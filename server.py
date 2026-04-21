@@ -19,6 +19,42 @@ import urllib.error
 import urllib.parse
 import urllib.request
 
+
+def _load_env_file(path: str):
+    if not os.path.exists(path):
+        return
+    try:
+        with open(path, "r", encoding="utf-8") as f:
+            for raw in f:
+                line = raw.strip()
+                if not line or line.startswith("#"):
+                    continue
+                if line.startswith("export "):
+                    line = line[7:].strip()
+                if "=" not in line:
+                    continue
+                key, value = line.split("=", 1)
+                key = key.strip()
+                value = value.strip().strip('"').strip("'")
+                if not key:
+                    continue
+                # Shell env has priority over file-based defaults.
+                if key not in os.environ:
+                    os.environ[key] = value
+    except Exception:
+        # Keep server startup resilient; AI will fall back with a warning.
+        pass
+
+
+def _load_local_env_files():
+    base = os.path.dirname(os.path.abspath(__file__))
+    # .env.local is preferred over .env for local secret overrides.
+    _load_env_file(os.path.join(base, ".env.local"))
+    _load_env_file(os.path.join(base, ".env"))
+
+
+_load_local_env_files()
+
 PORT = 8080
 API_BASE = "https://tunniplaan-api.taltech.ee/api"
 OPENAI_API = "https://api.openai.com/v1/chat/completions"
@@ -63,14 +99,27 @@ TOKEN_STOPWORDS = {
     "tahan",
     "soovin",
     "about",
+    "teha",
+    "saada",
+    "mingi",
+    "sest",
+    "väga",
+    "vaga",
+    "siis",
+    "kuna",
+    "nagu",
 }
 
 
 def _tokenize(text: str) -> list[str]:
     out = []
+    seen = set()
     for t in re.findall(r"[a-zA-Z0-9]+", (text or "").lower()):
         if len(t) < 3 or t in TOKEN_STOPWORDS:
             continue
+        if t in seen:
+            continue
+        seen.add(t)
         out.append(t)
     return out
 
@@ -107,6 +156,27 @@ def _http_get_text(url: str, headers: dict | None = None, timeout: int = 20) -> 
 
 def _http_get_json(url: str, headers: dict | None = None, timeout: int = 20) -> dict | list:
     return json.loads(_http_get_text(url, headers=headers, timeout=timeout))
+
+
+def _http_post_json(url: str, payload: dict, headers: dict | None = None, timeout: int = 40) -> dict:
+    req = urllib.request.Request(
+        url,
+        data=json.dumps(payload).encode("utf-8"),
+        method="POST",
+        headers=headers or {},
+    )
+    try:
+        with urllib.request.urlopen(req, timeout=timeout) as resp:
+            return json.loads(resp.read().decode("utf-8"))
+    except urllib.error.HTTPError as e:
+        detail = ""
+        try:
+            detail = e.read().decode("utf-8", errors="replace").strip()
+        except Exception:
+            pass
+        if detail:
+            raise ValueError(f"HTTP {e.code}: {_clip(detail, 420)}")
+        raise ValueError(f"HTTP {e.code}: {e.reason}")
 
 
 def _rtf_to_text(rtf: str) -> str:
@@ -435,7 +505,11 @@ def _heuristic_recommend(
 
         reason_parts = []
         if match_tokens or desc_tokens:
-            tags = (match_tokens + desc_tokens)[:4]
+            tags = []
+            for tok in (match_tokens + desc_tokens):
+                if tok not in tags:
+                    tags.append(tok)
+            tags = tags[:4]
             reason_parts.append(f"kuna mainisid huvi ({', '.join(tags)}), siis aine sisu kattub sellega")
         if desc_tokens:
             reason_parts.append("ainekirjelduses on need teemad selgelt kirjeldatud")
@@ -601,34 +675,54 @@ def _openai_recommend(
         deployment = AZURE_OPENAI_DEPLOYMENT or OPENAI_MODEL
         if not deployment:
             raise ValueError("Azure OpenAI deployment name missing")
-        azure_url = (
+        azure_dep_url = (
             f"{AZURE_OPENAI_ENDPOINT}/openai/deployments/"
             f"{urllib.parse.quote(deployment)}/chat/completions"
             f"?api-version={urllib.parse.quote(AZURE_OPENAI_API_VERSION)}"
         )
-        req = urllib.request.Request(
-            azure_url,
-            data=json.dumps(payload).encode("utf-8"),
-            method="POST",
-            headers={
-                "api-key": api_key,
-                "Content-Type": "application/json",
-            },
-        )
+        azure_headers = {
+            "api-key": api_key,
+            "Content-Type": "application/json",
+        }
+        try:
+            response_data = _http_post_json(
+                azure_dep_url,
+                payload,
+                headers=azure_headers,
+                timeout=40,
+            )
+        except Exception as dep_exc:
+            azure_v1_url = (
+                f"{AZURE_OPENAI_ENDPOINT}/openai/v1/chat/completions"
+                f"?api-version={urllib.parse.quote(AZURE_OPENAI_API_VERSION)}"
+            )
+            payload_v1 = dict(payload)
+            payload_v1["model"] = deployment
+            try:
+                response_data = _http_post_json(
+                    azure_v1_url,
+                    payload_v1,
+                    headers=azure_headers,
+                    timeout=40,
+                )
+            except Exception as v1_exc:
+                raise ValueError(
+                    "Azure OpenAI call failed. "
+                    f"Deployment route error: {dep_exc}. "
+                    f"V1 route error: {v1_exc}. "
+                    "Check AZURE_OPENAI_DEPLOYMENT and AZURE_OPENAI_API_VERSION."
+                )
     else:
         payload["model"] = OPENAI_MODEL
-        req = urllib.request.Request(
+        response_data = _http_post_json(
             OPENAI_API,
-            data=json.dumps(payload).encode("utf-8"),
-            method="POST",
+            payload,
             headers={
                 "Authorization": f"Bearer {api_key}",
                 "Content-Type": "application/json",
             },
+            timeout=40,
         )
-
-    with urllib.request.urlopen(req, timeout=40) as resp:
-        response_data = json.loads(resp.read().decode("utf-8"))
 
     content = (
         response_data.get("choices", [{}])[0]
@@ -873,7 +967,10 @@ class Handler(BaseHTTPRequestHandler):
                     normalized_mandatory,
                     normalized_time_preferences,
                 )
-                fallback["warning"] = f"OpenAI call failed, fallback used: {type(exc).__name__}"
+                fallback["warning"] = _clip(
+                    f"OpenAI call failed, fallback used: {type(exc).__name__}: {exc}",
+                    320,
+                )
                 if blocked_by_prereq:
                     fallback["blocked_due_prerequisites"] = blocked_by_prereq[:40]
                     fallback["summary"] = _clip(
@@ -882,7 +979,7 @@ class Handler(BaseHTTPRequestHandler):
                         520,
                     )
                 self._send_json(200, fallback)
-                return
+            return
 
         fallback = _heuristic_recommend(
             interests,
@@ -890,6 +987,10 @@ class Handler(BaseHTTPRequestHandler):
             normalized_candidates,
             normalized_mandatory,
             normalized_time_preferences,
+        )
+        fallback["warning"] = (
+            "OpenAI pole seadistatud. Sea AZURE_OPENAI_API_KEY + AZURE_OPENAI_ENDPOINT "
+            "+ AZURE_OPENAI_DEPLOYMENT (.env.local või shell env), et kasutada päris LLM-i."
         )
         if blocked_by_prereq:
             fallback["blocked_due_prerequisites"] = blocked_by_prereq[:40]
