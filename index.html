@@ -3,325 +3,903 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>TalTech Aineplanner</title>
+<title>TalTech Aineplanner · AI Agent</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@300;400;500;600;700;800&display=swap');
 
   :root {
-    --bg: #0a0a0f;
-    --surface: #13131a;
-    --surface2: #1c1c26;
-    --border: #2a2a3a;
-    --accent: #4f6ef7;
-    --accent2: #7c3aed;
+    --bg: #07070c;
+    --bg-2: #0b0b14;
+    --surface: #10111c;
+    --surface-2: #161826;
+    --surface-3: #1d2033;
+    --border: #242742;
+    --border-soft: #1c1e30;
+    --accent: #6366f1;
+    --accent-2: #8b5cf6;
+    --accent-3: #22d3ee;
+    --glow: #6366f1;
     --green: #10b981;
+    --green-soft: #34d399;
     --red: #ef4444;
+    --red-soft: #f87171;
     --amber: #f59e0b;
-    --text: #e8e8f0;
-    --muted: #6b6b80;
-    --mono: 'Space Mono', monospace;
-    --sans: 'DM Sans', sans-serif;
+    --text: #ffffff;
+    --text-dim: #d9dcf0;
+    --muted: #a1a4bf;
+    --muted-2: #7a7d9a;
+    --mono: 'JetBrains Mono', ui-monospace, monospace;
+    --sans: 'Inter', system-ui, sans-serif;
+    --radius: 14px;
+    --radius-sm: 10px;
+    --radius-lg: 20px;
+    --ease: cubic-bezier(0.32, 0.72, 0, 1);
+    --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+    --shadow-sm: 0 1px 2px rgba(0,0,0,0.3), 0 1px 3px rgba(0,0,0,0.2);
+    --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.4), 0 2px 4px -2px rgba(0,0,0,0.3);
+    --shadow-lg: 0 20px 40px -10px rgba(0,0,0,0.5), 0 10px 20px -10px rgba(99,102,241,0.15);
+    --shadow-glow: 0 0 0 1px rgba(99,102,241,0.12), 0 10px 40px -10px rgba(99,102,241,0.35);
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
 
   body {
     background: var(--bg);
     color: var(--text);
     font-family: var(--sans);
+    font-feature-settings: 'cv02','cv03','cv04','ss01';
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
     min-height: 100vh;
     overflow-x: hidden;
+    letter-spacing: -0.01em;
   }
 
-  /* Grid background */
-  body::before {
+  /* Animated aurora background */
+  body::before, body::after {
     content: '';
     position: fixed;
-    inset: 0;
+    border-radius: 50%;
+    filter: blur(120px);
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.35;
+    animation: drift 22s ease-in-out infinite;
+  }
+  body::before {
+    width: 640px; height: 640px;
+    background: radial-gradient(circle, var(--accent) 0%, transparent 60%);
+    top: -200px; left: -200px;
+  }
+  body::after {
+    width: 560px; height: 560px;
+    background: radial-gradient(circle, var(--accent-2) 0%, transparent 60%);
+    top: 30%; right: -240px;
+    animation-delay: -8s;
+  }
+  @keyframes drift {
+    0%,100% { transform: translate(0,0) scale(1); }
+    50%     { transform: translate(40px,60px) scale(1.1); }
+  }
+
+  /* Subtle grid overlay */
+  .grid-overlay {
+    position: fixed; inset: 0;
     background-image:
-      linear-gradient(rgba(79,110,247,0.03) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(79,110,247,0.03) 1px, transparent 1px);
-    background-size: 40px 40px;
+      linear-gradient(rgba(99,102,241,0.035) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(99,102,241,0.035) 1px, transparent 1px);
+    background-size: 48px 48px;
+    mask-image: radial-gradient(ellipse at center, black 40%, transparent 80%);
     pointer-events: none;
     z-index: 0;
   }
 
-  .app { position: relative; z-index: 1; max-width: 960px; margin: 0 auto; padding: 40px 24px; }
+  .app {
+    position: relative;
+    z-index: 1;
+    max-width: 1040px;
+    margin: 0 auto;
+    padding: 48px 24px 80px;
+  }
 
-  /* Header */
-  header { margin-bottom: 48px; }
-  .logo { font-family: var(--mono); font-size: 11px; color: var(--accent); letter-spacing: 3px; text-transform: uppercase; margin-bottom: 12px; }
-  h1 { font-size: 36px; font-weight: 600; line-height: 1.15; }
-  h1 span { color: var(--accent); }
-  .subtitle { color: var(--muted); margin-top: 8px; font-size: 15px; }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
 
-  /* Steps */
-  .step { display: none; animation: fadeIn 0.3s ease; }
-  .step.active { display: block; }
-  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
-
-  /* Step indicator */
-  .step-indicator { display: flex; gap: 8px; margin-bottom: 32px; }
-  .step-dot { width: 28px; height: 4px; border-radius: 2px; background: var(--border); transition: background 0.3s; }
-  .step-dot.done { background: var(--accent); }
-  .step-dot.active { background: var(--accent); opacity: 0.5; }
-
-  /* Cards */
-  .card {
-    background: var(--surface);
+  /* ─── Header ─── */
+  header { margin-bottom: 40px; }
+  .brand-row {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 12px 6px 6px;
+    background: rgba(255,255,255,0.02);
     border: 1px solid var(--border);
-    border-radius: 12px;
+    border-radius: 100px;
+    margin-bottom: 24px;
+    backdrop-filter: blur(10px);
+  }
+  .brand-dot {
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent), var(--accent-2));
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 0 12px rgba(99,102,241,0.6);
+  }
+  .brand-dot svg { width: 12px; height: 12px; color: #fff; }
+  .brand-txt {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-dim);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    font-weight: 500;
+  }
+
+  h1 {
+    font-size: clamp(32px, 5vw, 52px);
+    font-weight: 700;
+    line-height: 1.05;
+    letter-spacing: -0.035em;
+    margin-bottom: 12px;
+  }
+  h1 .grad {
+    background: linear-gradient(120deg, var(--accent) 0%, var(--accent-2) 50%, var(--accent-3) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .subtitle {
+    color: var(--text-dim);
+    max-width: 520px;
+    font-size: 16px;
+    line-height: 1.6;
+    font-weight: 400;
+  }
+
+  /* ─── Steps ─── */
+  .step { display: none; animation: fadeSlide 0.45s var(--ease); }
+  .step.active { display: block; }
+  @keyframes fadeSlide {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .step-indicator {
+    display: flex;
+    gap: 14px;
+    margin: 0 0 36px;
+    padding: 14px 18px;
+    background: rgba(255,255,255,0.02);
+    border: 1px solid var(--border-soft);
+    border-radius: var(--radius);
+    backdrop-filter: blur(8px);
+    overflow-x: auto;
+  }
+  .step-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 1;
+    min-width: 0;
+    opacity: 0.4;
+    transition: opacity 0.3s var(--ease);
+  }
+  .step-item.active, .step-item.done { opacity: 1; }
+  .step-num {
+    width: 26px; height: 26px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 700;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    flex-shrink: 0;
+    transition: all 0.3s var(--ease);
+  }
+  .step-item.active .step-num {
+    background: linear-gradient(135deg, var(--accent), var(--accent-2));
+    border-color: transparent;
+    color: #fff;
+    box-shadow: 0 0 0 4px rgba(99,102,241,0.15);
+  }
+  .step-item.done .step-num {
+    background: var(--green);
+    border-color: var(--green);
+    color: #fff;
+  }
+  .step-item.done .step-num::before { content: '✓'; }
+  .step-item.done .step-num-txt { display: none; }
+  .step-label {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-dim);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .step-item.active .step-label { color: var(--text); }
+  @media (max-width: 560px) {
+    .step-label { display: none; }
+  }
+
+  /* ─── Card ─── */
+  .card {
+    position: relative;
+    background: linear-gradient(180deg, rgba(255,255,255,0.025) 0%, rgba(255,255,255,0.01) 100%);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
     padding: 24px;
     margin-bottom: 16px;
+    backdrop-filter: blur(10px);
+    transition: border-color 0.2s var(--ease);
   }
-  .card-title { font-size: 13px; font-family: var(--mono); color: var(--muted); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 16px; }
+  .card-title {
+    font-size: 11px;
+    font-family: var(--mono);
+    color: var(--muted);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 18px;
+    display: flex; align-items: center; gap: 8px;
+    font-weight: 500;
+  }
+  .card-title::before {
+    content: '';
+    width: 4px; height: 4px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 8px var(--accent);
+  }
 
-  /* Inputs */
+  /* ─── Inputs ─── */
   .input-row { display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap; }
   .field { flex: 1; min-width: 160px; }
-  label { display: block; font-size: 12px; color: var(--muted); margin-bottom: 6px; font-family: var(--mono); letter-spacing: 0.5px; }
+  label {
+    display: block;
+    font-size: 11px;
+    color: var(--muted);
+    margin-bottom: 8px;
+    font-family: var(--mono);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    font-weight: 500;
+  }
   input, select {
     width: 100%;
-    background: var(--surface2);
+    background: var(--surface-2);
     border: 1px solid var(--border);
-    border-radius: 8px;
+    border-radius: var(--radius-sm);
     color: var(--text);
     font-family: var(--mono);
     font-size: 14px;
-    padding: 10px 14px;
+    padding: 12px 14px;
     outline: none;
-    transition: border-color 0.2s;
+    transition: border-color 0.2s var(--ease), box-shadow 0.2s var(--ease), background 0.2s var(--ease);
+    min-height: 44px;
   }
-  input:focus, select:focus { border-color: var(--accent); }
-  select option { background: var(--surface2); }
+  input:hover, select:hover { border-color: var(--muted-2); }
+  input:focus, select:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 4px rgba(99,102,241,0.15);
+    background: var(--surface-3);
+  }
+  select {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%237a7d9a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    padding-right: 36px;
+  }
+  select option { background: var(--surface-2); color: var(--text); }
 
-  /* Buttons */
+  /* ─── Buttons ─── */
   .btn {
-    padding: 10px 20px;
-    border-radius: 8px;
+    position: relative;
+    padding: 12px 22px;
+    border-radius: var(--radius-sm);
     border: none;
     cursor: pointer;
     font-family: var(--sans);
     font-size: 14px;
-    font-weight: 500;
-    transition: all 0.15s;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    transition: transform 0.15s var(--ease), box-shadow 0.2s var(--ease), background 0.2s var(--ease), border-color 0.2s var(--ease), color 0.2s var(--ease);
     display: inline-flex;
     align-items: center;
     gap: 8px;
+    min-height: 44px;
+    isolation: isolate;
+  }
+  .btn:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 4px rgba(99,102,241,0.3);
   }
   .btn:active { transform: scale(0.97); }
-  .btn-primary { background: var(--accent); color: #fff; }
-  .btn-primary:hover { background: #3d5ce8; }
-  .btn-secondary { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
-  .btn-secondary:hover { border-color: var(--accent); }
-  .btn-ghost { background: transparent; color: var(--muted); border: 1px solid var(--border); }
-  .btn-ghost:hover { color: var(--text); }
-  .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  .btn svg { width: 16px; height: 16px; }
 
-  /* Course list */
+  .btn-primary {
+    background: linear-gradient(135deg, var(--accent) 0%, var(--accent-2) 100%);
+    color: #fff;
+    box-shadow: 0 4px 14px -4px rgba(99,102,241,0.6), inset 0 1px 0 rgba(255,255,255,0.15);
+  }
+  .btn-primary:hover {
+    box-shadow: 0 8px 24px -6px rgba(99,102,241,0.75), inset 0 1px 0 rgba(255,255,255,0.2);
+    transform: translateY(-1px);
+  }
+  .btn-primary:active { transform: translateY(0) scale(0.98); }
+
+  .btn-secondary {
+    background: var(--surface-2);
+    color: var(--text);
+    border: 1px solid var(--border);
+  }
+  .btn-secondary:hover {
+    border-color: var(--accent);
+    background: var(--surface-3);
+  }
+  .btn-ghost {
+    background: transparent;
+    color: var(--muted);
+    border: 1px solid transparent;
+  }
+  .btn-ghost:hover {
+    color: var(--text);
+    background: var(--surface-2);
+  }
+  .btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    transform: none !important;
+    box-shadow: none !important;
+  }
+
+  /* ─── Course list ─── */
   .course-list { display: flex; flex-direction: column; gap: 8px; }
   .course-item {
     display: flex;
     align-items: center;
-    gap: 12px;
-    padding: 12px 16px;
-    background: var(--surface2);
+    gap: 14px;
+    padding: 14px 16px;
+    background: var(--surface-2);
     border: 1px solid var(--border);
-    border-radius: 8px;
+    border-radius: var(--radius-sm);
     cursor: pointer;
-    transition: border-color 0.2s;
+    transition: all 0.2s var(--ease);
     user-select: none;
+    min-height: 44px;
   }
-  .course-item:hover { border-color: var(--accent); }
-  .course-item.selected { border-color: var(--accent); background: rgba(79,110,247,0.08); }
-  .course-item.confirmed { border-color: var(--green); background: rgba(16,185,129,0.06); }
-  .course-code { font-family: var(--mono); font-size: 12px; color: var(--accent); min-width: 80px; }
-  .course-name { flex: 1; font-size: 14px; }
-  .course-eap { font-family: var(--mono); font-size: 11px; color: var(--muted); }
-  .course-sem { font-family: var(--mono); font-size: 11px; color: var(--muted); padding: 2px 8px; border: 1px solid var(--border); border-radius: 4px; }
-  .check { width: 18px; height: 18px; border-radius: 4px; border: 1.5px solid var(--border); display: flex; align-items: center; justify-content: center; transition: all 0.2s; flex-shrink: 0; }
-  .course-item.selected .check, .course-item.confirmed .check { background: var(--green); border-color: var(--green); }
-  .check::after { content: '✓'; font-size: 11px; color: #fff; display: none; }
-  .course-item.selected .check::after, .course-item.confirmed .check::after { display: block; }
-
-  /* Filter row */
-  .filter-row { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 16px; }
-  .filter-chip {
-    padding: 6px 14px;
-    border-radius: 20px;
-    border: 1px solid var(--border);
-    background: var(--surface2);
-    color: var(--muted);
-    font-size: 12px;
-    cursor: pointer;
-    transition: all 0.15s;
+  .course-item:hover {
+    border-color: var(--muted-2);
+    background: var(--surface-3);
+    transform: translateX(2px);
+  }
+  .course-item.selected {
+    border-color: var(--accent);
+    background: linear-gradient(90deg, rgba(99,102,241,0.1) 0%, rgba(99,102,241,0.04) 100%);
+    box-shadow: inset 3px 0 0 var(--accent);
+  }
+  .course-code {
     font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--accent-3);
+    min-width: 84px;
   }
-  .filter-chip:hover { border-color: var(--accent); color: var(--text); }
-  .filter-chip.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .course-name { flex: 1; font-size: 14px; font-weight: 500; }
+  .course-eap {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--muted);
+    padding: 3px 8px;
+    background: var(--surface);
+    border-radius: 6px;
+    border: 1px solid var(--border-soft);
+  }
+  .check {
+    width: 20px; height: 20px;
+    border-radius: 6px;
+    border: 1.5px solid var(--border);
+    background: var(--surface);
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.25s var(--ease-spring);
+    flex-shrink: 0;
+  }
+  .course-item.selected .check {
+    background: linear-gradient(135deg, var(--accent), var(--accent-2));
+    border-color: transparent;
+    box-shadow: 0 0 0 3px rgba(99,102,241,0.25);
+  }
+  .check svg { width: 12px; height: 12px; color: #fff; opacity: 0; transform: scale(0.5); transition: all 0.2s var(--ease-spring); }
+  .course-item.selected .check svg { opacity: 1; transform: scale(1); }
 
-  /* Timetable grid */
+  /* ─── Filter chips ─── */
+  .filter-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+  .filter-chip {
+    padding: 8px 16px;
+    border-radius: 100px;
+    border: 1px solid var(--border);
+    background: var(--surface-2);
+    color: var(--text-dim);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s var(--ease);
+    font-family: var(--sans);
+    min-height: 36px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .filter-chip:hover { border-color: var(--muted-2); color: var(--text); }
+  .filter-chip.active {
+    background: linear-gradient(135deg, var(--accent), var(--accent-2));
+    border-color: transparent;
+    color: #fff;
+    box-shadow: 0 2px 10px -2px rgba(99,102,241,0.5);
+  }
+
+  /* ─── Timetable ─── */
   .timetable {
     display: grid;
-    grid-template-columns: 56px repeat(5, 1fr);
+    grid-template-columns: 52px repeat(5, 1fr);
     gap: 2px;
-    margin-top: 16px;
+    margin-top: 12px;
     font-size: 11px;
   }
   .tt-header {
-    background: var(--surface2);
-    border-radius: 6px;
-    padding: 8px 4px;
+    background: var(--surface-2);
+    border-radius: 8px;
+    padding: 10px 4px;
     text-align: center;
     font-family: var(--mono);
-    color: var(--muted);
-    font-size: 10px;
+    color: var(--text-dim);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1px;
   }
   .tt-time {
-    background: transparent;
-    color: var(--muted);
+    color: var(--muted-2);
     font-family: var(--mono);
-    font-size: 9px;
+    font-size: 10px;
+    font-weight: 500;
     display: flex;
     align-items: flex-start;
     justify-content: flex-end;
-    padding: 2px 6px 0 0;
+    padding: 2px 8px 0 0;
     height: 32px;
   }
   .tt-cell {
-    background: var(--surface2);
+    background: rgba(255,255,255,0.015);
     border-radius: 4px;
     height: 32px;
     position: relative;
-    border: 1px solid transparent;
+    transition: background 0.2s var(--ease);
   }
+  .tt-cell:hover { background: rgba(255,255,255,0.03); }
   .tt-event {
     position: absolute;
     left: 1px; right: 1px;
-    border-radius: 4px;
-    padding: 3px 5px;
+    border-radius: 6px;
+    padding: 4px 6px;
     font-size: 9px;
     line-height: 1.2;
     overflow: hidden;
     cursor: pointer;
-    transition: opacity 0.2s;
+    transition: transform 0.15s var(--ease), box-shadow 0.2s var(--ease);
     z-index: 1;
+    font-family: var(--mono);
+    font-weight: 500;
   }
-  .tt-event:hover { opacity: 0.85; }
-  .tt-event.mandatory { background: rgba(79,110,247,0.25); border: 1px solid rgba(79,110,247,0.5); color: #a5b4fc; }
-  .tt-event.free { background: rgba(16,185,129,0.2); border: 1px solid rgba(16,185,129,0.5); color: #6ee7b7; }
-  .tt-event.conflict { background: rgba(239,68,68,0.15); border: 1px solid rgba(239,68,68,0.4); color: #fca5a5; }
+  .tt-event:hover {
+    transform: scale(1.03);
+    z-index: 2;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+  }
+  .tt-event.mandatory {
+    background: linear-gradient(135deg, rgba(99,102,241,0.3), rgba(139,92,246,0.25));
+    border: 1px solid rgba(99,102,241,0.55);
+    color: #c7d2fe;
+  }
+  .tt-event.free {
+    background: linear-gradient(135deg, rgba(16,185,129,0.25), rgba(34,211,238,0.18));
+    border: 1px solid rgba(16,185,129,0.55);
+    color: #a7f3d0;
+  }
+  .tt-event.conflict {
+    background: rgba(239,68,68,0.15);
+    border: 1px solid rgba(239,68,68,0.4);
+    color: #fecaca;
+  }
 
-  /* Result cards */
-  .result-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; margin-top: 16px; }
+  .legend {
+    display: flex;
+    gap: 16px;
+    font-size: 12px;
+    color: var(--text-dim);
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+  }
+  .legend-item { display: inline-flex; align-items: center; gap: 6px; }
+  .legend-dot {
+    width: 10px; height: 10px; border-radius: 3px;
+  }
+  .legend-dot.mand { background: linear-gradient(135deg, #6366f1, #8b5cf6); box-shadow: 0 0 6px rgba(99,102,241,0.4); }
+  .legend-dot.free { background: linear-gradient(135deg, #10b981, #22d3ee); box-shadow: 0 0 6px rgba(16,185,129,0.4); }
+  .legend-dot.conf { background: rgba(239,68,68,0.6); }
+
+  /* ─── Result cards ─── */
+  .result-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 12px;
+    margin-top: 16px;
+  }
   .result-card {
-    background: var(--surface);
+    position: relative;
+    background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
     border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 16px;
-    transition: border-color 0.2s, transform 0.15s;
+    border-radius: var(--radius);
+    padding: 18px;
+    transition: border-color 0.2s var(--ease), transform 0.2s var(--ease), box-shadow 0.2s var(--ease);
     cursor: pointer;
+    overflow: hidden;
   }
-  .result-card:hover { border-color: var(--green); transform: translateY(-1px); }
+  .result-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--green), var(--accent-3));
+    opacity: 0;
+    transition: opacity 0.2s var(--ease);
+  }
+  .result-card:hover {
+    border-color: var(--green);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px -10px rgba(16,185,129,0.2);
+  }
+  .result-card:hover::before { opacity: 1; }
   .result-card.conflict-card { opacity: 0.45; }
-  .result-card.conflict-card:hover { border-color: var(--red); transform: none; }
-  .rc-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
-  .rc-code { font-family: var(--mono); font-size: 11px; color: var(--accent); }
-  .rc-badge {
-    font-size: 10px; font-family: var(--mono); padding: 2px 8px;
-    border-radius: 10px; border: 1px solid;
+  .result-card.conflict-card:hover {
+    border-color: var(--red);
+    transform: none;
+    box-shadow: none;
+    opacity: 0.7;
   }
-  .rc-badge.free { color: var(--green); border-color: var(--green); background: rgba(16,185,129,0.1); }
-  .rc-badge.conflict { color: var(--red); border-color: var(--red); background: rgba(239,68,68,0.1); }
-  .rc-name { font-size: 13px; font-weight: 500; margin-bottom: 6px; line-height: 1.3; }
+  .result-card.conflict-card::before { display: none; }
+  .rc-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; gap: 10px; }
+  .rc-code {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--accent-3);
+    font-weight: 600;
+    letter-spacing: 0.5px;
+  }
+  .rc-badge {
+    font-size: 10px;
+    font-family: var(--mono);
+    padding: 3px 9px;
+    border-radius: 100px;
+    border: 1px solid;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .rc-badge.free {
+    color: var(--green-soft);
+    border-color: rgba(16,185,129,0.5);
+    background: rgba(16,185,129,0.1);
+  }
+  .rc-badge.conflict {
+    color: var(--red-soft);
+    border-color: rgba(239,68,68,0.5);
+    background: rgba(239,68,68,0.1);
+  }
+  .rc-name { font-size: 14px; font-weight: 600; margin-bottom: 8px; line-height: 1.35; letter-spacing: -0.01em; }
   .rc-meta { font-size: 11px; color: var(--muted); font-family: var(--mono); }
-  .rc-time { margin-top: 6px; font-size: 11px; color: var(--muted); font-family: var(--mono); }
+  .rc-time {
+    margin-top: 10px;
+    font-size: 11px;
+    color: var(--text-dim);
+    font-family: var(--mono);
+    padding: 5px 9px;
+    background: var(--surface-2);
+    border-radius: 6px;
+    display: inline-block;
+  }
 
-  /* Agent bubble */
+  /* ─── Agent bubble ─── */
   .agent-bubble {
-    background: var(--surface);
-    border: 1px solid rgba(79,110,247,0.3);
-    border-left: 3px solid var(--accent);
-    border-radius: 0 10px 10px 0;
-    padding: 14px 18px;
-    margin-bottom: 20px;
+    position: relative;
+    background: linear-gradient(135deg, rgba(99,102,241,0.08), rgba(139,92,246,0.05));
+    border: 1px solid rgba(99,102,241,0.25);
+    border-radius: var(--radius);
+    padding: 18px 20px 18px 56px;
+    margin-bottom: 24px;
     font-size: 14px;
     line-height: 1.6;
     color: var(--text);
+    backdrop-filter: blur(10px);
   }
-  .agent-label { font-family: var(--mono); font-size: 10px; color: var(--accent); letter-spacing: 1px; margin-bottom: 6px; }
+  .agent-bubble::before {
+    content: '';
+    position: absolute;
+    left: 18px; top: 18px;
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent), var(--accent-2));
+    box-shadow: 0 0 0 3px rgba(99,102,241,0.2), 0 0 20px rgba(99,102,241,0.4);
+  }
+  .agent-bubble::after {
+    content: '';
+    position: absolute;
+    left: 27px; top: 27px;
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: #fff;
+    opacity: 0.95;
+    animation: pulse 2s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%,100% { transform: scale(1); opacity: 0.95; }
+    50%     { transform: scale(0.85); opacity: 0.6; }
+  }
+  .agent-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--accent-3);
+    letter-spacing: 2px;
+    margin-bottom: 4px;
+    text-transform: uppercase;
+    font-weight: 600;
+  }
+  .agent-bubble code {
+    font-family: var(--mono);
+    background: var(--surface-2);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 12px;
+    color: var(--accent-3);
+    border: 1px solid var(--border);
+  }
 
-  /* Loading */
-  .loading { display: flex; align-items: center; gap: 10px; color: var(--muted); font-size: 13px; }
-  .spinner { width: 16px; height: 16px; border: 2px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.7s linear infinite; }
+  /* ─── Loading ─── */
+  .loading {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: var(--text-dim);
+    font-size: 13px;
+    padding: 18px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+  }
+  .spinner {
+    width: 18px; height: 18px;
+    border: 2px solid var(--border);
+    border-top-color: var(--accent);
+    border-right-color: var(--accent-2);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    flex-shrink: 0;
+  }
   @keyframes spin { to { transform: rotate(360deg); } }
 
-  /* EAP slider */
-  .range-row { display: flex; align-items: center; gap: 16px; }
-  input[type=range] {
-    flex: 1; height: 4px; accent-color: var(--accent);
-    padding: 0; background: var(--surface2);
-    border: none;
+  /* ─── EAP slider ─── */
+  .range-row {
+    display: grid;
+    grid-template-columns: auto 1fr auto auto 1fr auto;
+    gap: 14px;
+    align-items: center;
   }
-  .range-val { font-family: var(--mono); font-size: 14px; color: var(--accent); min-width: 60px; }
+  @media (max-width: 640px) {
+    .range-row { grid-template-columns: auto 1fr auto; row-gap: 10px; }
+  }
+  input[type=range] {
+    -webkit-appearance: none;
+    appearance: none;
+    height: 6px;
+    background: var(--surface-3);
+    border: none;
+    border-radius: 100px;
+    padding: 0;
+    min-height: 0;
+    cursor: pointer;
+  }
+  input[type=range]:focus { box-shadow: 0 0 0 3px rgba(99,102,241,0.2); }
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 18px; height: 18px;
+    background: linear-gradient(135deg, var(--accent), var(--accent-2));
+    border-radius: 50%;
+    border: 2px solid var(--bg);
+    box-shadow: 0 2px 8px rgba(99,102,241,0.5);
+    cursor: grab;
+    transition: transform 0.15s var(--ease);
+  }
+  input[type=range]::-webkit-slider-thumb:hover { transform: scale(1.15); }
+  input[type=range]::-moz-range-thumb {
+    width: 16px; height: 16px;
+    background: var(--accent);
+    border-radius: 50%;
+    border: 2px solid var(--bg);
+    cursor: grab;
+  }
+  .range-label {
+    font-size: 11px;
+    color: var(--muted);
+    font-family: var(--mono);
+    letter-spacing: 1px;
+    font-weight: 500;
+  }
+  .range-val {
+    font-family: var(--mono);
+    font-size: 14px;
+    color: var(--text);
+    min-width: 56px;
+    font-weight: 600;
+    padding: 3px 10px;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    text-align: center;
+  }
 
-  /* Dept checkboxes */
-  .dept-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 8px; }
+  /* ─── Dept grid ─── */
+  .dept-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 8px;
+  }
   .dept-item {
     display: flex; align-items: center; gap: 10px;
-    padding: 10px 12px;
-    background: var(--surface2);
+    padding: 11px 14px;
+    background: var(--surface-2);
     border: 1px solid var(--border);
-    border-radius: 8px;
+    border-radius: var(--radius-sm);
     cursor: pointer;
-    transition: border-color 0.2s;
+    transition: all 0.2s var(--ease);
     font-size: 13px;
+    min-height: 44px;
+    user-select: none;
   }
-  .dept-item:hover { border-color: var(--accent); }
-  .dept-item.checked { border-color: var(--accent); background: rgba(79,110,247,0.08); }
-  .dept-cb { width: 14px; height: 14px; border-radius: 3px; border: 1.5px solid var(--border); flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
-  .dept-item.checked .dept-cb { background: var(--accent); border-color: var(--accent); }
-  .dept-cb::after { content: '✓'; font-size: 9px; color: #fff; display: none; }
-  .dept-item.checked .dept-cb::after { display: block; }
+  .dept-item:hover { border-color: var(--muted-2); background: var(--surface-3); }
+  .dept-item.checked {
+    border-color: var(--accent);
+    background: linear-gradient(135deg, rgba(99,102,241,0.12), rgba(99,102,241,0.04));
+  }
+  .dept-cb {
+    width: 16px; height: 16px;
+    border-radius: 4px;
+    border: 1.5px solid var(--border);
+    background: var(--surface);
+    flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.25s var(--ease-spring);
+  }
+  .dept-item.checked .dept-cb {
+    background: linear-gradient(135deg, var(--accent), var(--accent-2));
+    border-color: transparent;
+  }
+  .dept-cb svg { width: 10px; height: 10px; color: #fff; opacity: 0; transform: scale(0.5); transition: all 0.2s var(--ease-spring); }
+  .dept-item.checked .dept-cb svg { opacity: 1; transform: scale(1); }
 
-  .section-title { font-size: 18px; font-weight: 600; margin-bottom: 4px; }
-  .section-sub { font-size: 13px; color: var(--muted); margin-bottom: 20px; }
+  /* ─── Sections ─── */
+  .section-title {
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 6px;
+    letter-spacing: -0.02em;
+  }
+  .section-sub {
+    font-size: 14px;
+    color: var(--text-dim);
+    margin-bottom: 24px;
+    line-height: 1.5;
+  }
   .actions { display: flex; gap: 10px; margin-top: 20px; flex-wrap: wrap; }
   .divider { height: 1px; background: var(--border); margin: 20px 0; }
-  .tag { display: inline-block; font-family: var(--mono); font-size: 10px; padding: 2px 8px; border-radius: 4px; background: var(--surface2); border: 1px solid var(--border); color: var(--muted); }
-  .error { color: var(--red); font-size: 13px; margin-top: 8px; font-family: var(--mono); }
-  .success-count { font-family: var(--mono); font-size: 28px; font-weight: 700; color: var(--green); }
+  .error {
+    color: var(--red-soft);
+    font-size: 13px;
+    margin-top: 10px;
+    font-family: var(--mono);
+    padding: 8px 12px;
+    background: rgba(239,68,68,0.08);
+    border: 1px solid rgba(239,68,68,0.25);
+    border-radius: 8px;
+    display: none;
+  }
+  .error.show { display: block; }
+
+  .success-count {
+    font-family: var(--sans);
+    font-size: 56px;
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -0.04em;
+    background: linear-gradient(135deg, var(--green) 0%, var(--accent-3) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .stats-row {
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+    margin-bottom: 20px;
+    padding: 20px 24px;
+    background: linear-gradient(135deg, rgba(16,185,129,0.06), rgba(34,211,238,0.04));
+    border: 1px solid rgba(16,185,129,0.2);
+    border-radius: var(--radius);
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--surface-3); border-radius: 100px; border: 2px solid transparent; background-clip: padding-box; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--border); background-clip: padding-box; border: 2px solid transparent; }
+
+  /* Focus ring (accessibility) */
+  *:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+  input:focus-visible, select:focus-visible, .btn:focus-visible { outline: none; }
 </style>
 </head>
 <body>
+<div class="grid-overlay" aria-hidden="true"></div>
+
 <div class="app">
   <header>
-    <div class="logo">TalTech · Aineplanner</div>
-    <h1>Leia sobivad<br><span>valikained</span></h1>
-    <p class="subtitle">AI agent analüüsib sinu tunniplaani ja leiab konfliktivabad valikained</p>
+    <div class="brand-row">
+      <div class="brand-dot" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+      </div>
+      <span class="brand-txt">TalTech Aineplaneerija</span>
+    </div>
+    <h1>Leia sobivad<br><span class="grad">valikained</span> sekunditega</h1>
+    <p class="subtitle">AI agent analüüsib sinu tunniplaani, leiab kohustuslikud ained ja kontrollib konfliktivabad valikained automaatselt.</p>
   </header>
 
-  <div class="step-indicator">
-    <div class="step-dot active" id="dot0"></div>
-    <div class="step-dot" id="dot1"></div>
-    <div class="step-dot" id="dot2"></div>
-    <div class="step-dot" id="dot3"></div>
+  <div class="step-indicator" role="progressbar" aria-label="Protsessi samm">
+    <div class="step-item active" id="stepItem0"><div class="step-num"><span class="step-num-txt">1</span></div><span class="step-label">Õpperühm</span></div>
+    <div class="step-item" id="stepItem1"><div class="step-num"><span class="step-num-txt">2</span></div><span class="step-label">Kohustuslikud</span></div>
+    <div class="step-item" id="stepItem2"><div class="step-num"><span class="step-num-txt">3</span></div><span class="step-label">Filter</span></div>
+    <div class="step-item" id="stepItem3"><div class="step-num"><span class="step-num-txt">4</span></div><span class="step-label">Tulemused</span></div>
   </div>
 
   <!-- STEP 0: Input -->
   <div class="step active" id="step0">
     <div class="section-title">Sisesta oma andmed</div>
-    <div class="section-sub">Grupi kood ja semester — agent teeb ülejäänu</div>
+    <div class="section-sub">Grupi kood ja semester — agent teeb ülejäänu.</div>
 
     <div class="card">
       <div class="card-title">Õpperühm</div>
       <div class="input-row">
         <div class="field">
-          <label>GRUPI KOOD</label>
-          <input id="groupCode" type="text" placeholder="nt IAAB21" maxlength="8" style="text-transform:uppercase">
+          <label for="groupCode">Grupi kood</label>
+          <input id="groupCode" type="text" placeholder="nt IAAB21" maxlength="8" autocomplete="off" style="text-transform:uppercase">
         </div>
         <div class="field">
-          <label>SEMESTER</label>
+          <label for="semester">Semester</label>
           <select id="semester">
             <option value="1">1. semester</option>
             <option value="2">2. semester</option>
@@ -332,14 +910,15 @@
           </select>
         </div>
         <button class="btn btn-primary" onclick="startAgent()">
-          <span>Alusta</span> →
+          <span>Alusta</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
         </button>
       </div>
       <div id="step0Error" class="error"></div>
     </div>
 
     <div class="agent-bubble">
-      <div class="agent-label">AGENT</div>
+      <div class="agent-label">AI Agent</div>
       Tere! Sisesta oma grupi kood (nt <code>IAAB21</code>) ja jooksev semester. Agent tõmbab sinu tüüpõpingukava, leiab kohustuslikud ained ja kontrollib kõik valikained konfliktide suhtes — automaatselt.
     </div>
   </div>
@@ -350,12 +929,13 @@
     <div class="section-sub">Agent leidis sinu semestri kohustuslikud ained. Kinnita et need on õiged.</div>
 
     <div id="agentMsg1" class="agent-bubble" style="display:none">
-      <div class="agent-label">AGENT</div>
+      <div class="agent-label">AI Agent</div>
       <span id="agentMsg1Text"></span>
     </div>
 
     <div id="loadingCourses" class="loading" style="margin-bottom:16px">
-      <div class="spinner"></div> Laen tunniplaan ja kohustuslikud ained...
+      <div class="spinner"></div>
+      <span>Laen tunniplaani ja kohustuslikke aineid…</span>
     </div>
 
     <div class="card" id="mandatoryCard" style="display:none">
@@ -364,33 +944,37 @@
     </div>
 
     <div class="actions" id="step1Actions" style="display:none">
-      <button class="btn btn-primary" onclick="confirmMandatory()">Kinnita valitud ained →</button>
-      <button class="btn btn-ghost" onclick="goStep(0)">← Tagasi</button>
+      <button class="btn btn-primary" onclick="confirmMandatory()">
+        <span>Kinnita valitud ained</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+      </button>
+      <button class="btn btn-ghost" onclick="goStep(0)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+        <span>Tagasi</span>
+      </button>
     </div>
   </div>
 
   <!-- STEP 2: Filters -->
   <div class="step" id="step2">
     <div class="section-title">Seadista filter</div>
-    <div class="section-sub">Defineeri mida otsid — agent käib läbi ainult relevantse osa tunniplaanist</div>
+    <div class="section-sub">Defineeri mida otsid — agent käib läbi ainult relevantse osa tunniplaanist.</div>
 
     <div class="card">
       <div class="card-title">EAP maht</div>
       <div class="range-row">
-        <span style="font-size:12px;color:var(--muted);font-family:var(--mono)">MIN</span>
+        <span class="range-label">MIN</span>
         <input type="range" id="eapMin" min="1" max="12" value="3" step="1" oninput="updateEapLabel()">
-        <span class="range-val" id="eapMinVal">3 EAP</span>
-        <span style="font-size:12px;color:var(--muted);font-family:var(--mono)">MAX</span>
+        <span class="range-val" id="eapMinVal">3</span>
+        <span class="range-label">MAX</span>
         <input type="range" id="eapMax" min="1" max="12" value="6" step="1" oninput="updateEapLabel()">
-        <span class="range-val" id="eapMaxVal">6 EAP</span>
+        <span class="range-val" id="eapMaxVal">6</span>
       </div>
     </div>
 
     <div class="card">
       <div class="card-title">Teaduskonnad / valdkonnad</div>
-      <div class="dept-grid" id="deptGrid">
-        <!-- filled by JS -->
-      </div>
+      <div class="dept-grid" id="deptGrid"></div>
     </div>
 
     <div class="card">
@@ -403,55 +987,74 @@
     </div>
 
     <div class="actions">
-      <button class="btn btn-primary" onclick="runSearch()">Otsi sobivaid aineid →</button>
-      <button class="btn btn-ghost" onclick="goStep(1)">← Tagasi</button>
+      <button class="btn btn-primary" onclick="runSearch()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <span>Otsi sobivaid aineid</span>
+      </button>
+      <button class="btn btn-ghost" onclick="goStep(1)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+        <span>Tagasi</span>
+      </button>
     </div>
   </div>
 
   <!-- STEP 3: Results + timetable -->
   <div class="step" id="step3">
     <div id="agentMsg3" class="agent-bubble" style="display:none">
-      <div class="agent-label">AGENT</div>
+      <div class="agent-label">AI Agent</div>
       <span id="agentMsg3Text"></span>
     </div>
 
     <div id="loadingSearch" class="loading" style="display:none;margin-bottom:16px">
-      <div class="spinner"></div> <span id="loadingSearchText">Kontrollin valikaineid...</span>
+      <div class="spinner"></div>
+      <span id="loadingSearchText">Kontrollin valikaineid…</span>
     </div>
 
     <!-- Timetable -->
     <div class="card" id="ttCard" style="display:none">
       <div class="card-title">Sinu nädala tunniplaan</div>
-      <div style="font-size:11px;color:var(--muted);margin-bottom:12px">
-        <span style="color:#a5b4fc">■</span> Kohustuslikud &nbsp;
-        <span style="color:#6ee7b7">■</span> Sobivad valikained &nbsp;
-        <span style="color:#fca5a5;opacity:0.6">■</span> Konflikt
+      <div class="legend">
+        <span class="legend-item"><span class="legend-dot mand"></span> Kohustuslikud</span>
+        <span class="legend-item"><span class="legend-dot free"></span> Sobivad valikained</span>
+        <span class="legend-item"><span class="legend-dot conf"></span> Konflikt</span>
       </div>
       <div id="timetableGrid"></div>
     </div>
 
     <!-- Results -->
-    <div style="margin-top:24px" id="resultsSection" style="display:none">
-      <div style="display:flex;align-items:baseline;gap:12px;margin-bottom:16px">
+    <div style="margin-top:24px" id="resultsSection">
+      <div class="stats-row">
         <div class="success-count" id="freeCount">0</div>
         <div>
-          <div style="font-size:16px;font-weight:600">sobivat valikainete</div>
-          <div style="font-size:12px;color:var(--muted);font-family:var(--mono)" id="conflictCount"></div>
+          <div style="font-size:17px;font-weight:600;letter-spacing:-0.01em">sobivat valikainete</div>
+          <div style="font-size:12px;color:var(--muted);font-family:var(--mono);margin-top:2px" id="conflictCount"></div>
         </div>
       </div>
 
       <div class="filter-row" id="resultFilter">
         <div class="filter-chip active" onclick="filterResults('all', this)">Kõik</div>
-        <div class="filter-chip" onclick="filterResults('free', this)">✓ Sobivad</div>
-        <div class="filter-chip" onclick="filterResults('conflict', this)">✗ Konfliktid</div>
+        <div class="filter-chip" onclick="filterResults('free', this)">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          Sobivad
+        </div>
+        <div class="filter-chip" onclick="filterResults('conflict', this)">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          Konfliktid
+        </div>
       </div>
 
       <div class="result-grid" id="resultGrid"></div>
     </div>
 
     <div class="actions" style="margin-top:24px">
-      <button class="btn btn-ghost" onclick="goStep(2)">← Muuda filtrit</button>
-      <button class="btn btn-secondary" onclick="goStep(0)">Alusta uuesti</button>
+      <button class="btn btn-ghost" onclick="goStep(2)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+        <span>Muuda filtrit</span>
+      </button>
+      <button class="btn btn-secondary" onclick="goStep(0)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+        <span>Alusta uuesti</span>
+      </button>
     </div>
   </div>
 </div>
@@ -461,6 +1064,7 @@
 const API_BASE = '/proxy';
 const TT_ID    = 10;
 const HEADERS  = { 'Origin':'https://tunniplaan.taltech.ee', 'Referer':'https://tunniplaan.taltech.ee/', 'Accept':'application/json', 'Content-Type':'application/json' };
+const CHECK_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
 
 let state = {
   groupCode: '', semester: 1,
@@ -475,10 +1079,11 @@ let state = {
 // ── Navigation ─────────────────────────────────────────────────────────────
 function goStep(n) {
   document.querySelectorAll('.step').forEach((s,i) => s.classList.toggle('active', i===n));
-  document.querySelectorAll('.step-dot').forEach((d,i) => {
+  document.querySelectorAll('.step-item').forEach((d,i) => {
     d.classList.toggle('done', i < n);
     d.classList.toggle('active', i === n);
   });
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 // ── Helpers ────────────────────────────────────────────────────────────────
@@ -498,6 +1103,17 @@ function overlap(a, b) {
   return toMin(a.start) < toMin(b.end) && toMin(b.start) < toMin(a.end);
 }
 function dayName(d) { return ['','E','T','K','N','R'][d] || '?'; }
+
+function showError(id, msg) {
+  const el = document.getElementById(id);
+  el.textContent = msg;
+  el.classList.add('show');
+}
+function clearError(id) {
+  const el = document.getElementById(id);
+  el.textContent = '';
+  el.classList.remove('show');
+}
 
 // ── API calls ──────────────────────────────────────────────────────────────
 async function fetchAllGroups() {
@@ -544,9 +1160,8 @@ async function fetchGroupTimetable(sgId, cvId, deptId) {
 async function startAgent() {
   const code = document.getElementById('groupCode').value.trim().toUpperCase();
   const sem  = parseInt(document.getElementById('semester').value);
-  const err  = document.getElementById('step0Error');
-  err.textContent = '';
-  if (!code || code.length < 4) { err.textContent = 'Sisesta kehtiv grupi kood (nt IAAB21)'; return; }
+  clearError('step0Error');
+  if (!code || code.length < 4) { showError('step0Error', 'Sisesta kehtiv grupi kood (nt IAAB21)'); return; }
 
   state.groupCode = code;
   state.semester  = sem;
@@ -558,16 +1173,13 @@ async function startAgent() {
   document.getElementById('agentMsg1').style.display      = 'none';
 
   try {
-    // Load all groups
     state.allGroups = await fetchAllGroups();
     const group = state.allGroups.find(g => g.group_code === code);
     if (!group) throw new Error(`Gruppi "${code}" ei leitud. Kontrolli koodi.`);
     state.groupInfo = group;
 
-    // Fetch timetable
     state.timetableEvents = await fetchGroupTimetable(group.sg_id, group.curriculum_version_id, group.department_id);
 
-    // Extract unique courses from timetable as "mandatory candidates"
     const seen = new Set();
     const courses = [];
     for (const e of state.timetableEvents) {
@@ -578,14 +1190,12 @@ async function startAgent() {
 
     document.getElementById('loadingCourses').style.display = 'none';
 
-    // Agent message
     const msg = document.getElementById('agentMsg1');
     document.getElementById('agentMsg1Text').textContent =
       `Leidsin grupile ${code} tunniplaanist ${courses.length} ainet. `+
       `Palun märgi ained mida käid sel semestril — need on sinu kohustuslikud tunnid mille vastu konflikte kontrollime.`;
     msg.style.display = 'block';
 
-    // Render course list
     const list = document.getElementById('mandatoryCourseList');
     list.innerHTML = '';
     for (const c of courses) {
@@ -595,10 +1205,10 @@ async function startAgent() {
       el.className = 'course-item selected';
       el.dataset.code = c.course_code;
       el.innerHTML = `
-        <div class="check"></div>
+        <div class="check">${CHECK_ICON}</div>
         <div class="course-code">${c.course_code}</div>
         <div class="course-name">${c.course_name}</div>
-        <div class="course-eap" style="font-size:10px">${timeStr}</div>
+        <div class="course-eap">${timeStr}</div>
       `;
       el.onclick = () => el.classList.toggle('selected');
       list.appendChild(el);
@@ -607,7 +1217,6 @@ async function startAgent() {
     document.getElementById('mandatoryCard').style.display = 'block';
     document.getElementById('step1Actions').style.display  = 'flex';
 
-    // Build dept list for step 2
     buildDeptGrid();
 
   } catch(e) {
@@ -630,12 +1239,12 @@ function buildDeptGrid() {
   const depts = [...new Set(state.allGroups.map(g => g.dept_name).filter(Boolean))].sort();
   const grid = document.getElementById('deptGrid');
   grid.innerHTML = '';
-  state.selectedDepts = new Set(depts); // all selected by default
+  state.selectedDepts = new Set(depts);
   for (const dept of depts) {
     const el = document.createElement('div');
     el.className = 'dept-item checked';
     el.dataset.dept = dept;
-    el.innerHTML = `<div class="dept-cb"></div><span>${dept}</span>`;
+    el.innerHTML = `<div class="dept-cb">${CHECK_ICON}</div><span>${dept}</span>`;
     el.onclick = () => {
       el.classList.toggle('checked');
       if (el.classList.contains('checked')) state.selectedDepts.add(dept);
@@ -646,8 +1255,8 @@ function buildDeptGrid() {
 }
 
 function updateEapLabel() {
-  document.getElementById('eapMinVal').textContent = document.getElementById('eapMin').value + ' EAP';
-  document.getElementById('eapMaxVal').textContent = document.getElementById('eapMax').value + ' EAP';
+  document.getElementById('eapMinVal').textContent = document.getElementById('eapMin').value;
+  document.getElementById('eapMaxVal').textContent = document.getElementById('eapMax').value;
 }
 
 let activeChip = 'all';
@@ -664,27 +1273,22 @@ async function runSearch() {
   const loadTxt = document.getElementById('loadingSearchText');
   loading.style.display = 'flex';
   document.getElementById('ttCard').style.display = 'none';
-  document.getElementById('resultsSection').style.display = 'none';
+  document.getElementById('resultsSection').style.visibility = 'hidden';
   document.getElementById('agentMsg3').style.display = 'none';
 
-  const eapMin = parseInt(document.getElementById('eapMin').value);
-  const eapMax = parseInt(document.getElementById('eapMax').value);
   const mandCodes = state.confirmedCodes;
 
   try {
-    // Find elective candidate groups (filtered by dept)
     const candidateGroups = state.allGroups.filter(g => state.selectedDepts.has(g.dept_name));
-    loadTxt.textContent = `Kontrollin ${candidateGroups.length} gruppi...`;
+    loadTxt.textContent = `Kontrollin ${candidateGroups.length} gruppi…`;
 
-    // Collect all elective events from candidate groups
-    const electiveMap = new Map(); // code → [events]
-    const electiveInfo = new Map(); // code → {name, eap}
+    const electiveMap = new Map();
+    const electiveInfo = new Map();
 
-    // Process in batches to avoid hammering the API
     const BATCH = 6;
     for (let i = 0; i < Math.min(candidateGroups.length, 60); i += BATCH) {
       const batch = candidateGroups.slice(i, i+BATCH);
-      loadTxt.textContent = `Laen tunniplaane... ${Math.min(i+BATCH, candidateGroups.length)}/${Math.min(candidateGroups.length,60)}`;
+      loadTxt.textContent = `Laen tunniplaane… ${Math.min(i+BATCH, candidateGroups.length)}/${Math.min(candidateGroups.length,60)}`;
       await Promise.all(batch.map(async g => {
         try {
           const events = await fetchGroupTimetable(g.sg_id, g.curriculum_version_id, g.department_id);
@@ -700,16 +1304,13 @@ async function runSearch() {
       }));
     }
 
-    loadTxt.textContent = 'Kontrollin konflikte...';
+    loadTxt.textContent = 'Kontrollin konflikte…';
 
-    // Check conflicts
     const results = [];
     for (const [code, events] of electiveMap) {
       const fixedEvents = events.filter(e => e.dow !== -1 && e.start);
       const hasConflict = fixedEvents.some(e => state.mandatoryEvents.some(m => overlap(e, m)));
       const info = electiveInfo.get(code);
-
-      // Get a representative time slot
       const rep = fixedEvents[0];
       results.push({
         code, name: info.name, name_en: info.name_en,
@@ -727,21 +1328,18 @@ async function runSearch() {
     const free     = results.filter(r => r.free);
     const conflict = results.filter(r => !r.free);
 
-    // Agent summary
     document.getElementById('agentMsg3Text').textContent =
-      `Kontrollisin ${results.length} valikainete tunniplaane. Leidsin ${free.length} konfliktivaaba ainet. `+
+      `Kontrollisin ${results.length} valikainete tunniplaane. Leidsin ${free.length} konfliktivaba ainet. `+
       `${conflict.length} ainel esines konflikt sinu kohustuslike tundidega.`;
     document.getElementById('agentMsg3').style.display = 'block';
 
-    // Render timetable
     renderTimetable(state.mandatoryEvents, free);
     document.getElementById('ttCard').style.display = 'block';
 
-    // Render results
     document.getElementById('freeCount').textContent  = free.length;
-    document.getElementById('conflictCount').textContent = `${conflict.length} konfliktsed peidetud`;
+    document.getElementById('conflictCount').textContent = `${conflict.length} konfliktsed peidetud · ${results.length} kokku kontrollitud`;
     renderResults(results, 'all');
-    document.getElementById('resultsSection').style.display = 'block';
+    document.getElementById('resultsSection').style.visibility = 'visible';
 
   } catch(e) {
     loading.style.display = 'none';
@@ -754,16 +1352,14 @@ async function runSearch() {
 function renderTimetable(mandatory, free) {
   const HOUR_START = 8, HOUR_END = 20;
   const HOURS = HOUR_END - HOUR_START;
-  const SLOT_H = 28; // px per 30min
+  const SLOT_H = 28;
 
   const days = ['E','T','K','N','R'];
   let html = `<div class="timetable" style="grid-template-rows: auto repeat(${HOURS*2}, ${SLOT_H}px)">`;
 
-  // Headers
   html += `<div class="tt-header"></div>`;
   days.forEach(d => html += `<div class="tt-header">${d}</div>`);
 
-  // Time rows + cells
   for (let slot = 0; slot < HOURS*2; slot++) {
     const totalMin = HOUR_START*60 + slot*30;
     const h = Math.floor(totalMin/60), m = totalMin%60;
@@ -777,7 +1373,6 @@ function renderTimetable(mandatory, free) {
   const grid = document.getElementById('timetableGrid');
   grid.innerHTML = html;
 
-  // Place events
   const allEvents = [
     ...mandatory.map(e => ({...e, cls:'mandatory'})),
     ...free.flatMap(r => r.events.map(e => ({...e, cls:'free'}))),
@@ -813,17 +1408,20 @@ function renderResults(results, filter) {
   for (const r of toShow.slice(0, 80)) {
     const card = document.createElement('div');
     card.className = `result-card ${r.free ? '' : 'conflict-card'}`;
+    const badgeIcon = r.free
+      ? '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>'
+      : '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
     card.innerHTML = `
       <div class="rc-top">
         <div class="rc-code">${r.code}</div>
-        <div class="rc-badge ${r.free ? 'free' : 'conflict'}">${r.free ? '✓ sobib' : '✗ konflikt'}</div>
+        <div class="rc-badge ${r.free ? 'free' : 'conflict'}">${badgeIcon} ${r.free ? 'sobib' : 'konflikt'}</div>
       </div>
       <div class="rc-name">${r.name || r.code}</div>
       <div class="rc-time">${r.time}</div>
     `;
     grid.appendChild(card);
   }
-  if (!toShow.length) grid.innerHTML = '<div style="color:var(--muted);font-size:13px;padding:12px">Ühtegi tulemust ei leitud</div>';
+  if (!toShow.length) grid.innerHTML = '<div style="color:var(--muted);font-size:13px;padding:24px;text-align:center;background:var(--surface);border:1px dashed var(--border);border-radius:var(--radius-sm)">Ühtegi tulemust ei leitud</div>';
 }
 
 function filterResults(f, el) {
