@@ -59,9 +59,19 @@ PORT = 8080
 API_BASE = "https://tunniplaan-api.taltech.ee/api"
 OPENAI_API = "https://api.openai.com/v1/chat/completions"
 OPENAI_MODEL = os.getenv("OPENAI_MODEL", "gpt-4o-mini")
-AZURE_OPENAI_ENDPOINT = os.getenv("AZURE_OPENAI_ENDPOINT", "").strip().rstrip("/")
-AZURE_OPENAI_API_VERSION = os.getenv("AZURE_OPENAI_API_VERSION", "2024-10-21").strip()
-AZURE_OPENAI_DEPLOYMENT = os.getenv("AZURE_OPENAI_DEPLOYMENT", "").strip()
+AZURE_OPENAI_ENDPOINT = (
+    os.getenv("AZURE_OPENAI_ENDPOINT", "").strip()
+    or os.getenv("AZURE_API_BASE", "").strip()
+).rstrip("/")
+AZURE_OPENAI_API_VERSION = (
+    os.getenv("AZURE_OPENAI_API_VERSION", "").strip()
+    or os.getenv("AZURE_API_VERSION", "").strip()
+    or "2024-10-21"
+)
+AZURE_OPENAI_DEPLOYMENT = (
+    os.getenv("AZURE_OPENAI_DEPLOYMENT", "").strip()
+    or os.getenv("AZURE_DEPLOYMENT", "").strip()
+)
 OIS_SUBJECT_BASE = "https://ois2.taltech.ee/uusois/subject"
 
 API_HDRS = {
@@ -937,7 +947,7 @@ class Handler(BaseHTTPRequestHandler):
             )
             return
 
-        azure_api_key = os.getenv("AZURE_OPENAI_API_KEY", "").strip()
+        azure_api_key = os.getenv("AZURE_OPENAI_API_KEY", "").strip() or os.getenv("AZURE_API_KEY", "").strip()
         api_key = azure_api_key or os.getenv("OPENAI_API_KEY", "").strip()
         if api_key:
             try:
@@ -969,7 +979,7 @@ class Handler(BaseHTTPRequestHandler):
                 )
                 fallback["warning"] = _clip(
                     f"OpenAI call failed, fallback used: {type(exc).__name__}: {exc}",
-                    320,
+                    700,
                 )
                 if blocked_by_prereq:
                     fallback["blocked_due_prerequisites"] = blocked_by_prereq[:40]
