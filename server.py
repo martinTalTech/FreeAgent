@@ -520,7 +520,7 @@ def _heuristic_recommend(
                 if tok not in tags:
                     tags.append(tok)
             tags = tags[:4]
-            reason_parts.append(f"kuna mainisid huvi ({', '.join(tags)}), siis aine sisu kattub sellega")
+            reason_parts.append(f"kuna mainisid huvi teemade vastu: {', '.join(tags)}, siis aine sisu kattub sellega")
         if desc_tokens:
             reason_parts.append("ainekirjelduses on need teemad selgelt kirjeldatud")
         if c.get("free"):
@@ -679,8 +679,9 @@ def _openai_recommend(
 ) -> dict:
     system_prompt = (
         "You are an academic planning assistant for TalTech students. "
-        "Given student interests and filtered timetable-compatible courses, "
+        "Given student interests and candidate courses (some timetable-compatible now, some better for future semesters), "
         "optimize for the student's requested free/filled day-time windows. "
+        "Make explicit decisions with trade-offs, not generic text. "
         "Give practical, student-style reasoning tied to interests, study track fit, and future internship/work value. "
         "Return concise recommendation JSON only."
     )
@@ -830,7 +831,9 @@ def _openai_chat_answer(
         "You are a TalTech study planning assistant. "
         "Answer in Estonian unless user asks otherwise. "
         "Use the provided course context and explain concrete reasons, prerequisites and timetable fit. "
-        "Be concise but specific."
+        "Be concise but specific. "
+        "You may use lightweight markdown (**bold**, headings, bullet points). "
+        "Do not end your answer with trailing ellipsis (...)."
     )
     compact_courses = []
     for c in candidates[:80]:
@@ -880,7 +883,11 @@ def _openai_chat_answer(
         .get("message", {})
         .get("content", "")
     )
-    answer = _clip(str(content).strip(), 2200)
+    answer = str(content).strip()
+    if len(answer) > 6000:
+        answer = answer[:6000].rstrip()
+    if answer.endswith("..."):
+        answer = answer[:-3].rstrip()
     if not answer:
         raise ValueError("LLM returned empty chat answer")
     return {"mode": "openai", "answer": answer}

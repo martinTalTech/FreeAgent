@@ -751,7 +751,30 @@
   .ai-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
   .ai-title { font-size: 13px; font-family: var(--mono); letter-spacing: 0.6px; color: var(--text-dim); text-transform: uppercase; }
   .ai-summary { margin-top: 12px; color: var(--text-dim); font-size: 13px; line-height: 1.55; }
+  .ai-thinking {
+    margin-top: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--text-dim);
+    font-size: 12px;
+    font-family: var(--mono);
+  }
+  .ai-thinking .spinner {
+    width: 14px;
+    height: 14px;
+    border-width: 2px;
+  }
   .ai-list { margin-top: 12px; display: grid; gap: 10px; }
+  .ai-retry-wrap {
+    margin-top: 10px;
+    display: grid;
+    gap: 8px;
+    border: 1px dashed rgba(99,102,241,0.42);
+    border-radius: var(--radius-sm);
+    padding: 10px;
+    background: rgba(99,102,241,0.06);
+  }
   .ai-item {
     border: 1px solid var(--border-soft);
     border-radius: var(--radius-sm);
@@ -831,7 +854,7 @@
     line-height: 1.5;
     color: var(--text-dim);
     background: rgba(255,255,255,0.01);
-    white-space: pre-wrap;
+    white-space: normal;
   }
   .ai-chat-msg.user {
     border-color: rgba(34,211,238,0.35);
@@ -841,6 +864,29 @@
     border-color: rgba(99,102,241,0.35);
     background: rgba(99,102,241,0.08);
   }
+  .ai-chat-msg strong { color: var(--text); font-weight: 700; }
+  .ai-chat-msg em { color: var(--text); font-style: italic; }
+  .ai-chat-msg code {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: #67e8f9;
+    background: rgba(34,211,238,0.12);
+    border: 1px solid rgba(34,211,238,0.25);
+    border-radius: 5px;
+    padding: 1px 5px;
+  }
+  .ai-chat-h {
+    font-weight: 700;
+    color: var(--text);
+    margin: 3px 0 6px;
+    line-height: 1.35;
+  }
+  .ai-chat-h.h1 { font-size: 14px; }
+  .ai-chat-h.h2 { font-size: 13px; }
+  .ai-chat-h.h3 { font-size: 12px; }
+  .ai-chat-p { margin: 0 0 6px; }
+  .ai-chat-list { margin: 0 0 6px 18px; padding: 0; display: grid; gap: 4px; }
+  .ai-chat-list li { margin: 0; }
   .ai-chat-row {
     margin-top: 10px;
     display: grid;
@@ -1338,6 +1384,10 @@
             <option value="10">10. semester (kevad)</option>
           </select>
         </div>
+        <div class="field">
+          <label for="studentCode">Tudengikood (ÕIS)</label>
+          <input id="studentCode" type="text" placeholder="nt 233456IABM" maxlength="24" autocomplete="off">
+        </div>
         <button class="btn btn-primary" onclick="startAgent()">
           <span>Alusta</span>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
@@ -1490,6 +1540,9 @@
     <!-- Timetable -->
     <div class="card" id="ttCard" style="display:none">
       <div class="card-title">Sinu nädala tunniplaan</div>
+      <div style="margin-bottom:10px">
+        <button class="btn btn-secondary" type="button" onclick="generateAiScheduleFromPreferences()">Genereeri AI-ga tunniplaan (soovitustest)</button>
+      </div>
       <div class="legend">
         <span class="legend-item"><span class="legend-dot mand"></span> Kohustuslikud</span>
         <span class="legend-item"><span class="legend-dot free"></span> Sobivad valikained</span>
@@ -1508,6 +1561,41 @@
           </thead>
           <tbody id="plannedCourseTableBody"></tbody>
         </table>
+      </div>
+    </div>
+
+    <div class="ai-panel" id="aiPanel">
+      <div class="ai-row">
+        <div class="ai-title">AI personaalsed soovitused</div>
+        <button class="btn btn-secondary" onclick="runAiSuggestions(false)">
+          <span>Genereeri AI soovitus</span>
+        </button>
+      </div>
+      <div id="aiSummary" class="ai-summary">Sisesta huvid eelmises sammus ja vajuta "Genereeri AI soovitus".</div>
+      <div id="aiThinking" class="ai-thinking" style="display:none">
+        <div class="spinner"></div>
+        <span id="aiThinkingText">AI koostab personaalseid soovitusi...</span>
+      </div>
+      <div id="aiPrereqInfo" class="ai-prereq-info"></div>
+      <div id="aiList" class="ai-list"></div>
+      <div id="aiRetryWrap" class="ai-retry-wrap" style="display:none">
+        <div class="ai-note">Kui praegused AI soovitused ei sobi, otsin laiemalt ka teisi õppeaineid (sh merendusvaldkond).</div>
+        <button class="btn btn-secondary" type="button" onclick="retryAiAlternativeSearch()">Genereeri ja otsi muid aineid</button>
+      </div>
+      <div class="ai-title" style="margin-top:14px">AI asendussoovitused</div>
+      <div id="aiSwapList" class="ai-swap-list"></div>
+      <div class="ai-title" style="margin-top:14px">AI soovitused tulevikuks</div>
+      <div id="aiFutureList" class="ai-list"></div>
+
+      <div class="ai-title" style="margin-top:14px">AI Chat</div>
+      <div class="ai-chat">
+        <div id="aiChatLog" class="ai-chat-log">
+          <div class="ai-chat-msg assistant">Küsi ükskõik millise aine kohta täpsemalt (sisu, miks see sobib, millal võtta, mille vastu vahetada).</div>
+        </div>
+        <div class="ai-chat-row">
+          <input id="aiChatInput" type="text" placeholder="Nt: Selgita miks ICD0001 sobib mu AI huvidega">
+          <button class="btn btn-secondary" type="button" onclick="sendAiChatMessage()">Saada</button>
+        </div>
       </div>
     </div>
 
@@ -1536,33 +1624,6 @@
       <div class="result-grid" id="resultGrid"></div>
     </div>
 
-    <div class="ai-panel" id="aiPanel">
-      <div class="ai-row">
-        <div class="ai-title">AI personaalsed soovitused</div>
-        <button class="btn btn-secondary" onclick="runAiSuggestions(false)">
-          <span>Genereeri AI soovitus</span>
-        </button>
-      </div>
-      <div id="aiSummary" class="ai-summary">Sisesta huvid eelmises sammus ja vajuta "Genereeri AI soovitus".</div>
-      <div id="aiPrereqInfo" class="ai-prereq-info"></div>
-      <div id="aiList" class="ai-list"></div>
-      <div class="ai-title" style="margin-top:14px">AI asendussoovitused</div>
-      <div id="aiSwapList" class="ai-swap-list"></div>
-      <div class="ai-title" style="margin-top:14px">AI soovitused tulevikuks</div>
-      <div id="aiFutureList" class="ai-list"></div>
-
-      <div class="ai-title" style="margin-top:14px">AI Chat</div>
-      <div class="ai-chat">
-        <div id="aiChatLog" class="ai-chat-log">
-          <div class="ai-chat-msg assistant">Küsi ükskõik millise aine kohta täpsemalt (sisu, miks see sobib, millal võtta, mille vastu vahetada).</div>
-        </div>
-        <div class="ai-chat-row">
-          <input id="aiChatInput" type="text" placeholder="Nt: Selgita miks ICD0001 sobib mu AI huvidega">
-          <button class="btn btn-secondary" type="button" onclick="sendAiChatMessage()">Saada</button>
-        </div>
-      </div>
-    </div>
-
     <div class="actions" style="margin-top:24px">
       <button class="btn btn-ghost" onclick="goStep(2)">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
@@ -1585,6 +1646,7 @@ const CHECK_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" s
 
 let state = {
   groupCode: '', semester: 1,
+  studentCode: '',
   groupInfo: null, allGroups: [],
   timetableEvents: [],
   mandatoryEvents: [],
@@ -1605,6 +1667,9 @@ let state = {
   freeResults: [],
   aiChatHistory: [],
   selectedAutoPlanCourse: '',
+  oisMaritimeCandidates: [],
+  aiCandidatePool: [],
+  aiLastRequestOptions: null,
 };
 
 // ── Navigation ─────────────────────────────────────────────────────────────
@@ -1651,6 +1716,151 @@ function overlap(a, b) {
   return toMin(a.start) < toMin(b.end) && toMin(b.start) < toMin(a.end);
 }
 function dayName(d) { return ['','E','T','K','N','R'][d] || '?'; }
+const MARITIME_INTEREST_RE = /\b(meri|merendus|laev|laevandus|navig|sadam|marine|maritime|ship|nauti|ocean|seafar)\w*\b/i;
+const MARITIME_TEXT_RE = /\b(meri|merendus|laev|laevandus|navig|sadam|marine|maritime|shipping|nautic|ship|port|ocean|seafar)\w*\b/i;
+const MARITIME_CODE_RE = /^(VLM|VLL|VMV|VMS|VME|SKR|ECK)/i;
+function hasMaritimeInterest(interests) {
+  return MARITIME_INTEREST_RE.test(String(interests || '').trim());
+}
+function isMaritimeSubjectRow(row) {
+  if (!row || !row.code) return false;
+  const code = String(row.code || '').trim().toUpperCase();
+  const text = `${row.name || ''} ${row.name_en || ''}`.toLowerCase();
+  return MARITIME_CODE_RE.test(code) || MARITIME_TEXT_RE.test(text);
+}
+function toAiCandidateShape(row, fallback) {
+  const base = fallback || {};
+  return {
+    code: String(row.code || base.code || '').toUpperCase(),
+    name: row.name || base.name || row.code || '',
+    name_en: row.name_en || base.name_en || '',
+    free: !!(row.free ?? base.free),
+    time: row.time || base.time || '',
+    courseKind: row.courseKind || base.courseKind || 'vaba',
+    isOnline: !!(row.isOnline ?? base.isOnline),
+    allTeachers: row.allTeachers || base.allTeachers || [],
+    descriptionHint: row.descriptionHint || base.descriptionHint || '',
+    timePreferenceScore: row.timePreferenceScore ?? base.timePreferenceScore ?? 0,
+    timePreferenceNotes: row.timePreferenceNotes || base.timePreferenceNotes || [],
+  };
+}
+async function fetchMaritimeSubjectCandidates(limit) {
+  const maxRows = Math.max(10, Math.min(120, Number(limit) || 70));
+  if (state.oisMaritimeCandidates.length) return state.oisMaritimeCandidates.slice(0, maxRows);
+  try {
+    const r = await fetch(`${API_BASE}/public/searchSubjects?command=${encodeURIComponent('a')}`, { headers: HEADERS });
+    const data = await r.json();
+    if (!Array.isArray(data)) return [];
+    const byCode = new Map();
+    for (const row of data) {
+      if (!row || !row.code) continue;
+      const clean = {
+        code: String(row.code || '').toUpperCase(),
+        name: String(row.name || row.nameEn || '').trim(),
+        name_en: String(row.nameEn || '').trim(),
+      };
+      if (!isMaritimeSubjectRow(clean)) continue;
+      if (!byCode.has(clean.code)) byCode.set(clean.code, clean);
+    }
+    state.oisMaritimeCandidates = [...byCode.values()].slice(0, 160);
+    return state.oisMaritimeCandidates.slice(0, maxRows);
+  } catch (_) {
+    return [];
+  }
+}
+function getInterestSearchTokens(interests) {
+  const text = String(interests || '').toLowerCase();
+  if (!text) return [];
+  const parts = text.match(/[a-zA-Z\u00C0-\u017F]{4,}/g) || [];
+  const skip = new Set(['tahan', 'soovin', 'aine', 'ained', 'kursus', 'kursused', 'õppida', 'oppida', 'learning', 'study', 'about']);
+  const out = [];
+  for (const p of parts) {
+    if (skip.has(p)) continue;
+    if (!out.includes(p)) out.push(p);
+    if (out.length >= 4) break;
+  }
+  return out;
+}
+async function fetchInterestSubjectCandidates(interests, limit) {
+  const maxRows = Math.max(8, Math.min(80, Number(limit) || 40));
+  const tokens = getInterestSearchTokens(interests);
+  if (!tokens.length) return [];
+  const byCode = new Map();
+  for (const tok of tokens) {
+    try {
+      const rows = await searchAllSubjects(tok);
+      for (const row of rows) {
+        if (!row || !row.code) continue;
+        const blob = `${row.code} ${row.name || ''} ${row.name_en || ''}`.toLowerCase();
+        if (!blob.includes(tok)) continue;
+        if (!byCode.has(row.code)) byCode.set(row.code, row);
+      }
+      if (byCode.size >= maxRows) break;
+    } catch (_) {}
+  }
+  return [...byCode.values()].slice(0, maxRows);
+}
+async function buildAiPayloadCandidates(interests, options) {
+  const opts = options || {};
+  const out = [];
+  const seen = new Set();
+  for (const row of (state.allResults || []).slice(0, 160)) {
+    const cand = toAiCandidateShape(row, {});
+    if (!cand.code || seen.has(cand.code)) continue;
+    seen.add(cand.code);
+    out.push(cand);
+  }
+
+  const needMaritime = !!opts.forceAlternativeSearch || hasMaritimeInterest(interests);
+  if (needMaritime) {
+    const maritimeRows = await fetchMaritimeSubjectCandidates(opts.maritimeLimit || 70);
+    for (const row of maritimeRows) {
+      const code = String(row.code || '').toUpperCase();
+      if (!code || seen.has(code)) continue;
+      seen.add(code);
+      out.push(toAiCandidateShape(row, {
+        free: false,
+        time: 'tunniplaan kontrollimata',
+        courseKind: 'teine',
+        isOnline: false,
+        descriptionHint: 'Mereakadeemia/merenduse aine ÕISist',
+        timePreferenceScore: 25,
+        timePreferenceNotes: ['vajab eraldi tunniplaani kontrolli'],
+      }));
+    }
+  }
+
+  if (opts.forceAlternativeSearch) {
+    const extraRows = await fetchInterestSubjectCandidates(interests, opts.extraLimit || 45);
+    for (const row of extraRows) {
+      const code = String(row.code || '').toUpperCase();
+      if (!code || seen.has(code)) continue;
+      seen.add(code);
+      out.push(toAiCandidateShape(row, {
+        free: false,
+        time: 'tunniplaan kontrollimata',
+        courseKind: 'vaba',
+        isOnline: false,
+        descriptionHint: 'AI laiotsing huvide põhjal ÕISist',
+        timePreferenceScore: 20,
+        timePreferenceNotes: ['vajab eraldi tunniplaani kontrolli'],
+      }));
+    }
+  }
+  return out.slice(0, 180);
+}
+function setAiThinking(isThinking, text) {
+  const wrap = document.getElementById('aiThinking');
+  const txt = document.getElementById('aiThinkingText');
+  if (!wrap) return;
+  wrap.style.display = isThinking ? 'flex' : 'none';
+  if (txt && text) txt.textContent = text;
+}
+function setAiRetryVisibility(show) {
+  const el = document.getElementById('aiRetryWrap');
+  if (!el) return;
+  el.style.display = show ? 'grid' : 'none';
+}
 function semesterSeasonByNumber(sem) {
   return (Number(sem) % 2 === 1) ? 'fall' : 'spring';
 }
@@ -1662,6 +1872,36 @@ function slotKeyForVariant(e) {
 }
 function typeShortLabel(type) {
   return evTypeLabel(type || '');
+}
+function isPracticumLikeType(type) {
+  const s = String(type || '').toUpperCase();
+  return s.includes('_P') || s.includes('PRAKT') || s.includes('_HAR') || s.includes('HARJ') || s.includes('_LA') || s.includes('LAB') || s.includes('_LP') || s.includes('LOENG_PRAKT');
+}
+function studentCompletedStorageKey() {
+  const sc = String(state.studentCode || '').trim().toUpperCase();
+  if (!sc) return '';
+  return `freeagent_completed_${sc}`;
+}
+function saveCompletedSelectionsByStudent() {
+  const key = studentCompletedStorageKey();
+  if (!key) return;
+  try {
+    const codes = [...new Set((state.completedCourseChoices || []).map(x => x.code).filter(Boolean))];
+    localStorage.setItem(key, JSON.stringify(codes));
+  } catch (_) {}
+}
+function loadCompletedSelectionsByStudent() {
+  const key = studentCompletedStorageKey();
+  if (!key) return [];
+  try {
+    const raw = localStorage.getItem(key);
+    if (!raw) return [];
+    const arr = JSON.parse(raw);
+    if (!Array.isArray(arr)) return [];
+    return arr.map(x => String(x || '').toUpperCase()).filter(Boolean);
+  } catch (_) {
+    return [];
+  }
 }
 
 function showError(id, msg) {
@@ -1755,39 +1995,12 @@ function buildPreviousSemesterCatalog() {
     state.prevSemesterCourseRows = [];
     return;
   }
-  const targetSeason = semesterSeasonByNumber(prevSem);
-  const map = new Map();
-  for (const e of state.timetableEvents || []) {
-    if (!e.course_code) continue;
-    if (!map.has(e.course_code)) {
-      map.set(e.course_code, {
-        code: e.course_code,
-        name: e.course_name || e.course_name_en || e.course_code,
-        dts: [],
-      });
-    }
-    const row = map.get(e.course_code);
-    row.dts.push(...(e.dts || []));
-  }
-  const rows = [];
-  for (const row of map.values()) {
-    const label = semesterLabel([...new Set(row.dts)].sort());
-    const season = label?.cls === 'sem-fall' ? 'fall' : label?.cls === 'sem-spring' ? 'spring' : '';
-    rows.push({
-      code: row.code,
-      name: row.name,
-      season,
-      seasonLabel: label?.label || '',
-    });
-  }
-  let filtered = rows.filter(r => r.season === targetSeason);
-  if (!filtered.length) {
-    // Fallback if API does not expose dates for all rows.
-    filtered = rows.slice(0, 30);
-  }
+  const currentSemCodes = new Set((state.confirmedCodes && state.confirmedCodes.size) ? [...state.confirmedCodes] : []);
+  const baseRows = (state.ownCurriculumCatalog || []).map(r => ({ code: r.code, name: r.name || r.code }));
+  const filtered = baseRows.filter(r => !currentSemCodes.has(r.code));
   state.prevSemesterCourseRows = filtered
     .sort((a, b) => a.code.localeCompare(b.code))
-    .slice(0, 60);
+    .slice(0, 140);
 }
 
 function syncPrevSemesterCheckboxes() {
@@ -1818,7 +2031,9 @@ function renderPreviousSemesterChecklist() {
     listEl.innerHTML = '';
     return;
   }
-  titleEl.textContent = `Eelmise semestri (${prevSem}. semester, ${seasonTxt}) tüüpkava ained`;
+  const fromTo = `1-${prevSem}`;
+  const studentTxt = state.studentCode ? ` · tudengikood: ${state.studentCode}` : '';
+  titleEl.textContent = `Eelnevate semestrite (${fromTo}. semester, kuni ${seasonTxt}) tüüpkava ained${studentTxt}`;
   listEl.innerHTML = '';
   for (const row of rows) {
     const item = document.createElement('label');
@@ -1880,7 +2095,7 @@ function renderPlannedCourseTable() {
   }
 }
 
-function addCourseToPlannedSchedule(code, withScroll) {
+function addCourseToPlannedSchedule(code, withScroll, silent) {
   const course = resolveCourseForModal(code);
   if (!course) return;
   const plan = buildCompatibleSlotPlan(course.allSlots || [], state.timePreferences || readTimePreferences());
@@ -1903,10 +2118,12 @@ function addCourseToPlannedSchedule(code, withScroll) {
   renderPlannedCourseTable();
   renderTimetable(state.mandatoryEvents, getDisplayTimetableCourses());
   document.getElementById('ttCard').style.display = 'block';
-  const msg = document.getElementById('agentMsg3');
-  const txt = document.getElementById('agentMsg3Text');
-  txt.textContent = `Aine ${code} lisati tunniplaani. Nüüd saad lisada järgmisi aineid samamoodi või eemaldada tabelist.`;
-  msg.style.display = 'block';
+  if (!silent) {
+    const msg = document.getElementById('agentMsg3');
+    const txt = document.getElementById('agentMsg3Text');
+    txt.textContent = `Aine ${code} lisati tunniplaani. Nüüd saad lisada järgmisi aineid samamoodi või eemaldada tabelist.`;
+    msg.style.display = 'block';
+  }
   if (withScroll) document.getElementById('ttCard').scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
@@ -1967,6 +2184,7 @@ function renderMandatoryCourseList(courses) {
           <span class="variant-label">${group.label}</span>
           <select data-course="${c.course_code}" data-type="${group.type}">
             <option value="all">Kõik variandid</option>
+            ${isPracticumLikeType(group.type) ? '<option value="none">Ei käi kohal</option>' : ''}
             ${group.options.map(opt => `<option value="${opt.key}">${opt.label}</option>`).join('')}
           </select>
         `;
@@ -1982,11 +2200,13 @@ function renderMandatoryCourseList(courses) {
 async function startAgent() {
   const code = document.getElementById('groupCode').value.trim().toUpperCase();
   const sem  = parseInt(document.getElementById('semester').value);
+  const studentCode = document.getElementById('studentCode')?.value?.trim().toUpperCase() || '';
   clearError('step0Error');
   if (!code || code.length < 4) { showError('step0Error', 'Sisesta kehtiv grupi kood (nt IAAB21)'); return; }
 
   state.groupCode = code;
   state.semester  = sem;
+  state.studentCode = studentCode;
   state.completedCourseChoices = [];
   state.prevSemesterCourseRows = [];
   state.plannedCourses = [];
@@ -2031,6 +2251,14 @@ async function startAgent() {
 
     renderMandatoryCourseList(courses);
     buildOwnCurriculumCatalog();
+    const savedCompleted = loadCompletedSelectionsByStudent();
+    if (savedCompleted.length) {
+      const byCode = new Map((state.ownCurriculumCatalog || []).map(r => [r.code, r]));
+      for (const c of savedCompleted.slice(0, 40)) {
+        const row = byCode.get(c);
+        state.completedCourseChoices.push({ code: c, name: row?.name || c });
+      }
+    }
     buildPreviousSemesterCatalog();
     renderPreviousSemesterChecklist();
     renderCompletedCourseChips();
@@ -2065,9 +2293,12 @@ function confirmMandatory() {
     if (e.dow < 1 || !e.start || !e.end) return true;
     const byCourse = variantChoices[e.course_code] || {};
     const choice = byCourse[e.type || 'OTHER'] || 'all';
+    if (choice === 'none') return false;
     if (choice === 'all') return true;
     return slotKeyForVariant(e) === choice;
   });
+  buildPreviousSemesterCatalog();
+  renderPreviousSemesterChecklist();
   goStep(2);
 }
 
@@ -2261,12 +2492,16 @@ async function runSearch() {
   state.aiSummary = '';
   state.aiMode = '';
   state.aiChatHistory = [];
+  state.aiCandidatePool = [];
+  state.aiLastRequestOptions = null;
   document.getElementById('aiSummary').textContent = 'AI soovitused ilmuvad siia pärast otsingut.';
   document.getElementById('aiPrereqInfo').style.display = 'none';
   document.getElementById('aiPrereqInfo').textContent = '';
   document.getElementById('aiList').innerHTML = '';
   document.getElementById('aiSwapList').innerHTML = '';
   document.getElementById('aiFutureList').innerHTML = '';
+  setAiThinking(false);
+  setAiRetryVisibility(false);
   const aiChatLog = document.getElementById('aiChatLog');
   if (aiChatLog) aiChatLog.innerHTML = '<div class="ai-chat-msg assistant">Küsi ükskõik millise aine kohta täpsemalt (sisu, miks see sobib, millal võtta, mille vastu vahetada).</div>';
 
@@ -2398,16 +2633,24 @@ async function runSearch() {
     document.getElementById('freeCount').textContent  = free.length;
     document.getElementById('conflictCount').textContent = `${conflictCount} kursust peidetud (slotikonflikt või ajafiltri mittesobivus) · ${totalChecked} kokku kontrollitud`;
     renderResults(results, 'all');
+    document.getElementById('resultsSection').style.visibility = 'visible';
     const interests = (document.getElementById('interestInput').value || '').trim();
     if (interests && results.length) {
-      await runAiSuggestions(true);
+      runAiSuggestions(true).catch((err) => {
+        document.getElementById('aiSummary').textContent = 'AI soovituse laadimine ebaõnnestus: ' + err.message;
+      });
     } else {
-      document.getElementById('aiSummary').textContent = 'Sisesta oma huvid sammus "Filter", et saada AI soovitused.';
+      if (interests && !results.length) {
+        document.getElementById('aiSummary').textContent = 'Filtri põhjal ei tekkinud sobivaid aineid. Vajuta "Genereeri ja otsi muid aineid", et AI otsiks laiemalt ka ÕISist.';
+        setAiRetryVisibility(true);
+      } else {
+        document.getElementById('aiSummary').textContent = 'Sisesta oma huvid sammus "Filter", et saada AI soovitused.';
+        setAiRetryVisibility(false);
+      }
       document.getElementById('aiList').innerHTML = '';
       document.getElementById('aiSwapList').innerHTML = '';
       document.getElementById('aiFutureList').innerHTML = '';
     }
-    document.getElementById('resultsSection').style.visibility = 'visible';
 
   } catch(e) {
     loading.style.display = 'none';
@@ -2727,6 +2970,7 @@ function renderCompletedCourseChips() {
     host.appendChild(chip);
   }
   syncPrevSemesterCheckboxes();
+  saveCompletedSelectionsByStudent();
 }
 
 function updateCompletedDatalist(rows) {
@@ -2834,7 +3078,8 @@ function summarizeCourseTime(course) {
   return `${dayName(first.dow)} ${first.start}-${first.end}`;
 }
 
-async function runAiSuggestions(isAuto) {
+async function runAiSuggestions(isAuto, options) {
+  const opts = options || {};
   const interests = (document.getElementById('interestInput').value || '').trim();
   const prereqInfoEl = document.getElementById('aiPrereqInfo');
   if (!interests) {
@@ -2842,14 +3087,18 @@ async function runAiSuggestions(isAuto) {
     document.getElementById('aiList').innerHTML = '';
     document.getElementById('aiSwapList').innerHTML = '';
     document.getElementById('aiFutureList').innerHTML = '';
+    setAiRetryVisibility(false);
+    setAiThinking(false);
     prereqInfoEl.style.display = 'none';
     prereqInfoEl.textContent = '';
     return;
   }
-  if (!state.allResults.length) {
+  if (!state.allResults.length && !opts.forceAlternativeSearch) {
     if (!isAuto) document.getElementById('aiSummary').textContent = 'Kõigepealt käivita ainete otsing.';
     document.getElementById('aiSwapList').innerHTML = '';
     document.getElementById('aiFutureList').innerHTML = '';
+    setAiRetryVisibility(false);
+    setAiThinking(false);
     prereqInfoEl.style.display = 'none';
     prereqInfoEl.textContent = '';
     return;
@@ -2857,11 +3106,42 @@ async function runAiSuggestions(isAuto) {
 
   const aiSummaryEl = document.getElementById('aiSummary');
   const aiListEl = document.getElementById('aiList');
-  aiSummaryEl.textContent = 'AI analüüsib huvisid ja seob need sinu filtritud ainetega...';
+  aiSummaryEl.textContent = opts.forceAlternativeSearch
+    ? 'AI otsib nüüd lisaks ka alternatiivseid aineid ÕISist ja seob need sinu huvidega...'
+    : 'AI analüüsib huvisid ja seob need sinu filtritud ainetega...';
   prereqInfoEl.style.display = 'none';
   prereqInfoEl.textContent = '';
   aiListEl.innerHTML = '';
   document.getElementById('aiSwapList').innerHTML = '';
+  document.getElementById('aiFutureList').innerHTML = '';
+  setAiRetryVisibility(false);
+  setAiThinking(true, opts.forceAlternativeSearch ? 'AI otsib alternatiivseid aineid...' : 'AI koostab personaalseid soovitusi...');
+
+  const candidates = await buildAiPayloadCandidates(interests, opts);
+  if (!candidates.length) {
+    aiSummaryEl.textContent = 'AI soovituse jaoks ei leitud kandidaate.';
+    setAiThinking(false);
+    setAiRetryVisibility(true);
+    return;
+  }
+  state.aiCandidatePool = candidates.map(c => ({
+    code: c.code,
+    name: c.name || c.code,
+    name_en: c.name_en || '',
+    free: !!c.free,
+    time: c.time || '',
+    courseKind: c.courseKind || 'vaba',
+    isOnline: !!c.isOnline,
+    allTeachers: c.allTeachers || [],
+    descriptionHint: c.descriptionHint || '',
+    allSlots: [],
+    blockedSlots: [],
+    events: [],
+    allSgs: [],
+    allRooms: [],
+    allDts: [],
+  }));
+  state.aiLastRequestOptions = opts;
 
   const payload = {
     group_code: state.groupCode,
@@ -2870,19 +3150,7 @@ async function runAiSuggestions(isAuto) {
     time_preferences: readTimePreferences(),
     mandatory_courses: buildMandatoryContext(),
     completed_courses: readCompletedCourses(),
-    candidates: state.allResults.slice(0, 160).map(r => ({
-      code: r.code,
-      name: r.name,
-      name_en: r.name_en,
-      free: r.free,
-      time: r.time,
-      courseKind: r.courseKind,
-      isOnline: r.isOnline,
-      allTeachers: r.allTeachers || [],
-      descriptionHint: r.descriptionHint || '',
-      timePreferenceScore: r.timePreferenceScore ?? 0,
-      timePreferenceNotes: r.timePreferenceNotes || [],
-    })),
+    candidates,
   };
 
   try {
@@ -2903,9 +3171,20 @@ async function runAiSuggestions(isAuto) {
     aiListEl.innerHTML = '';
     document.getElementById('aiSwapList').innerHTML = '';
     document.getElementById('aiFutureList').innerHTML = '';
+    setAiRetryVisibility(true);
     prereqInfoEl.style.display = 'none';
     prereqInfoEl.textContent = '';
+  } finally {
+    setAiThinking(false);
   }
+}
+
+async function retryAiAlternativeSearch() {
+  await runAiSuggestions(false, {
+    forceAlternativeSearch: true,
+    maritimeLimit: 90,
+    extraLimit: 55,
+  });
 }
 
 function appendAiChatMessage(role, text) {
@@ -2913,9 +3192,92 @@ function appendAiChatMessage(role, text) {
   if (!log) return;
   const row = document.createElement('div');
   row.className = `ai-chat-msg ${role === 'user' ? 'user' : 'assistant'}`;
-  row.textContent = text;
+  if (role === 'assistant') {
+    const html = markdownToChatHtml(text);
+    if (html) row.innerHTML = html;
+    else row.textContent = text;
+  } else {
+    row.textContent = text;
+  }
   log.appendChild(row);
   log.scrollTop = log.scrollHeight;
+}
+
+function normalizeChatPlainText(text) {
+  let out = String(text || '');
+  out = out.replace(/\*\*/g, '');
+  out = out.replace(/__/g, '');
+  out = out.replace(/`+/g, '');
+  out = out.replace(/^\s{0,3}#{1,6}\s*/gm, '');
+  out = out.replace(/^\s*[-*•]\s+/gm, '');
+  out = out.replace(/^\s*\d+\.\s+/gm, '');
+  out = out.replace(/\r/g, '');
+  out = out.replace(/\n{3,}/g, '\n\n');
+  return out.trim();
+}
+
+function escapeHtml(text) {
+  return String(text || '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function formatInlineMarkdown(text) {
+  let out = text;
+  out = out.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+  out = out.replace(/__(.+?)__/g, '<strong>$1</strong>');
+  out = out.replace(/\*(.+?)\*/g, '<em>$1</em>');
+  out = out.replace(/`([^`]+)`/g, '<code>$1</code>');
+  return out;
+}
+
+function markdownToChatHtml(text) {
+  const src = String(text || '').replace(/\r/g, '').trim();
+  if (!src) return '';
+  const lines = src.split('\n');
+  let html = '';
+  let inUl = false;
+  let inOl = false;
+  const closeLists = () => {
+    if (inUl) { html += '</ul>'; inUl = false; }
+    if (inOl) { html += '</ol>'; inOl = false; }
+  };
+
+  for (const rawLine of lines) {
+    const line = rawLine.trim();
+    if (!line) {
+      closeLists();
+      continue;
+    }
+    const heading = line.match(/^(#{1,6})\s+(.*)$/);
+    if (heading) {
+      closeLists();
+      const lvl = Math.min(3, heading[1].length);
+      html += `<div class="ai-chat-h h${lvl}">${formatInlineMarkdown(escapeHtml(heading[2]))}</div>`;
+      continue;
+    }
+    const bullet = line.match(/^[-*•]\s+(.*)$/);
+    if (bullet) {
+      if (inOl) { html += '</ol>'; inOl = false; }
+      if (!inUl) { html += '<ul class="ai-chat-list">'; inUl = true; }
+      html += `<li>${formatInlineMarkdown(escapeHtml(bullet[1]))}</li>`;
+      continue;
+    }
+    const ordered = line.match(/^\d+\.\s+(.*)$/);
+    if (ordered) {
+      if (inUl) { html += '</ul>'; inUl = false; }
+      if (!inOl) { html += '<ol class="ai-chat-list">'; inOl = true; }
+      html += `<li>${formatInlineMarkdown(escapeHtml(ordered[1]))}</li>`;
+      continue;
+    }
+    closeLists();
+    html += `<div class="ai-chat-p">${formatInlineMarkdown(escapeHtml(line))}</div>`;
+  }
+  closeLists();
+  return html.trim();
 }
 
 async function sendAiChatMessage(forcedQuestion) {
@@ -2927,21 +3289,33 @@ async function sendAiChatMessage(forcedQuestion) {
   state.aiChatHistory.push({ role: 'user', content: question });
 
   const payload = {
+    // Include both timetable-filtered and AI-expanded candidate pool for chat context.
     question,
     group_code: state.groupCode,
     semester: state.semester,
     interests: (document.getElementById('interestInput').value || '').trim(),
     completed_courses: readCompletedCourses(),
     mandatory_courses: buildMandatoryContext(),
-    candidates: state.allResults.slice(0, 120).map(r => ({
-      code: r.code,
-      name: r.name,
-      name_en: r.name_en,
-      time: r.time,
-      courseKind: r.courseKind,
-      descriptionHint: r.descriptionHint || '',
-      isOnline: !!r.isOnline,
-    })),
+    candidates: (() => {
+      const byCode = new Map();
+      for (const r of (state.aiCandidatePool || [])) {
+        if (!r || !r.code) continue;
+        byCode.set(r.code, r);
+      }
+      for (const r of (state.allResults || [])) {
+        if (!r || !r.code) continue;
+        byCode.set(r.code, r);
+      }
+      return [...byCode.values()].slice(0, 120).map(r => ({
+        code: r.code,
+        name: r.name,
+        name_en: r.name_en,
+        time: r.time,
+        courseKind: r.courseKind,
+        descriptionHint: r.descriptionHint || '',
+        isOnline: !!r.isOnline,
+      }));
+    })(),
     history: state.aiChatHistory.slice(-10),
   };
 
@@ -2955,7 +3329,7 @@ async function sendAiChatMessage(forcedQuestion) {
     if (!r.ok) throw new Error(data.error || 'AI chat endpoint error');
     const modeTag = data.mode === 'openai' ? '[OpenAI]' : '[Fallback]';
     const warning = data.warning ? `\n\n${data.warning}` : '';
-    const answer = `${modeTag} ${data.answer || 'Vastus puudub.'}${warning}`;
+    const answer = `${modeTag} ${data.answer || 'Vastus puudub.'}${warning}`.replace(/\s*\.\.\.\s*$/, '').trim();
     appendAiChatMessage('assistant', answer);
     state.aiChatHistory.push({ role: 'assistant', content: data.answer || '' });
   } catch (e) {
@@ -2984,6 +3358,41 @@ function generateScheduleFromModal(code) {
   closeModal();
 }
 
+async function generateAiScheduleFromPreferences() {
+  if (!state.allResults.length) {
+    alert('Kõigepealt käivita ainete otsing.');
+    return;
+  }
+  if (!state.aiSuggestions.length) {
+    await runAiSuggestions(false);
+  }
+  const picks = (state.aiSuggestions || []).slice(0, 5);
+  if (!picks.length) {
+    alert('AI ei tagastanud seekord soovitusi tunniplaani genereerimiseks.');
+    return;
+  }
+  let added = 0;
+  const skipped = [];
+  for (const pick of picks) {
+    const before = (state.plannedCourses || []).length;
+    addCourseToPlannedSchedule(pick.code, false, true);
+    const after = (state.plannedCourses || []).length;
+    if (after > before || state.plannedCourses.some(x => x.code === pick.code)) {
+      added += 1;
+    } else {
+      skipped.push(pick.code);
+    }
+  }
+  renderPlannedCourseTable();
+  renderTimetable(state.mandatoryEvents, getDisplayTimetableCourses());
+  document.getElementById('ttCard').style.display = 'block';
+  const msg = document.getElementById('agentMsg3');
+  const txt = document.getElementById('agentMsg3Text');
+  txt.textContent = `AI tunniplaan loodud: lisasin ${added} soovitatud ainet. ${skipped.length ? `Ei saanud lisada: ${skipped.join(', ')}.` : ''}`;
+  msg.style.display = 'block';
+  document.getElementById('ttCard').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
 function renderAiSuggestions(data) {
   const aiSummaryEl = document.getElementById('aiSummary');
   const aiListEl = document.getElementById('aiList');
@@ -3010,53 +3419,83 @@ function renderAiSuggestions(data) {
     prereqInfoEl.style.display = 'none';
   }
 
-  const mapByCode = new Map(state.allResults.map(r => [r.code, r]));
+  const mapByCode = new Map();
+  for (const r of (state.aiCandidatePool || [])) {
+    if (r && r.code && !mapByCode.has(r.code)) mapByCode.set(r.code, r);
+  }
+  for (const r of (state.allResults || [])) {
+    if (r && r.code) mapByCode.set(r.code, r);
+  }
+  const fallbackCourse = (pick) => ({
+    code: pick.code,
+    name: pick.name || pick.code,
+    name_en: '',
+    free: false,
+    courseKind: 'vaba',
+    isOnline: false,
+    allTeachers: [],
+    allRooms: [],
+    allDts: [],
+    allSgs: [],
+    allSlots: [],
+    blockedSlots: [],
+    events: [],
+    time: pick.timetable_note || 'tunniplaan kontrollimata',
+    description: pick.reason || '',
+    descriptionHint: pick.reason || '',
+  });
+  const pickCourse = (pick) => mapByCode.get(pick.code) || fallbackCourse(pick);
   const picks = (data.recommended_courses || []).slice(0, 5);
   if (!picks.length) {
     aiListEl.innerHTML = '<div class="ai-item"><div class="ai-reason">AI ei tagastanud seekord soovitusi.</div></div>';
     aiSwapEl.innerHTML = '<div class="ai-item"><div class="ai-reason">Asendussoovitusi hetkel pole.</div></div>';
-    return;
-  }
+    setAiRetryVisibility(true);
+  } else {
+    let suitableNow = 0;
+    for (const pick of picks) {
+      const course = pickCourse(pick);
+      const item = document.createElement('div');
+      item.className = 'ai-item clickable';
+      item.tabIndex = 0;
 
-  for (const pick of picks) {
-    const course = mapByCode.get(pick.code) || {};
-    const item = document.createElement('div');
-    item.className = 'ai-item clickable';
-    item.tabIndex = 0;
+      const head = document.createElement('div');
+      head.className = 'ai-item-head';
 
-    const head = document.createElement('div');
-    head.className = 'ai-item-head';
+      const code = document.createElement('div');
+      code.className = 'ai-code';
+      code.textContent = `${pick.code} ${course.name ? '· ' + course.name : ''}`;
 
-    const code = document.createElement('div');
-    code.className = 'ai-code';
-    code.textContent = `${pick.code} ${course.name ? '· ' + course.name : ''}`;
+      const score = document.createElement('div');
+      score.className = 'ai-score';
+      score.textContent = `${pick.fit_score ?? 0}/100`;
 
-    const score = document.createElement('div');
-    score.className = 'ai-score';
-    score.textContent = `${pick.fit_score ?? 0}/100`;
+      head.appendChild(code);
+      head.appendChild(score);
 
-    head.appendChild(code);
-    head.appendChild(score);
+      const reason = document.createElement('div');
+      reason.className = 'ai-reason';
+      reason.textContent = pick.reason || 'Sobib sinu huvidega.';
 
-    const reason = document.createElement('div');
-    reason.className = 'ai-reason';
-    reason.textContent = pick.reason || 'Sobib sinu huvidega.';
+      const note = document.createElement('div');
+      note.className = 'ai-note';
+      note.textContent = `${pick.timetable_note || ''}${summarizeCourseTime(course) ? ' · ' + summarizeCourseTime(course) : ''}`;
 
-    const note = document.createElement('div');
-    note.className = 'ai-note';
-    note.textContent = `${pick.timetable_note || ''}${summarizeCourseTime(course) ? ' · ' + summarizeCourseTime(course) : ''}`;
+      item.appendChild(head);
+      item.appendChild(reason);
+      item.appendChild(note);
+      item.onclick = () => openModal(course, pick);
+      item.onkeydown = (ev) => {
+        if (ev.key === 'Enter' || ev.key === ' ') {
+          ev.preventDefault();
+          openModal(course, pick);
+        }
+      };
+      aiListEl.appendChild(item);
 
-    item.appendChild(head);
-    item.appendChild(reason);
-    item.appendChild(note);
-    item.onclick = () => openModal(course, pick);
-    item.onkeydown = (ev) => {
-      if (ev.key === 'Enter' || ev.key === ' ') {
-        ev.preventDefault();
-        openModal(course, pick);
-      }
-    };
-    aiListEl.appendChild(item);
+      const noteText = String(pick.timetable_note || '').toLowerCase();
+      if (course.free || noteText.includes('konfliktivaba') || noteText.includes('sobiv')) suitableNow += 1;
+    }
+    setAiRetryVisibility(suitableNow === 0);
   }
 
   const swapRows = (data.swap_suggestions || []).slice(0, 3);
@@ -3081,7 +3520,7 @@ function renderAiSuggestions(data) {
     return;
   }
   for (const pick of futurePicks) {
-    const course = mapByCode.get(pick.code) || {};
+    const course = pickCourse(pick);
     const item = document.createElement('div');
     item.className = 'ai-item clickable';
     item.tabIndex = 0;
@@ -3233,6 +3672,7 @@ function weekLabelFromType(weekType, weekCodes) {
 // ── Init ───────────────────────────────────────────────────────────────────
 addTimePreference({ mode: 'free', day: 5, start: '14:00', end: '18:00' });
 document.getElementById('groupCode').addEventListener('keydown', e => { if(e.key==='Enter') startAgent(); });
+document.getElementById('studentCode')?.addEventListener('keydown', e => { if(e.key==='Enter') startAgent(); });
 document.getElementById('completedCourseSearch')?.addEventListener('input', () => updateCompletedSuggestions());
 document.getElementById('completedCourseSearch')?.addEventListener('keydown', (e) => {
   if (e.key === 'Enter') {
