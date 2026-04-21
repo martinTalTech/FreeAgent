@@ -11,16 +11,19 @@ This server:
 """
 
 from http.server import HTTPServer, BaseHTTPRequestHandler
+from html import unescape as html_unescape
 import json
 import os
 import re
 import urllib.error
+import urllib.parse
 import urllib.request
 
 PORT = 8080
 API_BASE = "https://tunniplaan-api.taltech.ee/api"
 OPENAI_API = "https://api.openai.com/v1/chat/completions"
 OPENAI_MODEL = os.getenv("OPENAI_MODEL", "gpt-4o-mini")
+OIS_SUBJECT_BASE = "https://ois2.taltech.ee/uusois/subject"
 
 API_HDRS = {
     "Origin": "https://tunniplaan.taltech.ee",
@@ -28,6 +31,9 @@ API_HDRS = {
     "Accept": "application/json",
     "Content-Type": "application/json",
 }
+
+COURSE_PROFILE_CACHE: dict[str, dict] = {}
+SUBJECT_ID_CACHE: dict[str, int | None] = {}
 
 
 def _tokenize(text: str) -> list[str]:
@@ -38,7 +44,7 @@ def _clip(text: str, size: int = 220) -> str:
     t = (text or "").strip()
     if len(t) <= size:
         return t
-    return t[: size - 1] + "…"
+    return t[: size - 3] + "..."
 
 
 def _extract_json_object(raw_text: str) -> dict:
@@ -57,7 +63,166 @@ def _extract_json_object(raw_text: str) -> dict:
     return json.loads(text[start : end + 1])
 
 
-def _heuristic_recommend(interests: str, candidates: list[dict], mandatory_courses: list[dict]) -> dict:
+def _http_get_text(url: str, headers: dict | None = None, timeout: int = 20) -> str:
+    req = urllib.request.Request(url, method="GET", headers=headers or {})
+    with urllib.request.urlopen(req, timeout=timeout) as resp:
+        charset = resp.headers.get_content_charset() or "utf-8"
+        return resp.read().decode(charset, errors="replace")
+
+
+def _http_get_json(url: str, headers: dict | None = None, timeout: int = 20) -> dict | list:
+    return json.loads(_http_get_text(url, headers=headers, timeout=timeout))
+
+
+def _rtf_to_text(rtf: str) -> str:
+    text = (rtf or "").replace("\r", "\n")
+    text = re.sub(
+        r"\\'([0-9a-fA-F]{2})",
+        lambda m: bytes([int(m.group(1), 16)]).decode("cp1252", errors="ignore"),
+        text,
+    )
+    text = re.sub(r"\\par[d]?", "\n", text)
+    text = re.sub(r"\\tab", "\t", text)
+    text = re.sub(r"\\[a-zA-Z]+-?\d* ?", "", text)
+    text = text.replace("{", "").replace("}", "")
+    text = html_unescape(text)
+    text = re.sub(r"\n{2,}", "\n", text)
+    return text.strip()
+
+
+def _extract_course_description(raw_text: str) -> str:
+    lines = [ln.strip() for ln in (raw_text or "").splitlines()]
+    lines = [ln for ln in lines if ln and len(ln) > 1]
+    if not lines:
+        return ""
+
+    skip_prefixes = (
+        "Course code:",
+        "Course title:",
+        "ECTS credits:",
+        "Õppeaine kood:",
+        "Õppeaine nimetus",
+        "Õpetamise semester",
+        "Õppejõud",
+    )
+    kept = [ln for ln in lines if not ln.startswith(skip_prefixes)]
+    if not kept:
+        kept = lines
+
+    keywords = (
+        "Course objectives",
+        "Learning outcomes",
+        "Description",
+        "Content",
+        "Õppeaine eesmärk",
+        "Õpiväljund",
+        "Aine sisu",
+        "Õppemeetod",
+    )
+    start_idx = 0
+    for i, ln in enumerate(kept):
+        if any(k.lower() in ln.lower() for k in keywords):
+            start_idx = i
+            break
+    body = kept[start_idx : start_idx + 45]
+    return _clip(" ".join(body), 2500)
+
+
+def _fetch_subject_id(code: str) -> int | None:
+    key = (code or "").strip().upper()
+    if not key:
+        return None
+    if key in SUBJECT_ID_CACHE:
+        return SUBJECT_ID_CACHE[key]
+    try:
+        url = f"{API_BASE}/public/searchSubjects?command={urllib.parse.quote(key)}"
+        data = _http_get_json(url, headers=API_HDRS, timeout=20)
+        if not isinstance(data, list):
+            SUBJECT_ID_CACHE[key] = None
+            return None
+        exact = next((x for x in data if str(x.get("code", "")).upper() == key), None)
+        if not exact and data:
+            exact = data[0]
+        sid = int(exact["id"]) if exact and exact.get("id") is not None else None
+        SUBJECT_ID_CACHE[key] = sid
+        return sid
+    except Exception:
+        SUBJECT_ID_CACHE[key] = None
+        return None
+
+
+def _fetch_ois_description(code: str) -> str:
+    key = (code or "").strip().upper()
+    if not key:
+        return ""
+    try:
+        page_url = f"{OIS_SUBJECT_BASE}/{urllib.parse.quote(key)}"
+        html = _http_get_text(page_url, timeout=20)
+    except Exception:
+        return ""
+
+    token_en = re.search(r"OIS3_PRINTRTFEN[0-9A-F]+", html)
+    token_et = re.search(r"OIS3_PRINTRTF[0-9A-F]+", html)
+    token = token_en.group(0) if token_en else (token_et.group(0) if token_et else "")
+    if not token:
+        return ""
+
+    try:
+        rtf = _http_get_text(f"{OIS_SUBJECT_BASE}/{token}", timeout=20)
+    except Exception:
+        return ""
+    return _extract_course_description(_rtf_to_text(rtf))
+
+
+def _get_course_profile(code: str) -> dict:
+    key = (code or "").strip().upper()
+    if not key:
+        return {"code": "", "name": "", "name_en": "", "description": "", "eap": None}
+    if key in COURSE_PROFILE_CACHE:
+        return COURSE_PROFILE_CACHE[key]
+
+    profile = {"code": key, "name": "", "name_en": "", "description": "", "eap": None}
+    subject_id = _fetch_subject_id(key)
+    if subject_id is not None:
+        try:
+            subject = _http_get_json(f"{API_BASE}/public/subject?subjectId={subject_id}", headers=API_HDRS, timeout=20)
+            if isinstance(subject, dict):
+                profile["name"] = str(subject.get("name", "")).strip()
+                profile["name_en"] = str(subject.get("nameEn", "")).strip()
+                sph = subject.get("subjectPartHours") or {}
+                if isinstance(sph, dict):
+                    profile["eap"] = sph.get("eap")
+        except Exception:
+            pass
+
+    profile["description"] = _fetch_ois_description(key)
+    COURSE_PROFILE_CACHE[key] = profile
+    return profile
+
+
+def _enrich_candidates_with_profiles(candidates: list[dict], max_fetch: int = 100) -> list[dict]:
+    ranked = sorted(
+        candidates,
+        key=lambda c: (bool(c.get("free")), int(c.get("timePreferenceScore", 0) or 0)),
+        reverse=True,
+    )
+    for c in ranked[:max_fetch]:
+        profile = _get_course_profile(str(c.get("code", "")))
+        if not c.get("name"):
+            c["name"] = profile.get("name", "")
+        if not c.get("name_en"):
+            c["name_en"] = profile.get("name_en", "")
+        c["description"] = profile.get("description", "")
+        c["eap"] = profile.get("eap")
+    return candidates
+
+
+def _heuristic_recommend(
+    interests: str,
+    candidates: list[dict],
+    mandatory_courses: list[dict],
+    time_preferences: list[dict],
+) -> dict:
     tokens = _tokenize(interests)
     wants_online = any(t in {"online", "kaug", "kaugoppe", "remote", "distants"} for t in tokens)
 
@@ -71,8 +236,16 @@ def _heuristic_recommend(interests: str, candidates: list[dict], mandatory_cours
                 " ".join(c.get("teachers", []) or []),
             ]
         ).lower()
+        desc_blob = " ".join(
+            [
+                str(c.get("description", "")),
+                str(c.get("description_hint", "")),
+                " ".join(c.get("timePreferenceNotes", []) or []),
+            ]
+        ).lower()
 
         match_tokens = [t for t in tokens if t in name_blob]
+        desc_tokens = [t for t in tokens if t in desc_blob]
         score = 0
         score += 24 if c.get("free") else 6
         kind = c.get("courseKind")
@@ -81,12 +254,19 @@ def _heuristic_recommend(interests: str, candidates: list[dict], mandatory_cours
         elif kind == "teine":
             score += 6
         score += min(5, len(match_tokens)) * 11
+        score += min(6, len(desc_tokens)) * 13
         if wants_online and c.get("isOnline"):
             score += 6
+        pref_score = max(0, min(100, int(c.get("timePreferenceScore", 0) or 0)))
+        score += int(pref_score / 8)
+        if time_preferences and pref_score >= 90:
+            score += 8
 
         reason_parts = []
         if match_tokens:
             reason_parts.append(f"huvidega kattuvad teemad: {', '.join(match_tokens[:4])}")
+        if desc_tokens:
+            reason_parts.append(f"ainekirjelduses kattuvad teemad: {', '.join(desc_tokens[:4])}")
         if c.get("free"):
             reason_parts.append("tunniplaani konflikt puudub")
         if kind == "oma":
@@ -95,6 +275,8 @@ def _heuristic_recommend(interests: str, candidates: list[dict], mandatory_cours
             reason_parts.append("kasulik rist-erialane aine")
         if c.get("isOnline"):
             reason_parts.append("sisaldab online-opet")
+        if time_preferences:
+            reason_parts.append(f"ajasoovide sobivus: {pref_score}%")
         if not reason_parts:
             reason_parts.append("sobib baasvalikuks sinu tunniplaani kontekstis")
 
@@ -109,14 +291,27 @@ def _heuristic_recommend(interests: str, candidates: list[dict], mandatory_cours
         )
 
     scored.sort(key=lambda x: x["fit_score"], reverse=True)
-    recommended = scored[:8]
-    future = [x for x in scored if x["future_value"] == "high"][:6]
+    free_first = [x for x in scored if x["timetable_note"] == "konfliktivaba"]
+    rest = [x for x in scored if x["timetable_note"] != "konfliktivaba"]
+    recommended = (free_first + rest)[:10]
+
+    recommended_codes = {x["code"] for x in recommended}
+    future_pool = [x for x in scored if x["code"] not in recommended_codes and x["future_value"] in {"high", "medium"}]
+    if len(future_pool) < 10:
+        future_pool.extend([x for x in scored if x["code"] not in recommended_codes and x not in future_pool])
+    if not future_pool:
+        future_pool = [x for x in scored if x["future_value"] in {"high", "medium"}]
+    if not future_pool:
+        future_pool = list(scored)
+    future = future_pool[:10]
     mandatory_codes = [m.get("code", "") for m in mandatory_courses if m.get("code")]
 
     summary = (
         f"Heuristiline soovitus {len(candidates)} kandidaadist. "
         f"Eelistasin konfliktivabu aineid, huvide tokeni-kattuvust ja eriala olulisust."
     )
+    if time_preferences:
+        summary += f" Arvestasin {len(time_preferences)} päeva/aja eelistust."
     if mandatory_codes:
         summary += f" Kohustuslike ainete kontekst: {', '.join(mandatory_codes[:6])}."
 
@@ -135,11 +330,13 @@ def _openai_recommend(
     semester: int,
     mandatory_courses: list[dict],
     candidates: list[dict],
+    time_preferences: list[dict],
 ) -> dict:
     system_prompt = (
         "You are an academic planning assistant for TalTech students. "
         "Given student interests and filtered timetable-compatible courses, "
-        "return concise recommendation JSON only."
+        "optimize for the student's requested free/filled day-time windows, "
+        "and return concise recommendation JSON only."
     )
 
     compact_candidates = []
@@ -154,13 +351,18 @@ def _openai_recommend(
                 "courseKind": c.get("courseKind", ""),
                 "isOnline": bool(c.get("isOnline")),
                 "teachers": (c.get("teachers") or [])[:4],
+                "description": _clip(str(c.get("description", "")), 1200),
+                "timePreferenceScore": int(c.get("timePreferenceScore", 0) or 0),
+                "timePreferenceNotes": c.get("timePreferenceNotes") or [],
             }
         )
 
     user_payload = {
         "student_context": {"group_code": group_code, "semester": semester, "interests": interests},
+        "time_preferences": time_preferences,
         "mandatory_courses": mandatory_courses[:20],
         "candidate_courses": compact_candidates,
+        "selection_rule": "recommended_courses should be top 10 best fitting now. future_courses should suggest useful courses for later semester planning.",
         "required_response_schema": {
             "summary": "string",
             "recommended_courses": [
@@ -238,6 +440,8 @@ def _openai_recommend(
 
     if not recommended:
         raise ValueError("LLM returned no usable recommendations")
+    if not future:
+        future = [r for r in recommended if r.get("future_value") in {"high", "medium"}][:10]
 
     return {
         "mode": "openai",
@@ -307,6 +511,7 @@ class Handler(BaseHTTPRequestHandler):
         interests = str(req.get("interests", "")).strip()
         candidates = req.get("candidates") or []
         mandatory_courses = req.get("mandatory_courses") or []
+        time_preferences = req.get("time_preferences") or []
         group_code = str(req.get("group_code", "")).strip().upper()
         semester = int(req.get("semester", 1) or 1)
 
@@ -331,12 +536,31 @@ class Handler(BaseHTTPRequestHandler):
                     "courseKind": str(c.get("courseKind", "")).strip(),
                     "isOnline": bool(c.get("isOnline")),
                     "teachers": c.get("allTeachers") or c.get("teachers") or [],
+                    "description_hint": str(c.get("descriptionHint", "")).strip(),
+                    "timePreferenceScore": int(c.get("timePreferenceScore", 0) or 0),
+                    "timePreferenceNotes": c.get("timePreferenceNotes") or [],
                 }
             )
 
         if not normalized_candidates:
             self._send_json(400, {"error": "No usable candidates"})
             return
+
+        normalized_time_preferences = []
+        for pref in time_preferences[:20]:
+            if not isinstance(pref, dict):
+                continue
+            mode = str(pref.get("mode", "")).strip().lower()
+            day = int(pref.get("day", 0) or 0)
+            start = str(pref.get("start", "")).strip()
+            end = str(pref.get("end", "")).strip()
+            if mode not in {"free", "filled"}:
+                continue
+            if day < 1 or day > 5:
+                continue
+            if not start or not end:
+                continue
+            normalized_time_preferences.append({"mode": mode, "day": day, "start": start, "end": end})
 
         normalized_mandatory = []
         for m in mandatory_courses[:30]:
@@ -353,6 +577,8 @@ class Handler(BaseHTTPRequestHandler):
                 }
             )
 
+        normalized_candidates = _enrich_candidates_with_profiles(normalized_candidates, max_fetch=100)
+
         api_key = os.getenv("OPENAI_API_KEY", "").strip()
         if api_key:
             try:
@@ -363,16 +589,30 @@ class Handler(BaseHTTPRequestHandler):
                     semester=semester,
                     mandatory_courses=normalized_mandatory,
                     candidates=normalized_candidates,
+                    time_preferences=normalized_time_preferences,
                 )
                 self._send_json(200, result)
                 return
             except Exception as exc:
-                fallback = _heuristic_recommend(interests, normalized_candidates, normalized_mandatory)
+                fallback = _heuristic_recommend(
+                    interests,
+                    normalized_candidates,
+                    normalized_mandatory,
+                    normalized_time_preferences,
+                )
                 fallback["warning"] = f"OpenAI call failed, fallback used: {type(exc).__name__}"
                 self._send_json(200, fallback)
                 return
 
-        self._send_json(200, _heuristic_recommend(interests, normalized_candidates, normalized_mandatory))
+        self._send_json(
+            200,
+            _heuristic_recommend(
+                interests,
+                normalized_candidates,
+                normalized_mandatory,
+                normalized_time_preferences,
+            ),
+        )
 
     def _serve_file(self, filename: str, ctype: str):
         try:
