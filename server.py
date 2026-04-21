@@ -9,12 +9,30 @@ from http.server import HTTPServer, BaseHTTPRequestHandler
 import json
 import os
 import re
+import time
 import urllib.error
 import urllib.request
 
+# Load .env file if present
+_env_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), ".env")
+if os.path.exists(_env_path):
+    with open(_env_path) as _f:
+        for _line in _f:
+            _line = _line.strip()
+            if _line and not _line.startswith("#") and "=" in _line:
+                _k, _v = _line.split("=", 1)
+                os.environ.setdefault(_k.strip(), _v.strip())
+
 PORT = 8080
 API_BASE = "https://tunniplaan-api.taltech.ee/api"
-OPENAI_API = "https://api.openai.com/v1/chat/completions"
+
+AZURE_ENDPOINT  = os.getenv("AZURE_OPENAI_ENDPOINT", "https://taltech-agent-hackathon-2026-19.openai.azure.com/")
+AZURE_API_KEY   = os.getenv("AZURE_OPENAI_API_KEY", "")
+AZURE_API_VER   = os.getenv("AZURE_API_VERSION", "2025-01-01-preview")
+AZURE_MODEL     = os.getenv("AZURE_OPENAI_MODEL", "gpt-5.4-nano")
+
+# Legacy regular OpenAI fallback
+OPENAI_API   = "https://api.openai.com/v1/chat/completions"
 OPENAI_MODEL = os.getenv("OPENAI_MODEL", "gpt-4o-mini")
 
 API_HDRS = {
@@ -161,25 +179,45 @@ def _tool_filter_candidates(candidates: list[dict], require_free: bool, prefer_d
 # ── OpenAI call helper ─────────────────────────────────────────────────────
 
 def _openai_call(api_key: str, messages: list[dict], tools: list[dict] | None = None) -> dict:
-    payload: dict = {
-        "model": OPENAI_MODEL,
-        "temperature": 0.2,
-        "messages": messages,
-    }
+    payload: dict = {"temperature": 0.2, "messages": messages}
     if tools:
         payload["tools"] = tools
         payload["tool_choice"] = "auto"
 
+    # Azure OpenAI — only if AZURE_OPENAI_API_KEY explicitly set
+    if AZURE_API_KEY:
+        url = (
+            f"{AZURE_ENDPOINT.rstrip('/')}/openai/deployments/{AZURE_MODEL}"
+            f"/chat/completions?api-version={AZURE_API_VER}"
+        )
+        headers = {"api-key": AZURE_API_KEY, "Content-Type": "application/json"}
+    else:
+        payload["model"] = OPENAI_MODEL
+        url = OPENAI_API
+        headers = {"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"}
+
     req = urllib.request.Request(
-        OPENAI_API,
+        url,
         data=json.dumps(payload, ensure_ascii=False).encode("utf-8"),
         method="POST",
-        headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
+        headers=headers,
     )
-    with urllib.request.urlopen(req, timeout=45) as resp:
-        data = json.loads(resp.read().decode("utf-8"))
-
-    return data["choices"][0]["message"]
+    for attempt in range(3):
+        try:
+            with urllib.request.urlopen(req, timeout=60) as resp:
+                data = json.loads(resp.read().decode("utf-8"))
+            return data["choices"][0]["message"]
+        except urllib.error.HTTPError as e:
+            body = e.read().decode("utf-8", errors="replace")
+            print(f"  [Azure HTTP {e.code} attempt {attempt+1}] {body[:300]}")
+            if e.code == 429 and attempt < 2:
+                wait = 8 + attempt * 6
+                print(f"  Rate limited — waiting {wait}s...")
+                time.sleep(wait)
+                # Rebuild request (body consumed)
+                req = urllib.request.Request(url, data=json.dumps(payload, ensure_ascii=False).encode("utf-8"), method="POST", headers=headers)
+                continue
+            raise
 
 
 # ── Agent loop ─────────────────────────────────────────────────────────────
@@ -498,7 +536,7 @@ class Handler(BaseHTTPRequestHandler):
                 "end": str(m.get("end", "")),
             })
 
-        api_key = os.getenv("OPENAI_API_KEY", "").strip()
+        api_key = AZURE_API_KEY or os.getenv("OPENAI_API_KEY", "").strip()
         if api_key:
             try:
                 result = _agent_recommend(
@@ -569,7 +607,9 @@ if __name__ == "__main__":
     print("  TalTech Aineplanner — AI Agent")
     print("=" * 50)
     print(f"  Avatud: http://localhost:{PORT}")
-    print(f"  OpenAI võti: {'OK ✓' if os.getenv('OPENAI_API_KEY') else 'puudub (heuristika)'}")
+    has_key = bool(AZURE_API_KEY or os.getenv("OPENAI_API_KEY"))
+    mode = "Azure OpenAI ✓" if AZURE_API_KEY else ("OpenAI ✓" if os.getenv("OPENAI_API_KEY") else "puudub (heuristika)")
+    print(f"  AI režiim: {mode}")
     print("  Stopp: Ctrl+C")
     print("=" * 50 + "\n")
 

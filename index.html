@@ -1100,12 +1100,14 @@
         <div class="field">
           <label for="semester">Semester</label>
           <select id="semester">
-            <option value="1">1. semester</option>
-            <option value="2">2. semester</option>
-            <option value="3">3. semester (kevad)</option>
-            <option value="4">4. semester</option>
-            <option value="5">5. semester</option>
-            <option value="6">6. semester</option>
+            <option value="1">1. semester — Sügis</option>
+            <option value="2">2. semester — Kevad</option>
+            <option value="3">3. semester — Sügis</option>
+            <option value="4">4. semester — Kevad</option>
+            <option value="5">5. semester — Sügis</option>
+            <option value="6">6. semester — Kevad</option>
+            <option value="7">7. semester — Sügis</option>
+            <option value="8">8. semester — Kevad</option>
           </select>
         </div>
         <button class="btn btn-primary" onclick="startAgent()">
@@ -1191,6 +1193,31 @@
         <div class="filter-chip active" id="kind_all" onclick="toggleCourseKind('all')">Kõik</div>
         <div class="filter-chip" id="kind_valikaine" onclick="toggleCourseKind('valikaine')">Valikaine</div>
         <div class="filter-chip" id="kind_vabaaine" onclick="toggleCourseKind('vabaaine')">Vabaaine</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Eelistatud päevad ja kellaaeg</div>
+      <div style="margin-bottom:16px">
+        <label style="display:block;margin-bottom:8px">Sobivad päevad</label>
+        <div class="filter-row" id="dayPrefRow">
+          <div class="filter-chip active" data-day="E" onclick="toggleDayPref(this)">Esm</div>
+          <div class="filter-chip active" data-day="T" onclick="toggleDayPref(this)">Teis</div>
+          <div class="filter-chip active" data-day="K" onclick="toggleDayPref(this)">Kolm</div>
+          <div class="filter-chip active" data-day="N" onclick="toggleDayPref(this)">Nelj</div>
+          <div class="filter-chip active" data-day="R" onclick="toggleDayPref(this)">Reede</div>
+          <div class="filter-chip active" data-day="flex" onclick="toggleDayPref(this)">Paindlik</div>
+        </div>
+      </div>
+      <div class="input-row">
+        <div class="field">
+          <label for="timeFrom">Kellast</label>
+          <input type="time" id="timeFrom" value="08:00">
+        </div>
+        <div class="field">
+          <label for="timeTo">Kellani</label>
+          <input type="time" id="timeTo" value="22:00">
+        </div>
       </div>
     </div>
 
@@ -1431,6 +1458,26 @@ async function startAgent() {
     if (!group) throw new Error(`Gruppi "${code}" ei leitud. Kontrolli koodi.`);
     state.groupInfo = group;
 
+    // Update semester dropdown based on curriculum length
+    const cc = (group.curriculum_code || '').toUpperCase();
+    const cn = (group.curriculum_name_en || '').toUpperCase();
+    let maxSem = 6;
+    if (cn.includes('MASTER') || cn.includes('MAGISTR') || cc.match(/M[0-9A-Z]/)) maxSem = 4;
+    else if (cn.includes('5 YEAR') || cn.includes('INTEGRATED') || cc.includes('5Y')) maxSem = 10;
+    else if (cn.includes('3 YEAR')) maxSem = 6;
+    else if (cn.includes('4 YEAR')) maxSem = 8;
+    const semLabels = {1:'Sügis',2:'Kevad',3:'Sügis',4:'Kevad',5:'Sügis',6:'Kevad',7:'Sügis',8:'Kevad',9:'Sügis',10:'Kevad'};
+    const semSel = document.getElementById('semester');
+    const curVal = parseInt(semSel.value);
+    semSel.innerHTML = '';
+    for (let i = 1; i <= maxSem; i++) {
+      const opt = document.createElement('option');
+      opt.value = i;
+      opt.textContent = `${i}. semester — ${semLabels[i]}`;
+      if (i === curVal) opt.selected = true;
+      semSel.appendChild(opt);
+    }
+
     state.timetableEvents = await fetchGroupTimetable(group.sg_id, group.curriculum_version_id, group.department_id);
 
     const seen = new Set();
@@ -1513,6 +1560,30 @@ function updateEapLabel() {
 }
 
 let activeChip = 'all';
+
+// Day preference filter
+const preferredDays = new Set(['E','T','K','N','R','flex']);
+function toggleDayPref(el) {
+  el.classList.toggle('active');
+  const day = el.dataset.day;
+  if (el.classList.contains('active')) preferredDays.add(day);
+  else preferredDays.delete(day);
+}
+
+function courseMatchesTimeFilter(r) {
+  if (preferredDays.size === 0) return true;
+  // Flexible/no fixed time — only show if 'flex' is selected
+  if (!r.dow || r.dow === -1) return preferredDays.has('flex');
+  const dayMap = {1:'E',2:'T',3:'K',4:'N',5:'R'};
+  if (!preferredDays.has(dayMap[r.dow])) return false;
+  const fromVal = document.getElementById('timeFrom').value || '08:00';
+  const toVal   = document.getElementById('timeTo').value   || '22:00';
+  const fromM = toMin(fromVal);
+  const toM   = toMin(toVal);
+  if (r.start && toMin(r.start) < fromM) return false;
+  if (r.end   && toMin(r.end)   > toM)   return false;
+  return true;
+}
 function toggleChip(id) {
   activeChip = id;
   document.querySelectorAll('.filter-chip[id^=chip_]').forEach(c => c.classList.remove('active'));
@@ -1630,22 +1701,24 @@ async function runSearch() {
       });
     }
 
-    state.allResults = results;
+    const filteredResults = results.filter(r => courseMatchesTimeFilter(r));
+    state.allResults = filteredResults;
     loading.style.display = 'none';
 
-    const free     = results.filter(r => r.free);
-    const conflict = results.filter(r => !r.free);
+    const free     = filteredResults.filter(r => r.free);
+    const conflict = filteredResults.filter(r => !r.free);
+    const hiddenByTime = results.length - filteredResults.length;
 
     document.getElementById('agentMsg3Text').textContent =
-      `Kontrollisin ${results.length} valikainete tunniplaane. Leidsin ${free.length} konfliktivaba ainet. `+
-      `${conflict.length} ainel esines konflikt sinu kohustuslike tundidega.`;
+      `Kontrollisin ${results.length} valikainete tunniplaane. Leidsin ${free.length} konfliktivaba ainet sinu ajaeelistusega.`+
+      (hiddenByTime > 0 ? ` (${hiddenByTime} ainet peidetud ajafilteri tõttu)` : '');
     document.getElementById('agentMsg3').style.display = 'block';
 
     renderTimetable(state.mandatoryEvents, free);
     document.getElementById('ttCard').style.display = 'block';
 
     document.getElementById('freeCount').textContent  = free.length;
-    document.getElementById('conflictCount').textContent = `${conflict.length} konfliktsed peidetud · ${results.length} kokku kontrollitud`;
+    document.getElementById('conflictCount').textContent = `${conflict.length} konfliktsed · ${results.length} kontrollitud kokku`;
     renderResults(results, 'all');
     const interests = (document.getElementById('interestInput').value || '').trim();
     if (interests && results.length) {
@@ -1710,36 +1783,60 @@ function renderTimetable(mandatory, free) {
     ...free.flatMap(r => r.events.map(e => ({...e, cls:'free'}))),
   ];
 
+  // Group by day, assign overlap columns
+  const byDay = {};
   for (const ev of allEvents) {
     if (ev.dow === -1 || !ev.start || !ev.end) continue;
     const startMin = toMin(ev.start) - HOUR_START*60;
     const endMin   = toMin(ev.end)   - HOUR_START*60;
     if (startMin < 0 || endMin > HOURS*60) continue;
+    if (!byDay[ev.dow]) byDay[ev.dow] = [];
+    byDay[ev.dow].push({...ev, startMin, endMin});
+  }
 
-    const startSlot = Math.floor(startMin/30);
-    const span      = Math.ceil((endMin - startMin)/30);
-    const cell = grid.querySelector(`[data-dow="${ev.dow}"][data-slot="${startSlot}"]`);
-    if (!cell) continue;
+  for (const evs of Object.values(byDay)) {
+    // Assign column index to each event greedily
+    const cols = [];
+    for (const ev of evs) {
+      let placed = false;
+      for (let c = 0; c < cols.length; c++) {
+        if (toMin(cols[c][cols[c].length-1].end) <= toMin(ev.start)) {
+          cols[c].push(ev); ev._col = c; placed = true; break;
+        }
+      }
+      if (!placed) { ev._col = cols.length; cols.push([ev]); }
+    }
+    const totalCols = cols.length;
 
-    const el = document.createElement('div');
-    el.className = `tt-event ${ev.cls}`;
-    el.style.height = `${span * SLOT_H - 2}px`;
-    el.style.top    = '1px';
-    const typeLbl  = evTypeLabel(ev.type);
-    const weekLbl  = evWeekLabel(ev.weekType, ev.weekCodes);
-    const tallEnough = span >= 3;
-    el.innerHTML = `
-      <div class="tt-ev-top">
-        <span class="tt-ev-code">${ev.course_code||''}</span>
-        <span class="tt-ev-type">(${typeLbl})</span>
-      </div>
-      ${tallEnough ? `<div class="tt-ev-name">${ev.course_name||''}</div>` : ''}
-      <div class="tt-ev-time">${ev.start}–${ev.end}</div>
-      <div class="tt-ev-week ${weekLbl.cls}">${weekLbl.label}</div>
-    `;
-    el.title = `${ev.course_code} – ${ev.course_name}\n${typeLbl} · ${ev.start}–${ev.end}\n${weekLbl.label}`;
-    cell.style.position = 'relative';
-    cell.appendChild(el);
+    for (const ev of evs) {
+      const startSlot = Math.floor(ev.startMin/30);
+      const span = Math.ceil((ev.endMin - ev.startMin)/30);
+      const cell = grid.querySelector(`[data-dow="${ev.dow}"][data-slot="${startSlot}"]`);
+      if (!cell) continue;
+      cell.style.position = 'relative';
+
+      const colW = 100 / totalCols;
+      const el = document.createElement('div');
+      el.className = `tt-event ${ev.cls}`;
+      el.style.height = `${span * SLOT_H - 2}px`;
+      el.style.top    = '1px';
+      el.style.left   = `${ev._col * colW}%`;
+      el.style.right  = `${(totalCols - ev._col - 1) * colW}%`;
+      const typeLbl  = evTypeLabel(ev.type);
+      const weekLbl  = evWeekLabel(ev.weekType, ev.weekCodes);
+      const tallEnough = span >= 3;
+      el.innerHTML = `
+        <div class="tt-ev-top">
+          <span class="tt-ev-code">${ev.course_code||''}</span>
+          <span class="tt-ev-type">(${typeLbl})</span>
+        </div>
+        ${tallEnough ? `<div class="tt-ev-name">${ev.course_name||''}</div>` : ''}
+        <div class="tt-ev-time">${ev.start}–${ev.end}</div>
+        <div class="tt-ev-week ${weekLbl.cls}">${weekLbl.label}</div>
+      `;
+      el.title = `${ev.course_code} – ${ev.course_name}\n${typeLbl} · ${ev.start}–${ev.end}\n${weekLbl.label}`;
+      cell.appendChild(el);
+    }
   }
 }
 
@@ -1789,10 +1886,13 @@ function buildMandatoryContext() {
   for (const e of state.mandatoryEvents || []) {
     if (!e.course_code) continue;
     if (!byCode.has(e.course_code)) {
-      byCode.set(e.course_code, { code: e.course_code, name: e.course_name || e.course_code, time: '' });
+      byCode.set(e.course_code, { code: e.course_code, name: e.course_name || e.course_code, time: '', dow: -1, start: '', end: '' });
     }
     const row = byCode.get(e.course_code);
-    if (!row.time && e.dow !== -1 && e.start && e.end) row.time = `${dayName(e.dow)} ${e.start}-${e.end}`;
+    if (e.dow !== -1 && e.start && e.end) {
+      row.dow = e.dow; row.start = e.start; row.end = e.end;
+      if (!row.time) row.time = `${dayName(e.dow)} ${e.start}-${e.end}`;
+    }
   }
   return [...byCode.values()];
 }
@@ -1828,12 +1928,14 @@ async function runAiSuggestions(isAuto) {
     semester: state.semester,
     interests,
     mandatory_courses: buildMandatoryContext(),
-    candidates: state.allResults.slice(0, 160).map(r => ({
-      code: r.code, name: r.name, name_en: r.name_en,
-      free: r.free, time: r.time, dow: r.dow ?? -1,
-      courseKind: r.courseKind, isOnline: r.isOnline,
-      allTeachers: r.allTeachers || [],
-    })),
+    candidates: state.allResults
+      .filter(r => r.free)
+      .slice(0, 40)
+      .map(r => ({
+        code: r.code, name: r.name, name_en: r.name_en,
+        free: r.free, time: r.time, dow: r.dow ?? -1,
+        courseKind: r.courseKind, isOnline: r.isOnline,
+      })),
   };
 
   try {
