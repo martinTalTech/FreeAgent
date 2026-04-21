@@ -1,0 +1,19 @@
+.idea/
+.venv/
+__pycache__/
+*.pyc
+*.log
+
+# Environment and secrets
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+*.p12
+*.pfx
+*.jks
+*secret*.json
+*credentials*.json
+*token*.json
+*apikey*.txt
