@@ -685,27 +685,44 @@ def _openai_recommend(
         deployment = AZURE_OPENAI_DEPLOYMENT or OPENAI_MODEL
         if not deployment:
             raise ValueError("Azure OpenAI deployment name missing")
-        azure_dep_url = (
-            f"{AZURE_OPENAI_ENDPOINT}/openai/deployments/"
-            f"{urllib.parse.quote(deployment)}/chat/completions"
-            f"?api-version={urllib.parse.quote(AZURE_OPENAI_API_VERSION)}"
-        )
         azure_headers = {
             "api-key": api_key,
             "Content-Type": "application/json",
         }
-        try:
-            response_data = _http_post_json(
-                azure_dep_url,
-                payload,
-                headers=azure_headers,
-                timeout=40,
+        version_candidates = []
+        for v in [
+            AZURE_OPENAI_API_VERSION,
+            "2025-01-01-preview",
+            "2024-10-21",
+            "2024-08-01-preview",
+            "2023-12-01-preview",
+            "2023-03-15-preview",
+        ]:
+            vv = str(v or "").strip()
+            if vv and vv not in version_candidates:
+                version_candidates.append(vv)
+
+        response_data = None
+        dep_errors = []
+        for api_ver in version_candidates:
+            azure_dep_url = (
+                f"{AZURE_OPENAI_ENDPOINT}/openai/deployments/"
+                f"{urllib.parse.quote(deployment)}/chat/completions"
+                f"?api-version={urllib.parse.quote(api_ver)}"
             )
-        except Exception as dep_exc:
-            azure_v1_url = (
-                f"{AZURE_OPENAI_ENDPOINT}/openai/v1/chat/completions"
-                f"?api-version={urllib.parse.quote(AZURE_OPENAI_API_VERSION)}"
-            )
+            try:
+                response_data = _http_post_json(
+                    azure_dep_url,
+                    payload,
+                    headers=azure_headers,
+                    timeout=40,
+                )
+                break
+            except Exception as dep_exc:
+                dep_errors.append(f"{api_ver}: {dep_exc}")
+
+        if response_data is None:
+            azure_v1_url = f"{AZURE_OPENAI_ENDPOINT}/openai/v1/chat/completions"
             payload_v1 = dict(payload)
             payload_v1["model"] = deployment
             try:
@@ -718,7 +735,7 @@ def _openai_recommend(
             except Exception as v1_exc:
                 raise ValueError(
                     "Azure OpenAI call failed. "
-                    f"Deployment route error: {dep_exc}. "
+                    f"Deployment route errors: {' | '.join(dep_errors[:4])}. "
                     f"V1 route error: {v1_exc}. "
                     "Check AZURE_OPENAI_DEPLOYMENT and AZURE_OPENAI_API_VERSION."
                 )
