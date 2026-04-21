@@ -38,10 +38,38 @@ COURSE_CODE_PATTERNS = (
     r"\b[A-Z]{2,6}\d{3,4}[A-Z]?\b",
     r"\b[A-Z]{2,6}\.\d{2}\.\d{3}\b",
 )
+TOKEN_STOPWORDS = {
+    "and",
+    "ning",
+    "with",
+    "for",
+    "the",
+    "that",
+    "this",
+    "from",
+    "have",
+    "more",
+    "less",
+    "want",
+    "would",
+    "could",
+    "mind",
+    "mina",
+    "huvitab",
+    "olen",
+    "tahan",
+    "soovin",
+    "about",
+}
 
 
 def _tokenize(text: str) -> list[str]:
-    return [t for t in re.findall(r"[a-zA-Z0-9]+", (text or "").lower()) if len(t) >= 3]
+    out = []
+    for t in re.findall(r"[a-zA-Z0-9]+", (text or "").lower()):
+        if len(t) < 3 or t in TOKEN_STOPWORDS:
+            continue
+        out.append(t)
+    return out
 
 
 def _clip(text: str, size: int = 220) -> str:
@@ -349,18 +377,28 @@ def _enrich_candidates_with_profiles(candidates: list[dict], max_fetch: int = 10
 
 def _heuristic_recommend(
     interests: str,
+    group_code: str,
     candidates: list[dict],
     mandatory_courses: list[dict],
     time_preferences: list[dict],
 ) -> dict:
     tokens = _tokenize(interests)
     wants_online = any(t in {"online", "kaug", "kaugoppe", "remote", "distants"} for t in tokens)
+    group = (group_code or "").upper()
+    if group.startswith("IAI") or group.startswith("IAB"):
+        track_label = "informaatika/IT suunaga"
+    elif group.startswith("IC"):
+        track_label = "insener-tehnilise suunaga"
+    else:
+        track_label = "sinu õppesuunaga"
+    by_code = {str(c.get("code", "")).upper(): c for c in candidates}
 
     scored = []
     for c in candidates:
+        code = str(c.get("code", "")).upper()
         name_blob = " ".join(
             [
-                str(c.get("code", "")),
+                code,
                 str(c.get("name", "")),
                 str(c.get("name_en", "")),
                 " ".join(c.get("teachers", []) or []),
@@ -393,26 +431,27 @@ def _heuristic_recommend(
             score += 8
 
         reason_parts = []
-        if match_tokens:
-            reason_parts.append(f"huvidega kattuvad teemad: {', '.join(match_tokens[:4])}")
+        if match_tokens or desc_tokens:
+            tags = (match_tokens + desc_tokens)[:4]
+            reason_parts.append(f"kuna mainisid huvi ({', '.join(tags)}), siis aine sisu kattub sellega")
         if desc_tokens:
-            reason_parts.append(f"ainekirjelduses kattuvad teemad: {', '.join(desc_tokens[:4])}")
+            reason_parts.append("ainekirjelduses on need teemad selgelt kirjeldatud")
         if c.get("free"):
-            reason_parts.append("tunniplaani konflikt puudub")
+            reason_parts.append("praeguse tunniplaaniga sobib konfliktita")
         if kind == "oma":
-            reason_parts.append("esineb sinu eriala kohustusliku/tugeva kursusena")
+            reason_parts.append(f"sobib hästi {track_label} tudengi profiiliga")
         elif kind == "teine":
-            reason_parts.append("kasulik rist-erialane aine")
+            reason_parts.append("annab väärtusliku rist-erialase oskuse")
         if c.get("isOnline"):
-            reason_parts.append("sisaldab online-opet")
+            reason_parts.append("sisaldab online-õppe komponenti")
         if time_preferences:
             reason_parts.append(f"ajasoovide sobivus: {pref_score}%")
         if not reason_parts:
-            reason_parts.append("sobib baasvalikuks sinu tunniplaani kontekstis")
+            reason_parts.append("sobib baasvalikuks sinu huvide ja plaani kontekstis")
 
         scored.append(
             {
-                "code": c.get("code", ""),
+                "code": code,
                 "fit_score": max(0, min(100, score)),
                 "reason": _clip("; ".join(reason_parts), 240),
                 "future_value": "high" if kind in {"oma", "teine"} else "medium",
@@ -423,22 +462,40 @@ def _heuristic_recommend(
     scored.sort(key=lambda x: x["fit_score"], reverse=True)
     free_first = [x for x in scored if x["timetable_note"] == "konfliktivaba"]
     rest = [x for x in scored if x["timetable_note"] != "konfliktivaba"]
-    recommended = (free_first + rest)[:10]
+    recommended = (free_first + rest)[:5]
 
     recommended_codes = {x["code"] for x in recommended}
     future_pool = [x for x in scored if x["code"] not in recommended_codes and x["future_value"] in {"high", "medium"}]
-    if len(future_pool) < 10:
+    if len(future_pool) < 5:
         future_pool.extend([x for x in scored if x["code"] not in recommended_codes and x not in future_pool])
-    if not future_pool:
-        future_pool = [x for x in scored if x["future_value"] in {"high", "medium"}]
-    if not future_pool:
-        future_pool = list(scored)
-    future = future_pool[:10]
+    future = future_pool[:5]
     mandatory_codes = [m.get("code", "") for m in mandatory_courses if m.get("code")]
+
+    swap_suggestions = []
+    if tokens and mandatory_courses and recommended:
+        weak_candidates = [m for m in mandatory_courses if not any(t in str(m.get("name", "")).lower() for t in tokens)]
+        replace_pick = weak_candidates[0] if weak_candidates else mandatory_courses[0]
+        for rec in recommended[:3]:
+            target = by_code.get(rec.get("code", ""))
+            if not target:
+                continue
+            swap_suggestions.append(
+                {
+                    "replace_code": str(replace_pick.get("code", "")).upper(),
+                    "replace_name": str(replace_pick.get("name", "")).strip(),
+                    "with_code": rec.get("code", ""),
+                    "with_name": str(target.get("name", "")).strip(),
+                    "reason": _clip(
+                        f"Kui asendad aine {replace_pick.get('code', '')} ainega {rec.get('code', '')}, "
+                        f"saad rohkem {', '.join(tokens[:3])} fookust ja see võib aidata tulevase praktika/töö suunas.",
+                        260,
+                    ),
+                }
+            )
 
     summary = (
         f"Heuristiline soovitus {len(candidates)} kandidaadist. "
-        f"Eelistasin konfliktivabu aineid, huvide tokeni-kattuvust ja eriala olulisust."
+        f"Eelistasin 5 parimat ainet, mis sobivad huvide, õppesuuna ja ajasoovidega."
     )
     if time_preferences:
         summary += f" Arvestasin {len(time_preferences)} päeva/aja eelistust."
@@ -450,6 +507,7 @@ def _heuristic_recommend(
         "summary": summary,
         "recommended_courses": recommended,
         "future_courses": future,
+        "swap_suggestions": swap_suggestions[:3],
     }
 
 
@@ -465,8 +523,9 @@ def _openai_recommend(
     system_prompt = (
         "You are an academic planning assistant for TalTech students. "
         "Given student interests and filtered timetable-compatible courses, "
-        "optimize for the student's requested free/filled day-time windows, "
-        "and return concise recommendation JSON only."
+        "optimize for the student's requested free/filled day-time windows. "
+        "Give practical, student-style reasoning tied to interests, study track fit, and future internship/work value. "
+        "Return concise recommendation JSON only."
     )
 
     compact_candidates = []
@@ -494,7 +553,7 @@ def _openai_recommend(
         "time_preferences": time_preferences,
         "mandatory_courses": mandatory_courses[:20],
         "candidate_courses": compact_candidates,
-        "selection_rule": "recommended_courses should be top 10 best fitting now. future_courses should suggest useful courses for later semester planning.",
+        "selection_rule": "recommended_courses should be top 5 best fitting now. future_courses should suggest useful courses for later semester planning. Include swap_suggestions for replacing one current course with a better interest-aligned one when possible.",
         "required_response_schema": {
             "summary": "string",
             "recommended_courses": [
@@ -513,6 +572,15 @@ def _openai_recommend(
                     "reason": "string",
                     "future_value": "high|medium|low",
                     "timetable_note": "string",
+                }
+            ],
+            "swap_suggestions": [
+                {
+                    "replace_code": "string",
+                    "replace_name": "string",
+                    "with_code": "string",
+                    "with_name": "string",
+                    "reason": "string",
                 }
             ],
         },
@@ -570,16 +638,37 @@ def _openai_recommend(
     recommended = normalize_rows(parsed.get("recommended_courses", []))
     future = normalize_rows(parsed.get("future_courses", []))
 
+    def normalize_swaps(rows: list[dict]) -> list[dict]:
+        out = []
+        for row in rows or []:
+            replace_code = str(row.get("replace_code", "")).strip().upper()
+            with_code = str(row.get("with_code", "")).strip().upper()
+            if not with_code or with_code not in candidate_codes:
+                continue
+            out.append(
+                {
+                    "replace_code": replace_code,
+                    "replace_name": _clip(str(row.get("replace_name", "")), 120),
+                    "with_code": with_code,
+                    "with_name": _clip(str(row.get("with_name", "")), 120),
+                    "reason": _clip(str(row.get("reason", "")), 260),
+                }
+            )
+        return out
+
+    swaps = normalize_swaps(parsed.get("swap_suggestions", []))
+
     if not recommended:
         raise ValueError("LLM returned no usable recommendations")
     if not future:
-        future = [r for r in recommended if r.get("future_value") in {"high", "medium"}][:10]
+        future = [r for r in recommended if r.get("future_value") in {"high", "medium"}][:5]
 
     return {
         "mode": "openai",
         "summary": _clip(str(parsed.get("summary", "")).strip(), 500),
-        "recommended_courses": recommended[:10],
-        "future_courses": future[:10],
+        "recommended_courses": recommended[:5],
+        "future_courses": future[:5],
+        "swap_suggestions": swaps[:3],
     }
 
 
@@ -714,7 +803,6 @@ class Handler(BaseHTTPRequestHandler):
         normalized_candidates = _enrich_candidates_with_profiles(normalized_candidates, max_fetch=100)
         completed_codes = _normalize_completed_codes(completed_courses)
         completed_codes.update(_normalize_completed_codes(known_course_codes))
-        completed_codes.update({m["code"] for m in normalized_mandatory if m.get("code")})
         normalized_candidates, blocked_by_prereq = _filter_candidates_by_prerequisites(
             normalized_candidates,
             completed_codes,
@@ -728,6 +816,7 @@ class Handler(BaseHTTPRequestHandler):
                     "summary": "Kõik kandidaadid langesid välja eeldusainete kontrolli tõttu.",
                     "recommended_courses": [],
                     "future_courses": [],
+                    "swap_suggestions": [],
                     "blocked_due_prerequisites": blocked_by_prereq[:40],
                 },
             )
@@ -757,6 +846,7 @@ class Handler(BaseHTTPRequestHandler):
             except Exception as exc:
                 fallback = _heuristic_recommend(
                     interests,
+                    group_code,
                     normalized_candidates,
                     normalized_mandatory,
                     normalized_time_preferences,
@@ -774,6 +864,7 @@ class Handler(BaseHTTPRequestHandler):
 
         fallback = _heuristic_recommend(
             interests,
+            group_code,
             normalized_candidates,
             normalized_mandatory,
             normalized_time_preferences,
