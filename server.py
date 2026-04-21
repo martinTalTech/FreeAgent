@@ -23,6 +23,9 @@ PORT = 8080
 API_BASE = "https://tunniplaan-api.taltech.ee/api"
 OPENAI_API = "https://api.openai.com/v1/chat/completions"
 OPENAI_MODEL = os.getenv("OPENAI_MODEL", "gpt-4o-mini")
+AZURE_OPENAI_ENDPOINT = os.getenv("AZURE_OPENAI_ENDPOINT", "").strip().rstrip("/")
+AZURE_OPENAI_API_VERSION = os.getenv("AZURE_OPENAI_API_VERSION", "2024-10-21").strip()
+AZURE_OPENAI_DEPLOYMENT = os.getenv("AZURE_OPENAI_DEPLOYMENT", "").strip()
 OIS_SUBJECT_BASE = "https://ois2.taltech.ee/uusois/subject"
 
 API_HDRS = {
@@ -587,7 +590,6 @@ def _openai_recommend(
     }
 
     payload = {
-        "model": OPENAI_MODEL,
         "temperature": 0.2,
         "response_format": {"type": "json_object"},
         "messages": [
@@ -595,16 +597,35 @@ def _openai_recommend(
             {"role": "user", "content": json.dumps(user_payload, ensure_ascii=False)},
         ],
     }
-
-    req = urllib.request.Request(
-        OPENAI_API,
-        data=json.dumps(payload).encode("utf-8"),
-        method="POST",
-        headers={
-            "Authorization": f"Bearer {api_key}",
-            "Content-Type": "application/json",
-        },
-    )
+    if AZURE_OPENAI_ENDPOINT:
+        deployment = AZURE_OPENAI_DEPLOYMENT or OPENAI_MODEL
+        if not deployment:
+            raise ValueError("Azure OpenAI deployment name missing")
+        azure_url = (
+            f"{AZURE_OPENAI_ENDPOINT}/openai/deployments/"
+            f"{urllib.parse.quote(deployment)}/chat/completions"
+            f"?api-version={urllib.parse.quote(AZURE_OPENAI_API_VERSION)}"
+        )
+        req = urllib.request.Request(
+            azure_url,
+            data=json.dumps(payload).encode("utf-8"),
+            method="POST",
+            headers={
+                "api-key": api_key,
+                "Content-Type": "application/json",
+            },
+        )
+    else:
+        payload["model"] = OPENAI_MODEL
+        req = urllib.request.Request(
+            OPENAI_API,
+            data=json.dumps(payload).encode("utf-8"),
+            method="POST",
+            headers={
+                "Authorization": f"Bearer {api_key}",
+                "Content-Type": "application/json",
+            },
+        )
 
     with urllib.request.urlopen(req, timeout=40) as resp:
         response_data = json.loads(resp.read().decode("utf-8"))
@@ -822,7 +843,8 @@ class Handler(BaseHTTPRequestHandler):
             )
             return
 
-        api_key = os.getenv("OPENAI_API_KEY", "").strip()
+        azure_api_key = os.getenv("AZURE_OPENAI_API_KEY", "").strip()
+        api_key = azure_api_key or os.getenv("OPENAI_API_KEY", "").strip()
         if api_key:
             try:
                 result = _openai_recommend(
