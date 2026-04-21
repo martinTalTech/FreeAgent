@@ -729,11 +729,35 @@
     padding: 10px 12px;
     background: rgba(255,255,255,0.02);
   }
+  .ai-item.clickable {
+    cursor: pointer;
+    transition: transform 0.15s var(--ease), border-color 0.2s var(--ease), background 0.2s var(--ease);
+  }
+  .ai-item.clickable:hover {
+    transform: translateY(-1px);
+    border-color: rgba(99,102,241,0.55);
+    background: rgba(99,102,241,0.08);
+  }
+  .ai-item.clickable:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(255,255,255,0.12), 0 0 0 5px rgba(99,102,241,0.35);
+  }
   .ai-item-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 5px; }
   .ai-code { font-family: var(--mono); font-weight: 700; color: var(--accent-3); font-size: 12px; }
   .ai-score { font-family: var(--mono); font-size: 11px; color: var(--text-dim); }
   .ai-reason { color: var(--text-dim); font-size: 12px; line-height: 1.5; }
   .ai-note { color: var(--muted); font-size: 11px; margin-top: 4px; font-family: var(--mono); }
+  .ai-prereq-info {
+    margin-top: 10px;
+    border: 1px solid rgba(245,158,11,0.35);
+    border-radius: var(--radius-sm);
+    background: rgba(245,158,11,0.08);
+    color: #fcd34d;
+    padding: 8px 10px;
+    font-size: 12px;
+    line-height: 1.45;
+    display: none;
+  }
   .time-pref-list { display: grid; gap: 8px; }
   .time-pref-row {
     display: grid;
@@ -1184,6 +1208,12 @@
     </div>
 
     <div class="card">
+      <div class="card-title">ÕIS läbitud ained</div>
+      <label for="completedCoursesInput">Sisesta läbitud ainete koodid (koma või tühikuga eraldatud)</label>
+      <textarea id="completedCoursesInput" placeholder="Nt: ICY0030, ICA0001, MAT0010"></textarea>
+    </div>
+
+    <div class="card">
       <div class="card-title">Päeva ja aja eelistused</div>
       <div style="font-size:12px;color:var(--muted);margin-bottom:10px">Määra plokid, mis peavad olema vabad või kus soovid tunde.</div>
       <div id="timePrefList" class="time-pref-list"></div>
@@ -1262,6 +1292,7 @@
         </button>
       </div>
       <div id="aiSummary" class="ai-summary">Sisesta huvid eelmises sammus ja vajuta "Genereeri AI soovitus".</div>
+      <div id="aiPrereqInfo" class="ai-prereq-info"></div>
       <div id="aiList" class="ai-list"></div>
       <div class="ai-title" style="margin-top:14px">AI soovitused tulevikuks</div>
       <div id="aiFutureList" class="ai-list"></div>
@@ -1616,6 +1647,8 @@ async function runSearch() {
   state.aiSummary = '';
   state.aiMode = '';
   document.getElementById('aiSummary').textContent = 'AI soovitused ilmuvad siia pärast otsingut.';
+  document.getElementById('aiPrereqInfo').style.display = 'none';
+  document.getElementById('aiPrereqInfo').textContent = '';
   document.getElementById('aiList').innerHTML = '';
   document.getElementById('aiFutureList').innerHTML = '';
 
@@ -1982,23 +2015,52 @@ function buildMandatoryContext() {
   return [...byCode.values()];
 }
 
+function extractCourseCodes(text) {
+  if (!text) return [];
+  const matches = String(text).toUpperCase().match(/\b[A-Z]{2,6}\d{3,4}[A-Z]?\b/g) || [];
+  return [...new Set(matches)];
+}
+
+function readCompletedCourses() {
+  const manual = document.getElementById('completedCoursesInput')?.value || '';
+  const manualCodes = extractCourseCodes(manual);
+  const knownCodes = [...new Set((state.timetableEvents || []).map(e => e.course_code).filter(Boolean))];
+  return [...new Set([...manualCodes, ...knownCodes])];
+}
+
+function summarizeCourseTime(course) {
+  if (!course) return '';
+  if (course.time && course.time !== 'paindlik') return course.time;
+  const slots = (course.allSlots || []).filter(s => s && s.dow >= 1 && s.start && s.end);
+  if (!slots.length) return '';
+  const first = slots[0];
+  return `${dayName(first.dow)} ${first.start}-${first.end}`;
+}
+
 async function runAiSuggestions(isAuto) {
   const interests = (document.getElementById('interestInput').value || '').trim();
+  const prereqInfoEl = document.getElementById('aiPrereqInfo');
   if (!interests) {
     if (!isAuto) document.getElementById('aiSummary').textContent = 'Kirjelda enne oma huvid (samm "Filter"), siis saan AI soovitused teha.';
     document.getElementById('aiList').innerHTML = '';
     document.getElementById('aiFutureList').innerHTML = '';
+    prereqInfoEl.style.display = 'none';
+    prereqInfoEl.textContent = '';
     return;
   }
   if (!state.allResults.length) {
     if (!isAuto) document.getElementById('aiSummary').textContent = 'Kõigepealt käivita ainete otsing.';
     document.getElementById('aiFutureList').innerHTML = '';
+    prereqInfoEl.style.display = 'none';
+    prereqInfoEl.textContent = '';
     return;
   }
 
   const aiSummaryEl = document.getElementById('aiSummary');
   const aiListEl = document.getElementById('aiList');
   aiSummaryEl.textContent = 'AI analüüsib huvisid ja seob need sinu filtritud ainetega...';
+  prereqInfoEl.style.display = 'none';
+  prereqInfoEl.textContent = '';
   aiListEl.innerHTML = '';
 
   const payload = {
@@ -2007,6 +2069,8 @@ async function runAiSuggestions(isAuto) {
     interests,
     time_preferences: readTimePreferences(),
     mandatory_courses: buildMandatoryContext(),
+    completed_courses: readCompletedCourses(),
+    known_course_codes: [...new Set((state.timetableEvents || []).map(e => e.course_code).filter(Boolean))],
     candidates: state.allResults.slice(0, 160).map(r => ({
       code: r.code,
       name: r.name,
@@ -2039,6 +2103,8 @@ async function runAiSuggestions(isAuto) {
     aiSummaryEl.textContent = 'AI soovituse laadimine ebaõnnestus: ' + e.message;
     aiListEl.innerHTML = '';
     document.getElementById('aiFutureList').innerHTML = '';
+    prereqInfoEl.style.display = 'none';
+    prereqInfoEl.textContent = '';
   }
 }
 
@@ -2046,12 +2112,26 @@ function renderAiSuggestions(data) {
   const aiSummaryEl = document.getElementById('aiSummary');
   const aiListEl = document.getElementById('aiList');
   const aiFutureEl = document.getElementById('aiFutureList');
+  const prereqInfoEl = document.getElementById('aiPrereqInfo');
   const mode = data.mode === 'openai' ? 'OpenAI' : 'Fallback';
   const warning = data.warning ? ` (${data.warning})` : '';
   aiSummaryEl.textContent = `${data.summary || 'AI soovitus valmis.'} [${mode}]${warning}`;
 
   aiListEl.innerHTML = '';
   aiFutureEl.innerHTML = '';
+  const blocked = data.blocked_due_prerequisites || [];
+  if (blocked.length) {
+    const rows = blocked.slice(0, 6).map(b => {
+      const missing = (b.missing || []).join(', ');
+      return `${b.code}${missing ? ` (puudu: ${missing})` : ''}`;
+    });
+    prereqInfoEl.textContent = `ÕIS eeldusainete kontroll peitis ${blocked.length} ainet: ${rows.join(' · ')}`;
+    prereqInfoEl.style.display = 'block';
+  } else {
+    prereqInfoEl.textContent = '';
+    prereqInfoEl.style.display = 'none';
+  }
+
   const mapByCode = new Map(state.allResults.map(r => [r.code, r]));
   const picks = (data.recommended_courses || []).slice(0, 10);
   if (!picks.length) {
@@ -2062,7 +2142,8 @@ function renderAiSuggestions(data) {
   for (const pick of picks) {
     const course = mapByCode.get(pick.code) || {};
     const item = document.createElement('div');
-    item.className = 'ai-item';
+    item.className = 'ai-item clickable';
+    item.tabIndex = 0;
 
     const head = document.createElement('div');
     head.className = 'ai-item-head';
@@ -2084,11 +2165,18 @@ function renderAiSuggestions(data) {
 
     const note = document.createElement('div');
     note.className = 'ai-note';
-    note.textContent = `${pick.timetable_note || ''}${course.time ? ' · ' + course.time : ''}`;
+    note.textContent = `${pick.timetable_note || ''}${summarizeCourseTime(course) ? ' · ' + summarizeCourseTime(course) : ''}`;
 
     item.appendChild(head);
     item.appendChild(reason);
     item.appendChild(note);
+    item.onclick = () => openModal(course, pick);
+    item.onkeydown = (ev) => {
+      if (ev.key === 'Enter' || ev.key === ' ') {
+        ev.preventDefault();
+        openModal(course, pick);
+      }
+    };
     aiListEl.appendChild(item);
   }
 
@@ -2101,21 +2189,30 @@ function renderAiSuggestions(data) {
   for (const pick of futurePicks) {
     const course = mapByCode.get(pick.code) || {};
     const item = document.createElement('div');
-    item.className = 'ai-item';
+    item.className = 'ai-item clickable';
+    item.tabIndex = 0;
     item.innerHTML = `
       <div class="ai-item-head">
         <div class="ai-code">${pick.code} ${course.name ? '· ' + course.name : ''}</div>
         <div class="ai-score">${pick.fit_score ?? 0}/100</div>
       </div>
       <div class="ai-reason">${pick.reason || 'Kasulik hilisemaks valikuks.'}</div>
-      <div class="ai-note">${pick.timetable_note || 'sobib tulevaseks semestriks'}</div>
+      <div class="ai-note">${pick.timetable_note || 'sobib tulevaseks semestriks'}${summarizeCourseTime(course) ? ' · ' + summarizeCourseTime(course) : ''}</div>
     `;
+    item.onclick = () => openModal(course, pick);
+    item.onkeydown = (ev) => {
+      if (ev.key === 'Enter' || ev.key === ' ') {
+        ev.preventDefault();
+        openModal(course, pick);
+      }
+    };
     aiFutureEl.appendChild(item);
   }
 }
 
 // ── Course detail modal ────────────────────────────────────────────────────
-function openModal(result) {
+function openModal(result, aiPick) {
+  if (!result || !result.code) return;
   const semLbl = semesterLabel(result.allDts);
   const kindCls = result.courseKind === 'oma' ? 'kind-own' : result.courseKind === 'teine' ? 'kind-other' : 'kind-free';
   const kindTxt = result.courseKind === 'oma' ? '★ Kohustuslik sinu erialal' : result.courseKind === 'teine' ? 'Kohustuslik teisel erialal' : 'Valikaine';
@@ -2129,7 +2226,7 @@ function openModal(result) {
     ${semLbl ? `<span class="rc-tag ${semLbl.cls}">${semLbl.label}</span>` : ''}
   `;
 
-  const scheduleRows = result.allSlots.map(s => {
+  const scheduleRows = (result.allSlots || []).map(s => {
     const dayNames = ['','E','T','K','N','R'];
     const wkLbl = weekLabelFromType(s.weekType, s.weekCodes);
     const typeLbl = evTypeLabel(s.type);
@@ -2140,19 +2237,29 @@ function openModal(result) {
     </div>`;
   }).join('');
 
-  const groupsHtml = result.allSgs.map(sg =>
+  const groupsHtml = (result.allSgs || []).map(sg =>
     `<span class="m-group-tag ${sg.isCompulsory ? 'compulsory' : ''}">${sg.code}</span>`
   ).join('');
 
-  const teachersVal = result.allTeachers.length ? result.allTeachers.join(', ') : '—';
+  const teachersVal = (result.allTeachers || []).length ? result.allTeachers.join(', ') : '—';
   const roomsVal = (result.allRooms || []).length ? result.allRooms.join(', ') : '—';
   const descHint = (result.descriptionHint || '').trim();
+  const aiReason = aiPick ? (aiPick.reason || '').trim() : '';
+  const aiScore = aiPick ? `${aiPick.fit_score ?? 0}/100` : '';
+  const aiTime = summarizeCourseTime(result);
 
   document.getElementById('modalContent').innerHTML = `
     <div class="m-code">${result.code}</div>
     <div class="m-name">${result.name || result.code}</div>
     ${result.name_en ? `<div class="m-name-en">${result.name_en}</div>` : ''}
     <div class="m-badges">${badgesHtml}</div>
+
+    ${aiPick ? `<div class="m-section">
+      <div class="m-section-title">AI põhjendus</div>
+      <div class="m-row"><span class="m-row-label">Sobivus</span><span class="m-row-val">${aiScore}</span></div>
+      <div class="m-row"><span class="m-row-label">Miks sobib</span><span class="m-row-val">${aiReason || 'AI hinnangul sobib sinu huvidega.'}</span></div>
+      <div class="m-row"><span class="m-row-label">Aeg</span><span class="m-row-val">${aiTime || 'fikseeritud aega ei leitud'}</span></div>
+    </div>` : ''}
 
     <div class="m-section">
       <div class="m-section-title">Tunniplaan</div>

@@ -34,6 +34,10 @@ API_HDRS = {
 
 COURSE_PROFILE_CACHE: dict[str, dict] = {}
 SUBJECT_ID_CACHE: dict[str, int | None] = {}
+COURSE_CODE_PATTERNS = (
+    r"\b[A-Z]{2,6}\d{3,4}[A-Z]?\b",
+    r"\b[A-Z]{2,6}\.\d{2}\.\d{3}\b",
+)
 
 
 def _tokenize(text: str) -> list[str]:
@@ -128,6 +132,110 @@ def _extract_course_description(raw_text: str) -> str:
     return _clip(" ".join(body), 2500)
 
 
+def _extract_course_codes(text: str) -> list[str]:
+    raw = " ".join((text or "").upper().split())
+    found: list[str] = []
+    seen: set[str] = set()
+    for pattern in COURSE_CODE_PATTERNS:
+        for match in re.findall(pattern, raw):
+            code = match.strip().upper()
+            if not code or code in seen:
+                continue
+            seen.add(code)
+            found.append(code)
+    return found
+
+
+def _extract_prerequisites(raw_text: str) -> dict:
+    lines = [ln.strip() for ln in (raw_text or "").splitlines()]
+    lines = [ln for ln in lines if ln]
+    if not lines:
+        return {"codes": [], "text": ""}
+
+    header_idx = -1
+    for i, ln in enumerate(lines):
+        low = ln.lower()
+        if "prerequisite(s)" in low or "eeldus" in low:
+            header_idx = i
+            break
+    if header_idx == -1:
+        return {"codes": [], "text": ""}
+
+    stop_markers = (
+        "work load:",
+        "koormus:",
+        "concurrent",
+        "requirements for completion",
+        "assessment methods",
+        "hindamismeetod",
+        "iseseisev too",
+        "iseseisev töö",
+        "study programmes that contain the course",
+        "opekavad, kus aine sisaldub",
+        "õppekavad, kus aine sisaldub",
+        "confirmed:",
+        "kinnitatud:",
+    )
+    section_lines = []
+    for ln in lines[header_idx + 1 :]:
+        lowered = ln.lower()
+        if any(marker in lowered for marker in stop_markers):
+            break
+        normalized = re.split(
+            r"(?i)\b(?:work load|koormus|concurrent|requirements for completion|assessment methods|confirmed|kinnitatud):",
+            ln,
+            maxsplit=1,
+        )[0].strip()
+        if not normalized:
+            continue
+        section_lines.append(normalized)
+
+    section_text = " ".join(section_lines).strip()
+    codes = _extract_course_codes(section_text)
+    return {"codes": codes, "text": _clip(section_text, 260)}
+
+
+def _normalize_completed_codes(value) -> set[str]:
+    out: set[str] = set()
+    if isinstance(value, list):
+        for row in value:
+            if isinstance(row, dict):
+                code = str(row.get("code", "")).strip().upper()
+                if code:
+                    out.add(code)
+            elif isinstance(row, str):
+                out.update(_extract_course_codes(row))
+        return out
+    if isinstance(value, str):
+        out.update(_extract_course_codes(value))
+    return out
+
+
+def _filter_candidates_by_prerequisites(candidates: list[dict], completed_codes: set[str]) -> tuple[list[dict], list[dict]]:
+    allowed = []
+    blocked = []
+    for c in candidates:
+        code = str(c.get("code", "")).strip().upper()
+        prereq = [p for p in (c.get("prerequisites") or []) if p and p != code]
+        if not prereq:
+            allowed.append(c)
+            continue
+        missing = [p for p in prereq if p not in completed_codes]
+        if missing:
+            blocked.append(
+                {
+                    "code": code,
+                    "name": str(c.get("name", "")).strip(),
+                    "missing": missing[:8],
+                    "prerequisites": prereq[:12],
+                    "prerequisite_text": _clip(str(c.get("prerequisite_text", "")).strip(), 180),
+                }
+            )
+            continue
+        allowed.append(c)
+    return allowed, blocked
+
+
 def _fetch_subject_id(code: str) -> int | None:
     key = (code or "").strip().upper()
     if not key:
@@ -151,7 +259,7 @@ def _fetch_subject_id(code: str) -> int | None:
         return None
 
 
-def _fetch_ois_description(code: str) -> str:
+def _fetch_ois_course_text(code: str) -> str:
     key = (code or "").strip().upper()
     if not key:
         return ""
@@ -171,17 +279,33 @@ def _fetch_ois_description(code: str) -> str:
         rtf = _http_get_text(f"{OIS_SUBJECT_BASE}/{token}", timeout=20)
     except Exception:
         return ""
-    return _extract_course_description(_rtf_to_text(rtf))
+    return _rtf_to_text(rtf)
 
 
 def _get_course_profile(code: str) -> dict:
     key = (code or "").strip().upper()
     if not key:
-        return {"code": "", "name": "", "name_en": "", "description": "", "eap": None}
+        return {
+            "code": "",
+            "name": "",
+            "name_en": "",
+            "description": "",
+            "eap": None,
+            "prerequisites": [],
+            "prerequisite_text": "",
+        }
     if key in COURSE_PROFILE_CACHE:
         return COURSE_PROFILE_CACHE[key]
 
-    profile = {"code": key, "name": "", "name_en": "", "description": "", "eap": None}
+    profile = {
+        "code": key,
+        "name": "",
+        "name_en": "",
+        "description": "",
+        "eap": None,
+        "prerequisites": [],
+        "prerequisite_text": "",
+    }
     subject_id = _fetch_subject_id(key)
     if subject_id is not None:
         try:
@@ -195,7 +319,11 @@ def _get_course_profile(code: str) -> dict:
         except Exception:
             pass
 
-    profile["description"] = _fetch_ois_description(key)
+    ois_text = _fetch_ois_course_text(key)
+    profile["description"] = _extract_course_description(ois_text)
+    prereq = _extract_prerequisites(ois_text)
+    profile["prerequisites"] = prereq.get("codes", [])
+    profile["prerequisite_text"] = prereq.get("text", "")
     COURSE_PROFILE_CACHE[key] = profile
     return profile
 
@@ -214,6 +342,8 @@ def _enrich_candidates_with_profiles(candidates: list[dict], max_fetch: int = 10
             c["name_en"] = profile.get("name_en", "")
         c["description"] = profile.get("description", "")
         c["eap"] = profile.get("eap")
+        c["prerequisites"] = profile.get("prerequisites", [])
+        c["prerequisite_text"] = profile.get("prerequisite_text", "")
     return candidates
 
 
@@ -352,6 +482,8 @@ def _openai_recommend(
                 "isOnline": bool(c.get("isOnline")),
                 "teachers": (c.get("teachers") or [])[:4],
                 "description": _clip(str(c.get("description", "")), 1200),
+                "prerequisites": c.get("prerequisites") or [],
+                "prerequisite_text": _clip(str(c.get("prerequisite_text", "")), 180),
                 "timePreferenceScore": int(c.get("timePreferenceScore", 0) or 0),
                 "timePreferenceNotes": c.get("timePreferenceNotes") or [],
             }
@@ -512,6 +644,8 @@ class Handler(BaseHTTPRequestHandler):
         candidates = req.get("candidates") or []
         mandatory_courses = req.get("mandatory_courses") or []
         time_preferences = req.get("time_preferences") or []
+        completed_courses = req.get("completed_courses")
+        known_course_codes = req.get("known_course_codes")
         group_code = str(req.get("group_code", "")).strip().upper()
         semester = int(req.get("semester", 1) or 1)
 
@@ -578,6 +712,26 @@ class Handler(BaseHTTPRequestHandler):
             )
 
         normalized_candidates = _enrich_candidates_with_profiles(normalized_candidates, max_fetch=100)
+        completed_codes = _normalize_completed_codes(completed_courses)
+        completed_codes.update(_normalize_completed_codes(known_course_codes))
+        completed_codes.update({m["code"] for m in normalized_mandatory if m.get("code")})
+        normalized_candidates, blocked_by_prereq = _filter_candidates_by_prerequisites(
+            normalized_candidates,
+            completed_codes,
+        )
+
+        if not normalized_candidates:
+            self._send_json(
+                200,
+                {
+                    "mode": "heuristic",
+                    "summary": "Kõik kandidaadid langesid välja eeldusainete kontrolli tõttu.",
+                    "recommended_courses": [],
+                    "future_courses": [],
+                    "blocked_due_prerequisites": blocked_by_prereq[:40],
+                },
+            )
+            return
 
         api_key = os.getenv("OPENAI_API_KEY", "").strip()
         if api_key:
@@ -591,6 +745,13 @@ class Handler(BaseHTTPRequestHandler):
                     candidates=normalized_candidates,
                     time_preferences=normalized_time_preferences,
                 )
+                if blocked_by_prereq:
+                    result["blocked_due_prerequisites"] = blocked_by_prereq[:40]
+                    result["summary"] = _clip(
+                        f"{result.get('summary', '')} "
+                        f"Eeldusainete puudumise tõttu peitsin {len(blocked_by_prereq)} ainet.",
+                        520,
+                    )
                 self._send_json(200, result)
                 return
             except Exception as exc:
@@ -601,18 +762,30 @@ class Handler(BaseHTTPRequestHandler):
                     normalized_time_preferences,
                 )
                 fallback["warning"] = f"OpenAI call failed, fallback used: {type(exc).__name__}"
+                if blocked_by_prereq:
+                    fallback["blocked_due_prerequisites"] = blocked_by_prereq[:40]
+                    fallback["summary"] = _clip(
+                        f"{fallback.get('summary', '')} "
+                        f"Eeldusainete puudumise tõttu peitsin {len(blocked_by_prereq)} ainet.",
+                        520,
+                    )
                 self._send_json(200, fallback)
                 return
 
-        self._send_json(
-            200,
-            _heuristic_recommend(
-                interests,
-                normalized_candidates,
-                normalized_mandatory,
-                normalized_time_preferences,
-            ),
+        fallback = _heuristic_recommend(
+            interests,
+            normalized_candidates,
+            normalized_mandatory,
+            normalized_time_preferences,
         )
+        if blocked_by_prereq:
+            fallback["blocked_due_prerequisites"] = blocked_by_prereq[:40]
+            fallback["summary"] = _clip(
+                f"{fallback.get('summary', '')} "
+                f"Eeldusainete puudumise tõttu peitsin {len(blocked_by_prereq)} ainet.",
+                520,
+            )
+        self._send_json(200, fallback)
 
     def _serve_file(self, filename: str, ctype: str):
         try:
