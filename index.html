@@ -492,13 +492,16 @@
     border-radius: 6px;
     padding: 4px 6px;
     font-size: 9px;
-    line-height: 1.2;
+    line-height: 1.3;
     overflow: hidden;
     cursor: pointer;
     transition: transform 0.15s var(--ease), box-shadow 0.2s var(--ease);
     z-index: 1;
     font-family: var(--mono);
     font-weight: 500;
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
   }
   .tt-event:hover {
     transform: scale(1.03);
@@ -520,6 +523,25 @@
     border: 1px solid rgba(239,68,68,0.4);
     color: #fecaca;
   }
+  .tt-ev-top { display: flex; align-items: baseline; gap: 4px; }
+  .tt-ev-code { font-weight: 700; font-size: 9px; white-space: nowrap; }
+  .tt-ev-type { font-size: 8px; opacity: 0.75; white-space: nowrap; }
+  .tt-ev-name { font-size: 8px; opacity: 0.7; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-family: var(--sans); font-weight: 400; }
+  .tt-ev-time { font-size: 8px; opacity: 0.55; }
+  .tt-ev-week {
+    display: inline-block;
+    font-size: 7px;
+    font-weight: 700;
+    padding: 0px 3px;
+    border-radius: 3px;
+    letter-spacing: 0.3px;
+    margin-top: 1px;
+    align-self: flex-start;
+    line-height: 1.6;
+  }
+  .tt-ev-week.odd  { background: rgba(245,158,11,0.25); color: #fcd34d; border: 1px solid rgba(245,158,11,0.4); }
+  .tt-ev-week.even { background: rgba(34,211,238,0.18); color: #67e8f9; border: 1px solid rgba(34,211,238,0.35); }
+  .tt-ev-week.all  { display: none; }
 
   .legend {
     display: flex;
@@ -620,6 +642,76 @@
     border-radius: 6px;
     display: inline-block;
   }
+  .rc-tags { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 10px; }
+  .rc-tag {
+    font-size: 10px;
+    font-family: var(--mono);
+    padding: 2px 7px;
+    border-radius: 100px;
+    border: 1px solid;
+    font-weight: 600;
+    letter-spacing: 0.2px;
+    white-space: nowrap;
+  }
+  .rc-tag.kind-own      { color: #a5b4fc; border-color: rgba(99,102,241,0.5);  background: rgba(99,102,241,0.1); }
+  .rc-tag.kind-other    { color: #c4b5fd; border-color: rgba(139,92,246,0.4);  background: rgba(139,92,246,0.08); }
+  .rc-tag.kind-free     { color: var(--muted); border-color: var(--border);    background: transparent; }
+  .rc-tag.online        { color: #67e8f9; border-color: rgba(34,211,238,0.4);  background: rgba(34,211,238,0.08); }
+  .rc-tag.sem-spring    { color: #6ee7b7; border-color: rgba(52,211,153,0.4);  background: rgba(16,185,129,0.08); }
+  .rc-tag.sem-fall      { color: #fcd34d; border-color: rgba(245,158,11,0.4);  background: rgba(245,158,11,0.08); }
+
+  /* ─── Modal ─── */
+  .modal-overlay {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.7);
+    backdrop-filter: blur(6px);
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    animation: fadeIn 0.18s var(--ease);
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 28px;
+    max-width: 540px;
+    width: 100%;
+    max-height: 80vh;
+    overflow-y: auto;
+    position: relative;
+    box-shadow: var(--shadow-lg);
+  }
+  .modal-close {
+    position: absolute; top: 16px; right: 16px;
+    background: var(--surface-2); border: 1px solid var(--border);
+    color: var(--muted); border-radius: 8px;
+    width: 32px; height: 32px;
+    font-size: 18px; line-height: 1;
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+    transition: color 0.15s, border-color 0.15s;
+  }
+  .modal-close:hover { color: var(--text); border-color: var(--accent); }
+  .m-code { font-family: var(--mono); font-size: 11px; color: var(--accent-3); font-weight: 600; letter-spacing: 0.5px; margin-bottom: 6px; }
+  .m-name { font-size: 20px; font-weight: 700; line-height: 1.2; letter-spacing: -0.02em; margin-bottom: 4px; }
+  .m-name-en { font-size: 13px; color: var(--muted); margin-bottom: 16px; }
+  .m-badges { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 20px; }
+  .m-section { margin-bottom: 16px; }
+  .m-section-title { font-family: var(--mono); font-size: 10px; color: var(--muted-2); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px; }
+  .m-row { display: flex; align-items: flex-start; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--border-soft); font-size: 13px; }
+  .m-row:last-child { border-bottom: none; }
+  .m-row-label { color: var(--muted); font-family: var(--mono); font-size: 11px; min-width: 80px; padding-top: 1px; }
+  .m-row-val { color: var(--text-dim); flex: 1; line-height: 1.5; }
+  .m-groups { display: flex; flex-wrap: wrap; gap: 4px; }
+  .m-group-tag {
+    font-size: 10px; font-family: var(--mono); padding: 2px 6px;
+    border-radius: 5px; border: 1px solid var(--border);
+    color: var(--muted);
+  }
+  .m-group-tag.compulsory { color: #a5b4fc; border-color: rgba(99,102,241,0.4); background: rgba(99,102,241,0.08); }
 
   /* ─── Agent bubble ─── */
   .agent-bubble {
@@ -1148,7 +1240,15 @@ async function fetchGroupTimetable(sgId, cvId, deptId) {
     for (const day of days) {
       for (const row of day.rows || []) {
         const [start, end] = parseTime(row.time);
-        events.push({ course_code: row.subjectCode||'', course_name: row.subjectName||'', course_name_en: row.subjectNameEn||'', type: row.type||'', dow: row.dow ?? -1, start, end, weekCodes: row.weekCodes||[], sgs: (row.sgs||[]).map(s=>s.code) });
+        events.push({
+          course_code: row.subjectCode||'', course_name: row.subjectName||'', course_name_en: row.subjectNameEn||'',
+          type: row.type||'', dow: row.dow ?? -1, start, end,
+          weekCodes: row.weekCodes||[], weekType: row.weekType||'',
+          isDistance: row.isDistance || false,
+          sgs: row.sgs || [],
+          teachers: (row.teachers||[]).map(t=>t.teacherName).filter(Boolean),
+          dts: (row.dts||[]).map(d=>d.date),
+        });
       }
     }
     if (days.reduce((s,d)=>s+(d.rows||[]).length,0) < 50) break;
@@ -1282,8 +1382,13 @@ async function runSearch() {
     const candidateGroups = state.allGroups.filter(g => state.selectedDepts.has(g.dept_name));
     loadTxt.textContent = `Kontrollin ${candidateGroups.length} gruppi…`;
 
-    const electiveMap = new Map();
-    const electiveInfo = new Map();
+    const electiveMap  = new Map(); // code → [events]
+    const electiveInfo = new Map(); // code → {name, name_en}
+    const electiveSgs  = new Map(); // code → Map<groupCode, isCompulsory>
+    const electiveTeachers = new Map(); // code → Set<name>
+    const electiveDts  = new Map(); // code → Set<date>
+
+    const ownPrefix = state.groupCode.replace(/\d.*$/, ''); // "IAAB21" → "IAAB"
 
     const BATCH = 6;
     for (let i = 0; i < Math.min(candidateGroups.length, 60); i += BATCH) {
@@ -1297,8 +1402,19 @@ async function runSearch() {
             if (!electiveMap.has(e.course_code)) {
               electiveMap.set(e.course_code, []);
               electiveInfo.set(e.course_code, { name: e.course_name, name_en: e.course_name_en });
+              electiveSgs.set(e.course_code, new Map());
+              electiveTeachers.set(e.course_code, new Set());
+              electiveDts.set(e.course_code, new Set());
             }
             electiveMap.get(e.course_code).push(e);
+            const sgMap = electiveSgs.get(e.course_code);
+            for (const sg of e.sgs) {
+              if (!sgMap.has(sg.code) || sg.isCompulsory) sgMap.set(sg.code, sg.isCompulsory);
+            }
+            const tSet = electiveTeachers.get(e.course_code);
+            e.teachers.forEach(t => tSet.add(t));
+            const dSet = electiveDts.get(e.course_code);
+            e.dts.forEach(d => dSet.add(d));
           }
         } catch(_) {}
       }));
@@ -1311,13 +1427,34 @@ async function runSearch() {
       const fixedEvents = events.filter(e => e.dow !== -1 && e.start);
       const hasConflict = fixedEvents.some(e => state.mandatoryEvents.some(m => overlap(e, m)));
       const info = electiveInfo.get(code);
-      const rep = fixedEvents[0];
+      const rep  = fixedEvents[0];
+
+      // Deduplicate slots by dow+start+type
+      const slotKey = e => `${e.dow}|${e.start}|${e.type}|${e.weekType}`;
+      const seenSlots = new Set();
+      const uniqueSlots = fixedEvents.filter(e => { const k=slotKey(e); if(seenSlots.has(k))return false; seenSlots.add(k); return true; });
+
+      // Build sgs list
+      const sgMap = electiveSgs.get(code);
+      const allSgs = [...sgMap.entries()].map(([c,ic])=>({code:c,isCompulsory:ic}));
+
+      // Classify: is this course mandatory for own curriculum or another?
+      const hasCompulsoryOwn   = allSgs.some(sg => sg.isCompulsory && sg.code.startsWith(ownPrefix));
+      const hasCompulsoryOther = allSgs.some(sg => sg.isCompulsory && !sg.code.startsWith(ownPrefix));
+      const courseKind = hasCompulsoryOwn ? 'oma' : hasCompulsoryOther ? 'teine' : 'vaba';
+
+      const isOnline   = events.some(e => e.isDistance === true);
+      const allDts     = [...electiveDts.get(code)].sort();
+      const allTeachers = [...electiveTeachers.get(code)];
+
       results.push({
         code, name: info.name, name_en: info.name_en,
         free: !hasConflict,
+        courseKind, isOnline, allDts, allTeachers,
+        allSgs, allSlots: uniqueSlots,
         time: rep ? `${dayName(rep.dow)} ${rep.start}–${rep.end}` : 'paindlik',
         dow: rep?.dow ?? -1, start: rep?.start, end: rep?.end,
-        weekCodes: rep?.weekCodes ?? [],
+        weekCodes: rep?.weekCodes ?? [], weekType: rep?.weekType ?? '',
         events: fixedEvents,
       });
     }
@@ -1349,6 +1486,23 @@ async function runSearch() {
 }
 
 // ── Timetable renderer ─────────────────────────────────────────────────────
+function evTypeLabel(type) {
+  if (!type) return '?';
+  const s = type.toUpperCase();
+  if (s.includes('_L') && !s.includes('_LP') && !s.includes('_LA')) return 'Loeng';
+  if (s.includes('_LP') || s.includes('LOENG_PRAKT')) return 'L+P';
+  if (s.includes('_P') || s.includes('PRAKT')) return 'Prakt';
+  if (s.includes('_HAR') || s.includes('HARJ')) return 'Harj';
+  if (s.includes('_LA') || s.includes('LAB')) return 'Lab';
+  if (s.includes('EKSAM') || s.includes('_E')) return 'Eksam';
+  const suffix = type.split('_').pop();
+  return suffix || type;
+}
+
+function evWeekLabel(weekType, weekCodes) {
+  return weekLabelFromType(weekType, weekCodes);
+}
+
 function renderTimetable(mandatory, free) {
   const HOUR_START = 8, HOUR_END = 20;
   const HOURS = HOUR_END - HOUR_START;
@@ -1393,8 +1547,19 @@ function renderTimetable(mandatory, free) {
     el.className = `tt-event ${ev.cls}`;
     el.style.height = `${span * SLOT_H - 2}px`;
     el.style.top    = '1px';
-    el.innerHTML    = `<div style="font-weight:700">${ev.course_code||''}</div><div style="opacity:.7">${ev.start}–${ev.end}</div>`;
-    el.title        = `${ev.course_code} ${ev.course_name}\n${ev.start}–${ev.end}`;
+    const typeLbl  = evTypeLabel(ev.type);
+    const weekLbl  = evWeekLabel(ev.weekType, ev.weekCodes);
+    const tallEnough = span >= 3;
+    el.innerHTML = `
+      <div class="tt-ev-top">
+        <span class="tt-ev-code">${ev.course_code||''}</span>
+        <span class="tt-ev-type">(${typeLbl})</span>
+      </div>
+      ${tallEnough ? `<div class="tt-ev-name">${ev.course_name||''}</div>` : ''}
+      <div class="tt-ev-time">${ev.start}–${ev.end}</div>
+      <div class="tt-ev-week ${weekLbl.cls}">${weekLbl.label}</div>
+    `;
+    el.title = `${ev.course_code} – ${ev.course_name}\n${typeLbl} · ${ev.start}–${ev.end}\n${weekLbl.label}`;
     cell.style.position = 'relative';
     cell.appendChild(el);
   }
@@ -1411,6 +1576,11 @@ function renderResults(results, filter) {
     const badgeIcon = r.free
       ? '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>'
       : '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
+
+    const kindCls = r.courseKind === 'oma' ? 'kind-own' : r.courseKind === 'teine' ? 'kind-other' : 'kind-free';
+    const kindTxt = r.courseKind === 'oma' ? '★ Erialal kohustuslik' : r.courseKind === 'teine' ? 'Teisel erialal kohustuslik' : 'Valikaine';
+    const semLbl = semesterLabel(r.allDts);
+
     card.innerHTML = `
       <div class="rc-top">
         <div class="rc-code">${r.code}</div>
@@ -1418,7 +1588,13 @@ function renderResults(results, filter) {
       </div>
       <div class="rc-name">${r.name || r.code}</div>
       <div class="rc-time">${r.time}</div>
+      <div class="rc-tags">
+        <span class="rc-tag ${kindCls}">${kindTxt}</span>
+        ${r.isOnline ? '<span class="rc-tag online">📡 Online</span>' : ''}
+        ${semLbl ? `<span class="rc-tag ${semLbl.cls}">${semLbl.label}</span>` : ''}
+      </div>
     `;
+    card.onclick = () => openModal(r);
     grid.appendChild(card);
   }
   if (!toShow.length) grid.innerHTML = '<div style="color:var(--muted);font-size:13px;padding:24px;text-align:center;background:var(--surface);border:1px dashed var(--border);border-radius:var(--radius-sm)">Ühtegi tulemust ei leitud</div>';
@@ -1430,8 +1606,100 @@ function filterResults(f, el) {
   renderResults(state.allResults, f);
 }
 
+// ── Course detail modal ────────────────────────────────────────────────────
+function openModal(result) {
+  const semLbl = semesterLabel(result.allDts);
+  const kindCls = result.courseKind === 'oma' ? 'kind-own' : result.courseKind === 'teine' ? 'kind-other' : 'kind-free';
+  const kindTxt = result.courseKind === 'oma' ? '★ Kohustuslik sinu erialal' : result.courseKind === 'teine' ? 'Kohustuslik teisel erialal' : 'Valikaine';
+
+  const badgesHtml = `
+    <span class="rc-tag ${result.free ? 'kind-free' : 'kind-own'}" style="${result.free ? 'color:var(--green-soft);border-color:rgba(16,185,129,0.5);background:rgba(16,185,129,0.1)' : 'color:var(--red-soft);border-color:rgba(239,68,68,0.5);background:rgba(239,68,68,0.1)'}">
+      ${result.free ? '✓ Sobib' : '✗ Konflikt'}
+    </span>
+    <span class="rc-tag ${kindCls}">${kindTxt}</span>
+    ${result.isOnline ? '<span class="rc-tag online">📡 Online</span>' : ''}
+    ${semLbl ? `<span class="rc-tag ${semLbl.cls}">${semLbl.label}</span>` : ''}
+  `;
+
+  const scheduleRows = result.allSlots.map(s => {
+    const dayNames = ['','E','T','K','N','R'];
+    const wkLbl = weekLabelFromType(s.weekType, s.weekCodes);
+    const typeLbl = evTypeLabel(s.type);
+    return `<div class="m-row">
+      <span class="m-row-label">${dayNames[s.dow] || '?'} ${s.start}–${s.end}</span>
+      <span class="m-row-val">${typeLbl}${wkLbl.cls !== 'all' ? ' · <span style="color:'+(wkLbl.cls==='odd'?'#fcd34d':'#67e8f9')+'">'+wkLbl.label+'</span>' : ''}</span>
+    </div>`;
+  }).join('');
+
+  const groupsHtml = result.allSgs.map(sg =>
+    `<span class="m-group-tag ${sg.isCompulsory ? 'compulsory' : ''}">${sg.code}</span>`
+  ).join('');
+
+  const teachersVal = result.allTeachers.length ? result.allTeachers.join(', ') : '—';
+
+  document.getElementById('modalContent').innerHTML = `
+    <div class="m-code">${result.code}</div>
+    <div class="m-name">${result.name || result.code}</div>
+    ${result.name_en ? `<div class="m-name-en">${result.name_en}</div>` : ''}
+    <div class="m-badges">${badgesHtml}</div>
+
+    <div class="m-section">
+      <div class="m-section-title">Tunniplaan</div>
+      ${scheduleRows || '<div class="m-row"><span class="m-row-val" style="color:var(--muted)">Paindlik aeg, fikseeritud tunnid puuduvad</span></div>'}
+    </div>
+
+    <div class="m-section">
+      <div class="m-section-title">Õppejõud</div>
+      <div class="m-row"><span class="m-row-val">${teachersVal}</span></div>
+    </div>
+
+    <div class="m-section">
+      <div class="m-section-title">Grupid kellele see aine on tunniplaanist leitud</div>
+      <div class="m-groups">${groupsHtml || '<span style="color:var(--muted);font-size:12px">—</span>'}</div>
+    </div>
+  `;
+  document.getElementById('courseModal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal(e) {
+  if (e && e.target !== document.getElementById('courseModal')) return;
+  document.getElementById('courseModal').classList.remove('open');
+  document.body.style.overflow = '';
+}
+document.addEventListener('keydown', e => { if(e.key==='Escape') { document.getElementById('courseModal').classList.remove('open'); document.body.style.overflow=''; } });
+
+function semesterLabel(dts) {
+  if (!dts || !dts.length) return null;
+  const months = dts.map(d => new Date(d).getMonth() + 1);
+  const min = Math.min(...months), max = Math.max(...months);
+  if (max <= 6)  return { cls: 'sem-spring', label: 'Kevad' };
+  if (min >= 9)  return { cls: 'sem-fall',   label: 'Sügis' };
+  return null;
+}
+
+function weekLabelFromType(weekType, weekCodes) {
+  if (weekType === 'ODD')     return { cls: 'odd',  label: 'Paaritu nädal' };
+  if (weekType === 'EVEN')    return { cls: 'even', label: 'Paaris nädal' };
+  if (weekType === 'ONETO16') return { cls: 'all',  label: 'Iga nädal' };
+  if (!weekCodes || !weekCodes.length) return { cls: 'all', label: 'Iga nädal' };
+  const nums = weekCodes.map(w => parseInt(w.replace(/\D/g,''),10)).filter(n=>!isNaN(n));
+  const hasOdd = nums.some(n=>n%2!==0), hasEven = nums.some(n=>n%2===0);
+  if (hasOdd && hasEven) return { cls: 'all',  label: 'Iga nädal' };
+  if (hasOdd)            return { cls: 'odd',  label: 'Paaritu nädal' };
+  return                        { cls: 'even', label: 'Paaris nädal' };
+}
+
 // ── Init ───────────────────────────────────────────────────────────────────
 document.getElementById('groupCode').addEventListener('keydown', e => { if(e.key==='Enter') startAgent(); });
 </script>
+
+<div class="modal-overlay" id="courseModal" onclick="closeModal(event)">
+  <div class="modal">
+    <button class="modal-close" onclick="document.getElementById('courseModal').classList.remove('open');document.body.style.overflow=''">✕</button>
+    <div id="modalContent"></div>
+  </div>
+</div>
+
 </body>
 </html>
