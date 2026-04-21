@@ -669,26 +669,103 @@
 
   .ai-panel {
     margin-top: 20px;
-    padding: 16px;
-    border: 1px solid var(--border);
+    border: 1px solid rgba(99,102,241,0.3);
     border-radius: var(--radius);
-    background: linear-gradient(180deg, rgba(99,102,241,0.09), rgba(16,185,129,0.03));
+    background: linear-gradient(180deg, rgba(99,102,241,0.07), rgba(16,185,129,0.02));
+    overflow: hidden;
   }
-  .ai-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
-  .ai-title { font-size: 13px; font-family: var(--mono); letter-spacing: 0.6px; color: var(--text-dim); text-transform: uppercase; }
-  .ai-summary { margin-top: 12px; color: var(--text-dim); font-size: 13px; line-height: 1.55; }
-  .ai-list { margin-top: 12px; display: grid; gap: 10px; }
+  .ai-panel-header {
+    display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+    padding: 18px 20px;
+    border-bottom: 1px solid rgba(99,102,241,0.15);
+  }
+  .ai-title {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 13px; font-family: var(--mono); letter-spacing: 1px;
+    color: var(--text); text-transform: uppercase; font-weight: 600;
+  }
+  .ai-title-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent), var(--accent-2));
+    box-shadow: 0 0 8px var(--accent);
+  }
+
+  /* Agent steps timeline */
+  .ai-steps {
+    padding: 16px 20px;
+    border-bottom: 1px solid rgba(99,102,241,0.12);
+    display: none;
+  }
+  .ai-steps.show { display: block; }
+  .ai-steps-label { font-family: var(--mono); font-size: 10px; color: var(--muted); letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 12px; }
+  .ai-step-row {
+    display: flex; gap: 12px; margin-bottom: 10px;
+    animation: fadeSlide 0.3s var(--ease);
+  }
+  .ai-step-row:last-child { margin-bottom: 0; }
+  .ai-step-icon {
+    width: 28px; height: 28px; border-radius: 50%; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    background: linear-gradient(135deg, var(--accent), var(--accent-2));
+    box-shadow: 0 0 0 3px rgba(99,102,241,0.15);
+    margin-top: 1px;
+  }
+  .ai-step-icon svg { width: 13px; height: 13px; color: #fff; }
+  .ai-step-body {}
+  .ai-step-label { font-size: 12px; font-weight: 600; color: var(--text); margin-bottom: 2px; }
+  .ai-step-detail { font-size: 12px; color: var(--text-dim); line-height: 1.5; }
+
+  /* Agent reasoning block */
+  .ai-reasoning {
+    padding: 14px 20px;
+    border-bottom: 1px solid rgba(99,102,241,0.12);
+    display: none;
+  }
+  .ai-reasoning.show { display: block; }
+  .ai-reasoning-label { font-family: var(--mono); font-size: 10px; color: var(--muted); letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 8px; }
+  .ai-reasoning-text { font-size: 13px; color: var(--text-dim); line-height: 1.6; }
+
+  /* AI courses */
+  .ai-courses { padding: 16px 20px; }
+  .ai-summary { font-size: 13px; color: var(--text-dim); line-height: 1.55; margin-bottom: 14px; }
+  .ai-list { display: grid; gap: 10px; }
   .ai-item {
     border: 1px solid var(--border-soft);
     border-radius: var(--radius-sm);
-    padding: 10px 12px;
+    padding: 12px 14px;
     background: rgba(255,255,255,0.02);
+    transition: border-color 0.2s var(--ease);
+    position: relative;
+    overflow: hidden;
   }
-  .ai-item-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 5px; }
+  .ai-item::before {
+    content: '';
+    position: absolute; left: 0; top: 0; bottom: 0; width: 3px;
+    background: linear-gradient(to bottom, var(--accent), var(--accent-2));
+    opacity: 0.6;
+  }
+  .ai-item.priority-must { border-color: rgba(16,185,129,0.4); }
+  .ai-item.priority-must::before { background: var(--green); opacity: 0.8; }
+  .ai-item.priority-optional { opacity: 0.75; }
+  .ai-item-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 6px; }
   .ai-code { font-family: var(--mono); font-weight: 700; color: var(--accent-3); font-size: 12px; }
-  .ai-score { font-family: var(--mono); font-size: 11px; color: var(--text-dim); }
-  .ai-reason { color: var(--text-dim); font-size: 12px; line-height: 1.5; }
-  .ai-note { color: var(--muted); font-size: 11px; margin-top: 4px; font-family: var(--mono); }
+  .ai-badges { display: flex; gap: 6px; align-items: center; }
+  .ai-score {
+    font-family: var(--mono); font-size: 10px;
+    padding: 2px 7px; border-radius: 100px;
+    background: rgba(99,102,241,0.12); border: 1px solid rgba(99,102,241,0.3);
+    color: var(--accent-3);
+  }
+  .ai-priority {
+    font-family: var(--mono); font-size: 10px;
+    padding: 2px 7px; border-radius: 100px;
+    border: 1px solid;
+  }
+  .ai-priority.must-take { color: var(--green-soft); border-color: rgba(16,185,129,0.4); background: rgba(16,185,129,0.08); }
+  .ai-priority.recommended { color: var(--text-dim); border-color: var(--border); background: transparent; }
+  .ai-priority.optional { color: var(--muted); border-color: var(--border-soft); background: transparent; }
+  .ai-reason { color: var(--text-dim); font-size: 13px; line-height: 1.5; }
+  .ai-note { color: var(--muted); font-size: 11px; margin-top: 5px; font-family: var(--mono); }
 
   /* ─── Modal ─── */
   .modal-overlay {
@@ -1184,14 +1261,31 @@
     </div>
 
     <div class="ai-panel" id="aiPanel">
-      <div class="ai-row">
-        <div class="ai-title">AI personaalsed soovitused</div>
+      <div class="ai-panel-header">
+        <div class="ai-title">
+          <div class="ai-title-dot"></div>
+          AI Agent · Personaalsed soovitused
+        </div>
         <button class="btn btn-secondary" onclick="runAiSuggestions(false)">
-          <span>Genereeri AI soovitus</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+          <span>Käivita agent</span>
         </button>
       </div>
-      <div id="aiSummary" class="ai-summary">Sisesta huvid eelmises sammus ja vajuta "Genereeri AI soovitus".</div>
-      <div id="aiList" class="ai-list"></div>
+      <!-- Agent steps timeline -->
+      <div class="ai-steps" id="aiSteps">
+        <div class="ai-steps-label">Agendi sammud</div>
+        <div id="aiStepsList"></div>
+      </div>
+      <!-- Agent reasoning -->
+      <div class="ai-reasoning" id="aiReasoning">
+        <div class="ai-reasoning-label">Agendi mõttekäik</div>
+        <div class="ai-reasoning-text" id="aiReasoningText"></div>
+      </div>
+      <!-- Results -->
+      <div class="ai-courses" id="aiCourses">
+        <div id="aiSummary" class="ai-summary">Sisesta huvid sammus "Filter" ja vajuta "Käivita agent" — agent analüüsib sinu tunniplaani ja otsustab ise mida soovitada.</div>
+        <div id="aiList" class="ai-list"></div>
+      </div>
     </div>
 
     <div class="actions" style="margin-top:24px">
@@ -1706,8 +1800,7 @@ function buildMandatoryContext() {
 async function runAiSuggestions(isAuto) {
   const interests = (document.getElementById('interestInput').value || '').trim();
   if (!interests) {
-    if (!isAuto) document.getElementById('aiSummary').textContent = 'Kirjelda enne oma huvid (samm "Filter"), siis saan AI soovitused teha.';
-    document.getElementById('aiList').innerHTML = '';
+    if (!isAuto) document.getElementById('aiSummary').textContent = 'Kirjelda enne oma huvid (samm "Filter"), siis saan agent soovitused teha.';
     return;
   }
   if (!state.allResults.length) {
@@ -1716,9 +1809,19 @@ async function runAiSuggestions(isAuto) {
   }
 
   const aiSummaryEl = document.getElementById('aiSummary');
-  const aiListEl = document.getElementById('aiList');
-  aiSummaryEl.textContent = 'AI analüüsib huvisid ja seob need sinu filtritud ainetega...';
+  const aiListEl    = document.getElementById('aiList');
+  const aiStepsEl   = document.getElementById('aiSteps');
+  const aiStepsList = document.getElementById('aiStepsList');
+  const aiReasonEl  = document.getElementById('aiReasoning');
+  const aiReasonTxt = document.getElementById('aiReasoningText');
+
+  // Reset UI
+  aiSummaryEl.textContent = 'Agent analüüsib tunniplaani ja otsustab sobivad ained…';
   aiListEl.innerHTML = '';
+  aiStepsEl.classList.remove('show');
+  aiStepsList.innerHTML = '';
+  aiReasonEl.classList.remove('show');
+  aiReasonTxt.textContent = '';
 
   const payload = {
     group_code: state.groupCode,
@@ -1726,13 +1829,9 @@ async function runAiSuggestions(isAuto) {
     interests,
     mandatory_courses: buildMandatoryContext(),
     candidates: state.allResults.slice(0, 160).map(r => ({
-      code: r.code,
-      name: r.name,
-      name_en: r.name_en,
-      free: r.free,
-      time: r.time,
-      courseKind: r.courseKind,
-      isOnline: r.isOnline,
+      code: r.code, name: r.name, name_en: r.name_en,
+      free: r.free, time: r.time, dow: r.dow ?? -1,
+      courseKind: r.courseKind, isOnline: r.isOnline,
       allTeachers: r.allTeachers || [],
     })),
   };
@@ -1747,60 +1846,89 @@ async function runAiSuggestions(isAuto) {
     if (!r.ok) throw new Error(data.error || 'AI endpoint error');
 
     state.aiSuggestions = data.recommended_courses || [];
-    state.aiSummary = data.summary || '';
-    state.aiMode = data.mode || '';
+    state.aiSummary     = data.summary || '';
+    state.aiMode        = data.mode || '';
     renderAiSuggestions(data);
   } catch (e) {
-    aiSummaryEl.textContent = 'AI soovituse laadimine ebaõnnestus: ' + e.message;
-    aiListEl.innerHTML = '';
+    aiSummaryEl.textContent = 'Agent ebaõnnestus: ' + e.message;
   }
 }
 
+const STEP_ICONS = {
+  analyze_schedule: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>',
+  filter_courses:   '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>',
+  finalize_plan:    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>',
+  heuristic_scoring:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>',
+};
+
 function renderAiSuggestions(data) {
   const aiSummaryEl = document.getElementById('aiSummary');
-  const aiListEl = document.getElementById('aiList');
-  const mode = data.mode === 'openai' ? 'OpenAI' : 'Fallback';
-  const warning = data.warning ? ` (${data.warning})` : '';
-  aiSummaryEl.textContent = `${data.summary || 'AI soovitus valmis.'} [${mode}]${warning}`;
+  const aiListEl    = document.getElementById('aiList');
+  const aiStepsEl   = document.getElementById('aiSteps');
+  const aiStepsList = document.getElementById('aiStepsList');
+  const aiReasonEl  = document.getElementById('aiReasoning');
+  const aiReasonTxt = document.getElementById('aiReasoningText');
 
+  // Render agent steps
+  const steps = data.steps || [];
+  if (steps.length) {
+    aiStepsList.innerHTML = '';
+    steps.forEach((step, i) => {
+      const row = document.createElement('div');
+      row.className = 'ai-step-row';
+      row.style.animationDelay = `${i * 80}ms`;
+      const icon = STEP_ICONS[step.action] || STEP_ICONS.heuristic_scoring;
+      row.innerHTML = `
+        <div class="ai-step-icon">${icon}</div>
+        <div class="ai-step-body">
+          <div class="ai-step-label">${step.label || step.action}</div>
+          <div class="ai-step-detail">${step.detail || ''}</div>
+        </div>`;
+      aiStepsList.appendChild(row);
+    });
+    aiStepsEl.classList.add('show');
+  }
+
+  // Render reasoning
+  if (data.reasoning) {
+    aiReasonTxt.textContent = data.reasoning;
+    aiReasonEl.classList.add('show');
+  }
+
+  // Render summary
+  const modeLabel = data.mode === 'agent' ? 'Agent' : data.mode === 'heuristic' ? 'Heuristika' : 'AI';
+  const warning = data.warning ? ` ⚠ ${data.warning}` : '';
+  aiSummaryEl.textContent = `${data.summary || 'Soovitused valmis.'}${warning}`;
+
+  // Render course picks
   aiListEl.innerHTML = '';
   const mapByCode = new Map(state.allResults.map(r => [r.code, r]));
   const picks = (data.recommended_courses || []).slice(0, 8);
+
   if (!picks.length) {
-    aiListEl.innerHTML = '<div class="ai-item"><div class="ai-reason">AI ei tagastanud seekord soovitusi.</div></div>';
+    aiListEl.innerHTML = '<div style="color:var(--muted);font-size:13px;padding:12px">Agent ei leidnud sobivaid aineid.</div>';
     return;
   }
 
   for (const pick of picks) {
     const course = mapByCode.get(pick.code) || {};
+    const priority = pick.priority || 'recommended';
     const item = document.createElement('div');
-    item.className = 'ai-item';
+    item.className = `ai-item priority-${priority.replace('-','_')}`;
 
-    const head = document.createElement('div');
-    head.className = 'ai-item-head';
+    const priorityLabels = { 'must-take': 'Peab võtma', 'recommended': 'Soovituslik', 'optional': 'Valikuline' };
 
-    const code = document.createElement('div');
-    code.className = 'ai-code';
-    code.textContent = `${pick.code} ${course.name ? '· ' + course.name : ''}`;
-
-    const score = document.createElement('div');
-    score.className = 'ai-score';
-    score.textContent = `${pick.fit_score ?? 0}/100`;
-
-    head.appendChild(code);
-    head.appendChild(score);
-
-    const reason = document.createElement('div');
-    reason.className = 'ai-reason';
-    reason.textContent = pick.reason || 'Sobib sinu huvidega.';
-
-    const note = document.createElement('div');
-    note.className = 'ai-note';
-    note.textContent = `${pick.timetable_note || ''}${course.time ? ' · ' + course.time : ''}`;
-
-    item.appendChild(head);
-    item.appendChild(reason);
-    item.appendChild(note);
+    item.innerHTML = `
+      <div class="ai-item-head">
+        <div class="ai-code">${pick.code}${course.name ? ' · ' + course.name : ''}</div>
+        <div class="ai-badges">
+          <span class="ai-score">${pick.fit_score ?? 0}/100</span>
+          <span class="ai-priority ${priority}">${priorityLabels[priority] || priority}</span>
+        </div>
+      </div>
+      <div class="ai-reason">${pick.reason || 'Sobib sinu huvidega.'}</div>
+      ${course.time ? `<div class="ai-note">${course.time}</div>` : ''}
+    `;
     aiListEl.appendChild(item);
   }
 }
