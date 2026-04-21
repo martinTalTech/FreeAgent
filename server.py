@@ -10,7 +10,7 @@ This server:
 3. Exposes /ai/recommend endpoint for personalized recommendations
 """
 
-from http.server import HTTPServer, BaseHTTPRequestHandler
+from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from html import unescape as html_unescape
 import json
 import os
@@ -935,7 +935,7 @@ if __name__ == "__main__":
     print("  Stop: Ctrl+C")
     print("=" * 50 + "\n")
 
-    server = HTTPServer(("localhost", PORT), Handler)
+    server = ThreadingHTTPServer(("localhost", PORT), Handler)
     try:
         server.serve_forever()
     except KeyboardInterrupt:
