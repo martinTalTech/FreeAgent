@@ -598,6 +598,76 @@ def _heuristic_recommend(
     }
 
 
+def _call_chat_completion(api_key: str, payload: dict, deployment: str | None = None) -> dict:
+    if AZURE_OPENAI_ENDPOINT:
+        dep_name = deployment or AZURE_OPENAI_DEPLOYMENT or OPENAI_MODEL
+        if not dep_name:
+            raise ValueError("Azure OpenAI deployment name missing")
+        azure_headers = {
+            "api-key": api_key,
+            "Content-Type": "application/json",
+        }
+        version_candidates = []
+        for v in [
+            AZURE_OPENAI_API_VERSION,
+            "2025-01-01-preview",
+            "2024-10-21",
+            "2024-08-01-preview",
+            "2023-12-01-preview",
+            "2023-03-15-preview",
+        ]:
+            vv = str(v or "").strip()
+            if vv and vv not in version_candidates:
+                version_candidates.append(vv)
+
+        dep_errors = []
+        for api_ver in version_candidates:
+            azure_dep_url = (
+                f"{AZURE_OPENAI_ENDPOINT}/openai/deployments/"
+                f"{urllib.parse.quote(dep_name)}/chat/completions"
+                f"?api-version={urllib.parse.quote(api_ver)}"
+            )
+            try:
+                return _http_post_json(
+                    azure_dep_url,
+                    payload,
+                    headers=azure_headers,
+                    timeout=40,
+                )
+            except Exception as dep_exc:
+                dep_errors.append(f"{api_ver}: {dep_exc}")
+
+        azure_v1_url = f"{AZURE_OPENAI_ENDPOINT}/openai/v1/chat/completions"
+        payload_v1 = dict(payload)
+        payload_v1["model"] = dep_name
+        try:
+            return _http_post_json(
+                azure_v1_url,
+                payload_v1,
+                headers=azure_headers,
+                timeout=40,
+            )
+        except Exception as v1_exc:
+            raise ValueError(
+                "Azure OpenAI call failed. "
+                f"Deployment route errors: {' | '.join(dep_errors[:4])}. "
+                f"V1 route error: {v1_exc}. "
+                "Check AZURE_OPENAI_DEPLOYMENT and AZURE_OPENAI_API_VERSION."
+            )
+
+    payload_openai = dict(payload)
+    payload_openai["model"] = deployment or OPENAI_MODEL
+    return _http_post_json(
+        OPENAI_API,
+        payload_openai,
+        headers={
+            "Authorization": f"Bearer {api_key}",
+            "Content-Type": "application/json",
+        },
+        timeout=40,
+    )
+
+
 def _openai_recommend(
     api_key: str,
     interests: str,
@@ -681,75 +751,7 @@ def _openai_recommend(
             {"role": "user", "content": json.dumps(user_payload, ensure_ascii=False)},
         ],
     }
-    if AZURE_OPENAI_ENDPOINT:
-        deployment = AZURE_OPENAI_DEPLOYMENT or OPENAI_MODEL
-        if not deployment:
-            raise ValueError("Azure OpenAI deployment name missing")
-        azure_headers = {
-            "api-key": api_key,
-            "Content-Type": "application/json",
-        }
-        version_candidates = []
-        for v in [
-            AZURE_OPENAI_API_VERSION,
-            "2025-01-01-preview",
-            "2024-10-21",
-            "2024-08-01-preview",
-            "2023-12-01-preview",
-            "2023-03-15-preview",
-        ]:
-            vv = str(v or "").strip()
-            if vv and vv not in version_candidates:
-                version_candidates.append(vv)
-
-        response_data = None
-        dep_errors = []
-        for api_ver in version_candidates:
-            azure_dep_url = (
-                f"{AZURE_OPENAI_ENDPOINT}/openai/deployments/"
-                f"{urllib.parse.quote(deployment)}/chat/completions"
-                f"?api-version={urllib.parse.quote(api_ver)}"
-            )
-            try:
-                response_data = _http_post_json(
-                    azure_dep_url,
-                    payload,
-                    headers=azure_headers,
-                    timeout=40,
-                )
-                break
-            except Exception as dep_exc:
-                dep_errors.append(f"{api_ver}: {dep_exc}")
-
-        if response_data is None:
-            azure_v1_url = f"{AZURE_OPENAI_ENDPOINT}/openai/v1/chat/completions"
-            payload_v1 = dict(payload)
-            payload_v1["model"] = deployment
-            try:
-                response_data = _http_post_json(
-                    azure_v1_url,
-                    payload_v1,
-                    headers=azure_headers,
-                    timeout=40,
-                )
-            except Exception as v1_exc:
-                raise ValueError(
-                    "Azure OpenAI call failed. "
-                    f"Deployment route errors: {' | '.join(dep_errors[:4])}. "
-                    f"V1 route error: {v1_exc}. "
-                    "Check AZURE_OPENAI_DEPLOYMENT and AZURE_OPENAI_API_VERSION."
-                )
-    else:
-        payload["model"] = OPENAI_MODEL
-        response_data = _http_post_json(
-            OPENAI_API,
-            payload,
-            headers={
-                "Authorization": f"Bearer {api_key}",
-                "Content-Type": "application/json",
-            },
-            timeout=40,
-        )
+    response_data = _call_chat_completion(api_key, payload)
 
     content = (
         response_data.get("choices", [{}])[0]
@@ -814,6 +816,126 @@ def _openai_recommend(
     }
 
 
+def _openai_chat_answer(
+    api_key: str,
+    question: str,
+    history: list[dict],
+    group_code: str,
+    semester: int,
+    interests: str,
+    mandatory_courses: list[dict],
+    candidates: list[dict],
+) -> dict:
+    system_prompt = (
+        "You are a TalTech study planning assistant. "
+        "Answer in Estonian unless user asks otherwise. "
+        "Use the provided course context and explain concrete reasons, prerequisites and timetable fit. "
+        "Be concise but specific."
+    )
+    compact_courses = []
+    for c in candidates[:80]:
+        compact_courses.append(
+            {
+                "code": c.get("code", ""),
+                "name": c.get("name", ""),
+                "name_en": c.get("name_en", ""),
+                "time": c.get("time", ""),
+                "courseKind": c.get("courseKind", ""),
+                "free": bool(c.get("free")),
+                "isOnline": bool(c.get("isOnline")),
+                "description_hint": _clip(str(c.get("description_hint", "")), 220),
+            }
+        )
+
+    messages = [{"role": "system", "content": system_prompt}]
+    for row in (history or [])[-8:]:
+        role = str(row.get("role", "")).strip().lower()
+        if role not in {"user", "assistant"}:
+            continue
+        content = str(row.get("content", "")).strip()
+        if not content:
+            continue
+        messages.append({"role": role, "content": _clip(content, 1200)})
+
+    user_payload = {
+        "student_context": {
+            "group_code": group_code,
+            "semester": semester,
+            "interests": interests,
+        },
+        "mandatory_courses": mandatory_courses[:20],
+        "candidate_courses": compact_courses,
+        "question": question,
+        "instruction": "Answer clearly and directly. If user asks about one course, include why it fits and when to take it.",
+    }
+    messages.append({"role": "user", "content": json.dumps(user_payload, ensure_ascii=False)})
+
+    payload = {
+        "temperature": 0.25,
+        "messages": messages,
+    }
+    response_data = _call_chat_completion(api_key, payload)
+    content = (
+        response_data.get("choices", [{}])[0]
+        .get("message", {})
+        .get("content", "")
+    )
+    answer = _clip(str(content).strip(), 2200)
+    if not answer:
+        raise ValueError("LLM returned empty chat answer")
+    return {"mode": "openai", "answer": answer}
+
+
+def _heuristic_chat_answer(question: str, candidates: list[dict], mandatory_courses: list[dict]) -> dict:
+    q = (question or "").lower()
+    codes = _extract_course_codes(question or "")
+    if not codes and candidates:
+        if "parim" in q or "soovita" in q:
+            top = [c.get("code", "") for c in candidates[:3] if c.get("code")]
+            if top:
+                return {
+                    "mode": "heuristic",
+                    "answer": (
+                        f"LLM pole hetkel saadaval. Kiirsoovitus: {', '.join(top)}. "
+                        "Küsi konkreetse ainekoodi kohta ja ma selgitan sobivust detailsemalt."
+                    ),
+                }
+        return {
+            "mode": "heuristic",
+            "answer": (
+                "LLM pole hetkel saadaval. Küsi konkreetset ainekoodi (nt ICD0001), "
+                "siis annan selle kohta kontekstipõhise seletuse olemasolevate andmete põhjal."
+            ),
+        }
+
+    by_code = {str(c.get("code", "")).upper(): c for c in candidates}
+    lines = []
+    for code in codes[:3]:
+        row = by_code.get(code)
+        if not row:
+            lines.append(f"{code}: seda ainet praeguses filtritud nimekirjas ei leitud.")
+            continue
+        why = []
+        if row.get("free"):
+            why.append("sobib tunniplaani")
+        if row.get("courseKind") == "oma":
+            why.append("on sinu õppekava suunaga seotud")
+        if row.get("isOnline"):
+            why.append("sisaldab online-komponenti")
+        hint = str(row.get("description_hint", "")).strip()
+        hint_txt = _clip(hint, 180) if hint else "kirjeldus puudub"
+        lines.append(
+            f"{code} ({row.get('name', code)}): "
+            f"{', '.join(why) if why else 'sobivus vajab täpsustamist'}. "
+            f"Lisainfo: {hint_txt}."
+        )
+    if mandatory_courses:
+        m_codes = [m.get("code", "") for m in mandatory_courses if m.get("code")]
+        if m_codes:
+            lines.append(f"Kohustuslike ainete kontekst: {', '.join(m_codes[:6])}.")
+    return {"mode": "heuristic", "answer": " ".join(lines)}
+
+
 class Handler(BaseHTTPRequestHandler):
     def log_message(self, fmt, *args):
         print(f"  {self.command} {self.path} -> {args[1] if len(args) > 1 else ''}")
@@ -859,6 +981,9 @@ class Handler(BaseHTTPRequestHandler):
 
         if self.path == "/ai/recommend":
             self._handle_ai_recommend(body)
+            return
+        if self.path == "/ai/chat":
+            self._handle_ai_chat(body)
             return
 
         self.send_response(404)
@@ -1026,6 +1151,91 @@ class Handler(BaseHTTPRequestHandler):
                 f"Eeldusainete puudumise tõttu peitsin {len(blocked_by_prereq)} ainet.",
                 520,
             )
+        self._send_json(200, fallback)
+
+    def _handle_ai_chat(self, body: bytes):
+        try:
+            req = json.loads(body.decode("utf-8"))
+        except Exception:
+            self._send_json(400, {"error": "Invalid JSON body"})
+            return
+
+        question = str(req.get("question", "")).strip()
+        if not question:
+            self._send_json(400, {"error": "question is required"})
+            return
+        group_code = str(req.get("group_code", "")).strip().upper()
+        semester = int(req.get("semester", 1) or 1)
+        interests = str(req.get("interests", "")).strip()
+        history = req.get("history") or []
+        mandatory_courses = req.get("mandatory_courses") or []
+        candidates = req.get("candidates") or []
+
+        normalized_candidates = []
+        for c in candidates[:140]:
+            if not isinstance(c, dict):
+                continue
+            code = str(c.get("code", "")).strip().upper()
+            if not code:
+                continue
+            normalized_candidates.append(
+                {
+                    "code": code,
+                    "name": str(c.get("name", "")).strip(),
+                    "name_en": str(c.get("name_en", "")).strip(),
+                    "time": str(c.get("time", "")).strip(),
+                    "courseKind": str(c.get("courseKind", "")).strip(),
+                    "free": bool(c.get("free")),
+                    "isOnline": bool(c.get("isOnline")),
+                    "description_hint": str(c.get("descriptionHint", c.get("description_hint", ""))).strip(),
+                }
+            )
+
+        normalized_mandatory = []
+        for m in mandatory_courses[:30]:
+            if not isinstance(m, dict):
+                continue
+            code = str(m.get("code", "")).strip().upper()
+            if not code:
+                continue
+            normalized_mandatory.append(
+                {
+                    "code": code,
+                    "name": str(m.get("name", "")).strip(),
+                    "time": str(m.get("time", "")).strip(),
+                }
+            )
+
+        azure_api_key = os.getenv("AZURE_OPENAI_API_KEY", "").strip() or os.getenv("AZURE_API_KEY", "").strip()
+        api_key = azure_api_key or os.getenv("OPENAI_API_KEY", "").strip()
+        if api_key:
+            try:
+                out = _openai_chat_answer(
+                    api_key=api_key,
+                    question=question,
+                    history=history if isinstance(history, list) else [],
+                    group_code=group_code,
+                    semester=semester,
+                    interests=interests,
+                    mandatory_courses=normalized_mandatory,
+                    candidates=normalized_candidates,
+                )
+                self._send_json(200, out)
+                return
+            except Exception as exc:
+                fallback = _heuristic_chat_answer(question, normalized_candidates, normalized_mandatory)
+                fallback["warning"] = _clip(
+                    f"OpenAI call failed, fallback used: {type(exc).__name__}: {exc}",
+                    700,
+                )
+                self._send_json(200, fallback)
+                return
+
+        fallback = _heuristic_chat_answer(question, normalized_candidates, normalized_mandatory)
+        fallback["warning"] = (
+            "OpenAI pole seadistatud. Sea AZURE_OPENAI_API_KEY + AZURE_OPENAI_ENDPOINT "
+            "+ AZURE_OPENAI_DEPLOYMENT (.env.local või shell env), et kasutada päris LLM-i."
+        )
         self._send_json(200, fallback)
 
     def _serve_file(self, filename: str, ctype: str):

@@ -809,6 +809,73 @@
     color: var(--text-dim);
     line-height: 1.5;
   }
+  .ai-chat {
+    margin-top: 14px;
+    border: 1px solid var(--border-soft);
+    border-radius: var(--radius-sm);
+    background: rgba(255,255,255,0.02);
+    padding: 10px;
+  }
+  .ai-chat-log {
+    display: grid;
+    gap: 8px;
+    max-height: 240px;
+    overflow-y: auto;
+    padding-right: 2px;
+  }
+  .ai-chat-msg {
+    border: 1px solid var(--border-soft);
+    border-radius: 8px;
+    padding: 8px 10px;
+    font-size: 12px;
+    line-height: 1.5;
+    color: var(--text-dim);
+    background: rgba(255,255,255,0.01);
+    white-space: pre-wrap;
+  }
+  .ai-chat-msg.user {
+    border-color: rgba(34,211,238,0.35);
+    background: rgba(34,211,238,0.08);
+  }
+  .ai-chat-msg.assistant {
+    border-color: rgba(99,102,241,0.35);
+    background: rgba(99,102,241,0.08);
+  }
+  .ai-chat-row {
+    margin-top: 10px;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 8px;
+    align-items: center;
+  }
+  .ai-chat-row input {
+    min-height: 42px;
+  }
+  .slot-status {
+    font-family: var(--mono);
+    font-size: 10px;
+    border: 1px solid;
+    border-radius: 100px;
+    padding: 2px 8px;
+    margin-left: 8px;
+    white-space: nowrap;
+  }
+  .slot-status.ok {
+    color: var(--green-soft);
+    border-color: rgba(16,185,129,0.55);
+    background: rgba(16,185,129,0.12);
+  }
+  .slot-status.blocked {
+    color: var(--red-soft);
+    border-color: rgba(239,68,68,0.45);
+    background: rgba(239,68,68,0.12);
+  }
+  .modal-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+  }
   .completed-tools {
     display: grid;
     gap: 10px;
@@ -846,6 +913,65 @@
     min-height: 0;
   }
   .completed-chip button:hover { color: var(--text); }
+  .completed-prev-wrap {
+    border: 1px solid var(--border-soft);
+    border-radius: var(--radius-sm);
+    background: rgba(255,255,255,0.02);
+    padding: 10px;
+    margin-top: 2px;
+  }
+  .completed-prev-title {
+    font-size: 11px;
+    font-family: var(--mono);
+    color: var(--muted-2);
+    margin-bottom: 8px;
+  }
+  .completed-prev-list {
+    display: grid;
+    gap: 6px;
+    max-height: 220px;
+    overflow-y: auto;
+  }
+  .completed-prev-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 6px 8px;
+    border: 1px solid var(--border-soft);
+    border-radius: 8px;
+    background: rgba(255,255,255,0.01);
+    font-size: 12px;
+    color: var(--text-dim);
+  }
+  .completed-prev-item code {
+    font-family: var(--mono);
+    color: var(--accent-3);
+    font-size: 11px;
+  }
+  .planned-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+  }
+  .planned-table th,
+  .planned-table td {
+    border-bottom: 1px solid var(--border-soft);
+    padding: 8px 6px;
+    text-align: left;
+    vertical-align: top;
+  }
+  .planned-table th {
+    color: var(--muted-2);
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+  }
+  .planned-table td code {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--accent-3);
+  }
   @media (max-width: 900px) {
     .completed-row { grid-template-columns: 1fr; }
     .variant-row { grid-template-columns: 1fr; }
@@ -1200,16 +1326,16 @@
         <div class="field">
           <label for="semester">Semester</label>
           <select id="semester">
-            <option value="1">1. semester</option>
-            <option value="2">2. semester</option>
-            <option value="3">3. semester (kevad)</option>
-            <option value="4">4. semester</option>
-            <option value="5">5. semester</option>
-            <option value="6">6. semester</option>
-            <option value="7">7. semester</option>
-            <option value="8">8. semester</option>
-            <option value="9">9. semester</option>
-            <option value="10">10. semester</option>
+            <option value="1">1. semester (sügis)</option>
+            <option value="2">2. semester (kevad)</option>
+            <option value="3">3. semester (sügis)</option>
+            <option value="4">4. semester (kevad)</option>
+            <option value="5">5. semester (sügis)</option>
+            <option value="6">6. semester (kevad)</option>
+            <option value="7">7. semester (sügis)</option>
+            <option value="8">8. semester (kevad)</option>
+            <option value="9">9. semester (sügis)</option>
+            <option value="10">10. semester (kevad)</option>
           </select>
         </div>
         <button class="btn btn-primary" onclick="startAgent()">
@@ -1317,6 +1443,10 @@
         </div>
         <datalist id="completedCourseOptions"></datalist>
         <div id="completedCourseChipList" class="completed-chip-list"></div>
+        <div id="prevSemesterCompletedWrap" class="completed-prev-wrap" style="display:none">
+          <div id="prevSemesterCompletedTitle" class="completed-prev-title"></div>
+          <div id="prevSemesterCompletedList" class="completed-prev-list"></div>
+        </div>
         <label for="completedCoursesInput">Või sisesta käsitsi ainekoodid (koma või tühikuga)</label>
         <textarea id="completedCoursesInput" placeholder="Nt: ICY0030, ICA0001, MAT0010"></textarea>
       </div>
@@ -1368,6 +1498,19 @@
       <div id="timetableGrid"></div>
     </div>
 
+    <div class="card" id="plannedCard" style="display:none;margin-top:12px">
+      <div class="card-title">Tunniplaani lisatud ained</div>
+      <div id="plannedCourseEmpty" style="font-size:12px;color:var(--muted);display:none">Ühtegi ainet pole veel tunniplaani lisatud.</div>
+      <div id="plannedCourseTableWrap" style="overflow:auto;display:none">
+        <table class="planned-table">
+          <thead>
+            <tr><th>Ainekood</th><th>Nimi</th><th>Valitud ajad</th><th></th></tr>
+          </thead>
+          <tbody id="plannedCourseTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+
     <!-- Results -->
     <div style="margin-top:24px" id="resultsSection">
       <div class="stats-row">
@@ -1407,6 +1550,17 @@
       <div id="aiSwapList" class="ai-swap-list"></div>
       <div class="ai-title" style="margin-top:14px">AI soovitused tulevikuks</div>
       <div id="aiFutureList" class="ai-list"></div>
+
+      <div class="ai-title" style="margin-top:14px">AI Chat</div>
+      <div class="ai-chat">
+        <div id="aiChatLog" class="ai-chat-log">
+          <div class="ai-chat-msg assistant">Küsi ükskõik millise aine kohta täpsemalt (sisu, miks see sobib, millal võtta, mille vastu vahetada).</div>
+        </div>
+        <div class="ai-chat-row">
+          <input id="aiChatInput" type="text" placeholder="Nt: Selgita miks ICD0001 sobib mu AI huvidega">
+          <button class="btn btn-secondary" type="button" onclick="sendAiChatMessage()">Saada</button>
+        </div>
+      </div>
     </div>
 
     <div class="actions" style="margin-top:24px">
@@ -1446,6 +1600,11 @@ let state = {
   completedSearchSuggestions: [],
   completedSuggestionMap: new Map(),
   ownCurriculumCatalog: [],
+  prevSemesterCourseRows: [],
+  plannedCourses: [],
+  freeResults: [],
+  aiChatHistory: [],
+  selectedAutoPlanCourse: '',
 };
 
 // ── Navigation ─────────────────────────────────────────────────────────────
@@ -1492,6 +1651,12 @@ function overlap(a, b) {
   return toMin(a.start) < toMin(b.end) && toMin(b.start) < toMin(a.end);
 }
 function dayName(d) { return ['','E','T','K','N','R'][d] || '?'; }
+function semesterSeasonByNumber(sem) {
+  return (Number(sem) % 2 === 1) ? 'fall' : 'spring';
+}
+function semesterSeasonLabel(sem) {
+  return semesterSeasonByNumber(sem) === 'fall' ? 'sügis' : 'kevad';
+}
 function slotKeyForVariant(e) {
   return `${e.type || 'OTHER'}|${e.dow}|${e.start}|${e.end}`;
 }
@@ -1583,6 +1748,168 @@ function buildOwnCurriculumCatalog() {
   state.ownCurriculumCatalog = [...map.values()].sort((a, b) => a.code.localeCompare(b.code));
 }
 
+function buildPreviousSemesterCatalog() {
+  const sem = Number(state.semester || 1);
+  const prevSem = sem - 1;
+  if (prevSem < 1) {
+    state.prevSemesterCourseRows = [];
+    return;
+  }
+  const targetSeason = semesterSeasonByNumber(prevSem);
+  const map = new Map();
+  for (const e of state.timetableEvents || []) {
+    if (!e.course_code) continue;
+    if (!map.has(e.course_code)) {
+      map.set(e.course_code, {
+        code: e.course_code,
+        name: e.course_name || e.course_name_en || e.course_code,
+        dts: [],
+      });
+    }
+    const row = map.get(e.course_code);
+    row.dts.push(...(e.dts || []));
+  }
+  const rows = [];
+  for (const row of map.values()) {
+    const label = semesterLabel([...new Set(row.dts)].sort());
+    const season = label?.cls === 'sem-fall' ? 'fall' : label?.cls === 'sem-spring' ? 'spring' : '';
+    rows.push({
+      code: row.code,
+      name: row.name,
+      season,
+      seasonLabel: label?.label || '',
+    });
+  }
+  let filtered = rows.filter(r => r.season === targetSeason);
+  if (!filtered.length) {
+    // Fallback if API does not expose dates for all rows.
+    filtered = rows.slice(0, 30);
+  }
+  state.prevSemesterCourseRows = filtered
+    .sort((a, b) => a.code.localeCompare(b.code))
+    .slice(0, 60);
+}
+
+function syncPrevSemesterCheckboxes() {
+  const selected = new Set((state.completedCourseChoices || []).map(x => x.code));
+  document.querySelectorAll('#prevSemesterCompletedList input[type="checkbox"][data-code]').forEach(cb => {
+    const code = String(cb.getAttribute('data-code') || '').toUpperCase();
+    cb.checked = selected.has(code);
+  });
+}
+
+function renderPreviousSemesterChecklist() {
+  const wrap = document.getElementById('prevSemesterCompletedWrap');
+  const titleEl = document.getElementById('prevSemesterCompletedTitle');
+  const listEl = document.getElementById('prevSemesterCompletedList');
+  if (!wrap || !titleEl || !listEl) return;
+
+  const sem = Number(state.semester || 1);
+  const prevSem = sem - 1;
+  if (prevSem < 1) {
+    wrap.style.display = 'none';
+    listEl.innerHTML = '';
+    return;
+  }
+  const seasonTxt = semesterSeasonLabel(prevSem);
+  const rows = state.prevSemesterCourseRows || [];
+  if (!rows.length) {
+    wrap.style.display = 'none';
+    listEl.innerHTML = '';
+    return;
+  }
+  titleEl.textContent = `Eelmise semestri (${prevSem}. semester, ${seasonTxt}) tüüpkava ained`;
+  listEl.innerHTML = '';
+  for (const row of rows) {
+    const item = document.createElement('label');
+    item.className = 'completed-prev-item';
+    const isChecked = state.completedCourseChoices.some(x => x.code === row.code);
+    item.innerHTML = `
+      <input type="checkbox" data-code="${row.code}" ${isChecked ? 'checked' : ''}>
+      <span><code>${row.code}</code> · ${row.name || row.code}</span>
+    `;
+    item.querySelector('input')?.addEventListener('change', (ev) => {
+      if (ev.target.checked) {
+        addCompletedCourseChoice({ code: row.code, name: row.name || row.code });
+      } else {
+        state.completedCourseChoices = state.completedCourseChoices.filter(x => x.code !== row.code);
+        renderCompletedCourseChips();
+      }
+    });
+    listEl.appendChild(item);
+  }
+  wrap.style.display = 'block';
+}
+
+function getDisplayTimetableCourses() {
+  return (state.plannedCourses || []).length ? state.plannedCourses : (state.freeResults || []);
+}
+
+function renderPlannedCourseTable() {
+  const card = document.getElementById('plannedCard');
+  const empty = document.getElementById('plannedCourseEmpty');
+  const wrap = document.getElementById('plannedCourseTableWrap');
+  const body = document.getElementById('plannedCourseTableBody');
+  if (!card || !empty || !wrap || !body) return;
+  const rows = state.plannedCourses || [];
+  card.style.display = 'block';
+  if (!rows.length) {
+    empty.style.display = 'block';
+    wrap.style.display = 'none';
+    body.innerHTML = '';
+    return;
+  }
+  empty.style.display = 'none';
+  wrap.style.display = 'block';
+  body.innerHTML = '';
+  for (const row of rows) {
+    const tr = document.createElement('tr');
+    const times = (row.events || []).map(s => `${dayName(s.dow)} ${s.start}-${s.end} (${evTypeLabel(s.type)})`).join(' · ');
+    tr.innerHTML = `
+      <td><code>${row.code}</code></td>
+      <td>${row.name || row.code}</td>
+      <td>${times || 'paindlik'}</td>
+      <td><button class="btn btn-ghost" type="button" data-remove="${row.code}">Eemalda</button></td>
+    `;
+    tr.querySelector('button[data-remove]')?.addEventListener('click', () => {
+      state.plannedCourses = state.plannedCourses.filter(x => x.code !== row.code);
+      renderPlannedCourseTable();
+      renderTimetable(state.mandatoryEvents, getDisplayTimetableCourses());
+    });
+    body.appendChild(tr);
+  }
+}
+
+function addCourseToPlannedSchedule(code, withScroll) {
+  const course = resolveCourseForModal(code);
+  if (!course) return;
+  const plan = buildCompatibleSlotPlan(course.allSlots || [], state.timePreferences || readTimePreferences());
+  if (!plan.canFit) {
+    alert(`Aine ${code} jaoks ei leidunud kohustuslike ainetega sobivat slotikombinatsiooni.`);
+    return;
+  }
+  const plannedRow = {
+    ...course,
+    free: true,
+    blockedSlots: plan.blockedSlots || [],
+    events: (plan.selectedSlots && plan.selectedSlots.length) ? plan.selectedSlots : (course.events || course.allSlots || []),
+    timePreferenceScore: plan.score ?? 100,
+    timePreferenceNotes: plan.notes || [],
+  };
+  const idx = state.plannedCourses.findIndex(x => x.code === plannedRow.code);
+  if (idx >= 0) state.plannedCourses[idx] = plannedRow;
+  else state.plannedCourses.push(plannedRow);
+
+  renderPlannedCourseTable();
+  renderTimetable(state.mandatoryEvents, getDisplayTimetableCourses());
+  document.getElementById('ttCard').style.display = 'block';
+  const msg = document.getElementById('agentMsg3');
+  const txt = document.getElementById('agentMsg3Text');
+  txt.textContent = `Aine ${code} lisati tunniplaani. Nüüd saad lisada järgmisi aineid samamoodi või eemaldada tabelist.`;
+  msg.style.display = 'block';
+  if (withScroll) document.getElementById('ttCard').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
 function buildCourseVariantGroups(courseCode) {
   const events = (state.timetableEvents || []).filter(e => e.course_code === courseCode && e.dow >= 1 && e.start && e.end);
   const byType = new Map();
@@ -1661,11 +1988,15 @@ async function startAgent() {
   state.groupCode = code;
   state.semester  = sem;
   state.completedCourseChoices = [];
+  state.prevSemesterCourseRows = [];
+  state.plannedCourses = [];
+  state.freeResults = [];
   const completedInput = document.getElementById('completedCoursesInput');
   const completedSearch = document.getElementById('completedCourseSearch');
   if (completedInput) completedInput.value = '';
   if (completedSearch) completedSearch.value = '';
   updateCompletedDatalist([]);
+  renderPlannedCourseTable();
   goStep(1);
 
   document.getElementById('loadingCourses').style.display = 'flex';
@@ -1700,6 +2031,8 @@ async function startAgent() {
 
     renderMandatoryCourseList(courses);
     buildOwnCurriculumCatalog();
+    buildPreviousSemesterCatalog();
+    renderPreviousSemesterChecklist();
     renderCompletedCourseChips();
 
     document.getElementById('mandatoryCard').style.display = 'block';
@@ -1847,6 +2180,74 @@ function evaluateTimePreferences(slots, prefs) {
   return { matches: true, score: 100, notes };
 }
 
+function slotTypeKey(slot) {
+  return String(slot?.type || 'OTHER').toUpperCase();
+}
+
+function slotConflictWithMandatory(slot) {
+  return (state.mandatoryEvents || []).some(m => overlap(slot, m));
+}
+
+function buildCompatibleSlotPlan(slots, prefs) {
+  const fixed = (slots || []).filter(s => s && s.dow >= 1 && s.start && s.end);
+  if (!fixed.length) {
+    return { canFit: true, selectedSlots: [], blockedSlots: [], score: 100, notes: ['paindlik aeg'] };
+  }
+
+  const blockedSlots = fixed.filter(slotConflictWithMandatory);
+  const allowedSlots = fixed.filter(s => !slotConflictWithMandatory(s));
+  const byType = new Map();
+  for (const s of allowedSlots) {
+    const key = slotTypeKey(s);
+    if (!byType.has(key)) byType.set(key, []);
+    byType.get(key).push(s);
+  }
+
+  const requiredTypes = [...new Set(fixed.map(slotTypeKey))];
+  for (const t of requiredTypes) {
+    if (!byType.has(t) || !byType.get(t).length) {
+      return { canFit: false, selectedSlots: [], blockedSlots, score: 0, notes: [`puudub sobiv slot: ${evTypeLabel(t)}`] };
+    }
+  }
+
+  const typeOrder = requiredTypes
+    .map(t => ({ type: t, options: byType.get(t) || [] }))
+    .sort((a, b) => a.options.length - b.options.length);
+
+  let best = null;
+  function dfs(idx, chosen) {
+    if (idx >= typeOrder.length) {
+      const prefEval = evaluateTimePreferences(chosen, prefs || []);
+      if (!prefEval.matches) return;
+      const score = (prefEval.score || 0) + chosen.length * 2;
+      if (!best || score > best.score) {
+        best = { score, selectedSlots: [...chosen], notes: prefEval.notes || [] };
+      }
+      return;
+    }
+    const group = typeOrder[idx];
+    const options = [...group.options].sort((a, b) => (a.dow - b.dow) || (toMin(a.start) - toMin(b.start)));
+    for (const slot of options) {
+      if (chosen.some(c => overlap(c, slot))) continue;
+      chosen.push(slot);
+      dfs(idx + 1, chosen);
+      chosen.pop();
+    }
+  }
+  dfs(0, []);
+
+  if (!best) {
+    return { canFit: false, selectedSlots: [], blockedSlots, score: 0, notes: ['sobivat slotikombinatsiooni ei leitud'] };
+  }
+  return {
+    canFit: true,
+    selectedSlots: best.selectedSlots,
+    blockedSlots,
+    score: Math.max(0, Math.min(100, best.score)),
+    notes: best.notes,
+  };
+}
+
 // ── Step 2 → 3: Search ────────────────────────────────────────────────────
 async function runSearch() {
   goStep(3);
@@ -1859,12 +2260,15 @@ async function runSearch() {
   state.aiSuggestions = [];
   state.aiSummary = '';
   state.aiMode = '';
+  state.aiChatHistory = [];
   document.getElementById('aiSummary').textContent = 'AI soovitused ilmuvad siia pärast otsingut.';
   document.getElementById('aiPrereqInfo').style.display = 'none';
   document.getElementById('aiPrereqInfo').textContent = '';
   document.getElementById('aiList').innerHTML = '';
   document.getElementById('aiSwapList').innerHTML = '';
   document.getElementById('aiFutureList').innerHTML = '';
+  const aiChatLog = document.getElementById('aiChatLog');
+  if (aiChatLog) aiChatLog.innerHTML = '<div class="ai-chat-msg assistant">Küsi ükskõik millise aine kohta täpsemalt (sisu, miks see sobib, millal võtta, mille vastu vahetada).</div>';
 
   const mandCodes = state.confirmedCodes;
   const timePreferences = readTimePreferences();
@@ -1923,21 +2327,22 @@ async function runSearch() {
     loadTxt.textContent = 'Kontrollin konflikte…';
 
     const results = [];
+    const totalChecked = electiveMap.size;
     for (const [code, events] of electiveMap) {
       const fixedEvents = events.filter(e => e.dow !== -1 && e.start);
-      const hasConflict = fixedEvents.some(e => state.mandatoryEvents.some(m => overlap(e, m)));
       const info = electiveInfo.get(code);
-      const rep  = fixedEvents[0];
 
       if (activeChip === 'loeng' && !events.some(e => (e.type || '').includes('_L'))) continue;
       if (activeChip === 'online' && !events.some(e => e.isDistance === true)) continue;
 
-      // Deduplicate slots by dow+start+type
-      const slotKey = e => `${e.dow}|${e.start}|${e.type}|${e.weekType}`;
+      // Deduplicate slots by full slot identity
+      const slotKey = e => `${e.dow}|${e.start}|${e.end}|${e.type}|${e.weekType}|${(e.weekCodes || []).join(',')}`;
       const seenSlots = new Set();
       const uniqueSlots = fixedEvents.filter(e => { const k=slotKey(e); if(seenSlots.has(k))return false; seenSlots.add(k); return true; });
-      const prefEval = evaluateTimePreferences(uniqueSlots, timePreferences);
-      if (!prefEval.matches) continue;
+      const slotPlan = buildCompatibleSlotPlan(uniqueSlots, timePreferences);
+      if (!slotPlan.canFit) continue;
+      const chosenSlots = slotPlan.selectedSlots || [];
+      const rep  = chosenSlots[0] || uniqueSlots[0];
 
       // Build sgs list
       const sgMap = electiveSgs.get(code);
@@ -1958,36 +2363,40 @@ async function runSearch() {
 
       results.push({
         code, name: info.name, name_en: info.name_en,
-        free: !hasConflict,
+        free: true,
         courseKind, isOnline, allDts, allTeachers, allRooms,
         allSgs, allSlots: uniqueSlots,
+        blockedSlots: slotPlan.blockedSlots || [],
         descriptionHint,
-        timePreferenceScore: prefEval.score,
-        timePreferenceNotes: prefEval.notes,
+        timePreferenceScore: slotPlan.score ?? 100,
+        timePreferenceNotes: slotPlan.notes || [],
         time: rep ? `${dayName(rep.dow)} ${rep.start}–${rep.end}` : 'paindlik',
         dow: rep?.dow ?? -1, start: rep?.start, end: rep?.end,
         weekCodes: rep?.weekCodes ?? [], weekType: rep?.weekType ?? '',
-        events: uniqueSlots,
+        events: chosenSlots.length ? chosenSlots : uniqueSlots,
       });
     }
 
     state.allResults = results;
     loading.style.display = 'none';
 
-    const free     = results.filter(r => r.free);
-    const conflict = results.filter(r => !r.free);
+    const free = results.filter(r => r.free);
+    state.freeResults = free;
+    state.plannedCourses = [];
+    renderPlannedCourseTable();
+    const conflictCount = Math.max(0, totalChecked - results.length);
     const prefTxt = timePreferences.length ? ` Arvestasin ${timePreferences.length} ajaploki eelistust.` : '';
 
     document.getElementById('agentMsg3Text').textContent =
-      `Kontrollisin ${results.length} valikainete tunniplaane. Leidsin ${free.length} konfliktivaba ainet. `+
-      `${conflict.length} ainel esines konflikt sinu kohustuslike tundidega.${prefTxt}`;
+      `Kontrollisin ${totalChecked} valikainete tunniplaane. Leidsin ${free.length} konfliktivaba ainet. `+
+      `${conflictCount} kursusel ei leidunud sobivat slotikombinatsiooni sinu kohustuslike tundidega.${prefTxt}`;
     document.getElementById('agentMsg3').style.display = 'block';
 
-    renderTimetable(state.mandatoryEvents, free);
+    renderTimetable(state.mandatoryEvents, getDisplayTimetableCourses());
     document.getElementById('ttCard').style.display = 'block';
 
     document.getElementById('freeCount').textContent  = free.length;
-    document.getElementById('conflictCount').textContent = `${conflict.length} konfliktsed peidetud · ${results.length} kokku kontrollitud`;
+    document.getElementById('conflictCount').textContent = `${conflictCount} kursust peidetud (slotikonflikt või ajafiltri mittesobivus) · ${totalChecked} kokku kontrollitud`;
     renderResults(results, 'all');
     const interests = (document.getElementById('interestInput').value || '').trim();
     if (interests && results.length) {
@@ -2106,9 +2515,9 @@ function resolveCourseForModal(code) {
   if (!code) return null;
   const fromResults = (state.allResults || []).find(r => r.code === code);
   if (fromResults) return fromResults;
-  const fromMandatory = buildModalCourseFromEvents(code, state.mandatoryEvents || []);
-  if (fromMandatory) return fromMandatory;
-  return buildModalCourseFromEvents(code, state.timetableEvents || []);
+  const fromFullTimetable = buildModalCourseFromEvents(code, state.timetableEvents || []);
+  if (fromFullTimetable) return fromFullTimetable;
+  return buildModalCourseFromEvents(code, state.mandatoryEvents || []);
 }
 
 function renderTimetable(mandatory, free) {
@@ -2251,6 +2660,9 @@ function renderResults(results, filter) {
     const kindCls = r.courseKind === 'oma' ? 'kind-own' : r.courseKind === 'teine' ? 'kind-other' : 'kind-free';
     const kindTxt = r.courseKind === 'oma' ? '★ Erialal kohustuslik' : r.courseKind === 'teine' ? 'Teisel erialal kohustuslik' : 'Valikaine';
     const semLbl = semesterLabel(r.allDts);
+    const allSlotCount = (r.allSlots || []).length;
+    const activeSlotCount = (r.events || []).length;
+    const slotNote = allSlotCount ? `${activeSlotCount}/${allSlotCount} sobivat sloti` : 'paindlik aeg';
 
     card.innerHTML = `
       <div class="rc-top">
@@ -2259,6 +2671,7 @@ function renderResults(results, filter) {
       </div>
       <div class="rc-name">${r.name || r.code}</div>
       <div class="rc-time">${r.time}</div>
+      <div class="rc-meta">${slotNote}</div>
       <div class="rc-tags">
         <span class="rc-tag ${kindCls}">${kindTxt}</span>
         ${r.isOnline ? '<span class="rc-tag online">📡 Online</span>' : ''}
@@ -2313,6 +2726,7 @@ function renderCompletedCourseChips() {
     });
     host.appendChild(chip);
   }
+  syncPrevSemesterCheckboxes();
 }
 
 function updateCompletedDatalist(rows) {
@@ -2494,6 +2908,82 @@ async function runAiSuggestions(isAuto) {
   }
 }
 
+function appendAiChatMessage(role, text) {
+  const log = document.getElementById('aiChatLog');
+  if (!log) return;
+  const row = document.createElement('div');
+  row.className = `ai-chat-msg ${role === 'user' ? 'user' : 'assistant'}`;
+  row.textContent = text;
+  log.appendChild(row);
+  log.scrollTop = log.scrollHeight;
+}
+
+async function sendAiChatMessage(forcedQuestion) {
+  const input = document.getElementById('aiChatInput');
+  const question = (forcedQuestion || input?.value || '').trim();
+  if (!question) return;
+  if (input && !forcedQuestion) input.value = '';
+  appendAiChatMessage('user', question);
+  state.aiChatHistory.push({ role: 'user', content: question });
+
+  const payload = {
+    question,
+    group_code: state.groupCode,
+    semester: state.semester,
+    interests: (document.getElementById('interestInput').value || '').trim(),
+    completed_courses: readCompletedCourses(),
+    mandatory_courses: buildMandatoryContext(),
+    candidates: state.allResults.slice(0, 120).map(r => ({
+      code: r.code,
+      name: r.name,
+      name_en: r.name_en,
+      time: r.time,
+      courseKind: r.courseKind,
+      descriptionHint: r.descriptionHint || '',
+      isOnline: !!r.isOnline,
+    })),
+    history: state.aiChatHistory.slice(-10),
+  };
+
+  try {
+    const r = await fetch('/ai/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    const data = await r.json();
+    if (!r.ok) throw new Error(data.error || 'AI chat endpoint error');
+    const modeTag = data.mode === 'openai' ? '[OpenAI]' : '[Fallback]';
+    const warning = data.warning ? `\n\n${data.warning}` : '';
+    const answer = `${modeTag} ${data.answer || 'Vastus puudub.'}${warning}`;
+    appendAiChatMessage('assistant', answer);
+    state.aiChatHistory.push({ role: 'assistant', content: data.answer || '' });
+  } catch (e) {
+    appendAiChatMessage('assistant', `AI chat ebaõnnestus: ${e.message}`);
+  }
+}
+
+function askAiAboutCourse(code) {
+  const course = resolveCourseForModal(code);
+  if (!course) return;
+  closeModal();
+  goStep(3);
+  const text = `Selgita palun täpsemalt, kas aine ${course.code} (${course.name || course.code}) sobib mulle ja miks. Too välja ka millised ajad/slotid oleksid kõige paremad.`;
+  sendAiChatMessage(text);
+  const aiPanel = document.getElementById('aiPanel');
+  if (aiPanel) aiPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function generateScheduleFromModal(code) {
+  addCourseToPlannedSchedule(code, true);
+  state.selectedAutoPlanCourse = code;
+  const msg = document.getElementById('agentMsg3');
+  const txt = document.getElementById('agentMsg3Text');
+  txt.textContent = `Genereerisin sobiva tunniplaani ainele ${code} ja jätsin selle tunniplaani tabelisse alles.`;
+  msg.style.display = 'block';
+  closeModal();
+}
+
 function renderAiSuggestions(data) {
   const aiSummaryEl = document.getElementById('aiSummary');
   const aiListEl = document.getElementById('aiList');
@@ -2630,14 +3120,21 @@ function openModal(result, aiPick) {
     ${semLbl ? `<span class="rc-tag ${semLbl.cls}">${semLbl.label}</span>` : ''}
   `;
 
-  const scheduleRows = (result.allSlots || []).map(s => {
+  const selectedSlotKeys = new Set((result.events || []).map(s => slotKeyForVariant(s)));
+  const blockedSlotKeys = new Set((result.blockedSlots || []).map(s => slotKeyForVariant(s)));
+  const sortedSlots = [...(result.allSlots || [])].sort((a, b) => (a.dow - b.dow) || (toMin(a.start) - toMin(b.start)));
+  const scheduleRows = sortedSlots.map(s => {
     const dayNames = ['','E','T','K','N','R'];
     const wkLbl = weekLabelFromType(s.weekType, s.weekCodes);
     const typeLbl = evTypeLabel(s.type);
     const roomTxt = (s.rooms || []).length ? ` · ${(s.rooms || []).join(', ')}` : '';
+    const slotKey = slotKeyForVariant(s);
+    let statusHtml = '';
+    if (selectedSlotKeys.has(slotKey)) statusHtml = '<span class="slot-status ok">aktiivne slot</span>';
+    else if (blockedSlotKeys.has(slotKey)) statusHtml = '<span class="slot-status blocked">konfliktne slot</span>';
     return `<div class="m-row">
       <span class="m-row-label">${dayNames[s.dow] || '?'} ${s.start}–${s.end}</span>
-      <span class="m-row-val">${typeLbl}${wkLbl.cls !== 'all' ? ' · <span style="color:'+(wkLbl.cls==='odd'?'#fcd34d':'#67e8f9')+'">'+wkLbl.label+'</span>' : ''}${roomTxt}</span>
+      <span class="m-row-val">${typeLbl}${wkLbl.cls !== 'all' ? ' · <span style="color:'+(wkLbl.cls==='odd'?'#fcd34d':'#67e8f9')+'">'+wkLbl.label+'</span>' : ''}${roomTxt}${statusHtml}</span>
     </div>`;
   }).join('');
 
@@ -2658,6 +3155,11 @@ function openModal(result, aiPick) {
     <div class="m-name">${result.name || result.code}</div>
     ${result.name_en ? `<div class="m-name-en">${result.name_en}</div>` : ''}
     <div class="m-badges">${badgesHtml}</div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" type="button" onclick="generateScheduleFromModal('${result.code}')">Genereeri sobiv tunniplaan</button>
+      <button class="btn btn-secondary" type="button" onclick="addCourseToPlannedSchedule('${result.code}', true)">Lisa tunniplaani</button>
+      <button class="btn btn-ghost" type="button" onclick="askAiAboutCourse('${result.code}')">Küsi AI-lt selle aine kohta</button>
+    </div>
 
     ${aiPick ? `<div class="m-section">
       <div class="m-section-title">AI põhjendus</div>
@@ -2739,6 +3241,12 @@ document.getElementById('completedCourseSearch')?.addEventListener('keydown', (e
   }
 });
 document.getElementById('completedScope')?.addEventListener('change', () => updateCompletedSuggestions());
+document.getElementById('aiChatInput')?.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') {
+    e.preventDefault();
+    sendAiChatMessage();
+  }
+});
 </script>
 
 <div class="modal-overlay" id="courseModal" onclick="closeModal(event)">
