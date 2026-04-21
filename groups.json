@@ -1,0 +1,2642 @@
+[
+  {
+    "group_code": "IADB40A",
+    "sg_id": 15906,
+    "curriculum_version_id": null,
+    "department_id": 50001,
+    "curriculum_code": "IADB17",
+    "curriculum_name_en": "IT Systems Development"
+  },
+  {
+    "group_code": "IADB40B",
+    "sg_id": 16185,
+    "curriculum_version_id": null,
+    "department_id": 50001,
+    "curriculum_code": "IADB17",
+    "curriculum_name_en": "IT Systems Development"
+  },
+  {
+    "group_code": "IADB41",
+    "sg_id": 15550,
+    "curriculum_version_id": null,
+    "department_id": 50001,
+    "curriculum_code": "IADB17",
+    "curriculum_name_en": "IT Systems Development"
+  },
+  {
+    "group_code": "IADB42",
+    "sg_id": 15551,
+    "curriculum_version_id": null,
+    "department_id": 50001,
+    "curriculum_code": "IADB17",
+    "curriculum_name_en": "IT Systems Development"
+  },
+  {
+    "group_code": "IADB43",
+    "sg_id": 15552,
+    "curriculum_version_id": null,
+    "department_id": 50001,
+    "curriculum_code": "IADB17",
+    "curriculum_name_en": "IT Systems Development"
+  },
+  {
+    "group_code": "IADB44",
+    "sg_id": 15553,
+    "curriculum_version_id": null,
+    "department_id": 50001,
+    "curriculum_code": "IADB17",
+    "curriculum_name_en": "IT Systems Development"
+  },
+  {
+    "group_code": "IADB45",
+    "sg_id": 15554,
+    "curriculum_version_id": null,
+    "department_id": 50001,
+    "curriculum_code": "IADB17",
+    "curriculum_name_en": "IT Systems Development"
+  },
+  {
+    "group_code": "IADB20A",
+    "sg_id": 15689,
+    "curriculum_version_id": null,
+    "department_id": 50001,
+    "curriculum_code": "IADB17",
+    "curriculum_name_en": "IT Systems Development"
+  },
+  {
+    "group_code": "IADB20B",
+    "sg_id": 16184,
+    "curriculum_version_id": null,
+    "department_id": 50001,
+    "curriculum_code": "IADB17",
+    "curriculum_name_en": "IT Systems Development"
+  },
+  {
+    "group_code": "IADB21",
+    "sg_id": 15148,
+    "curriculum_version_id": null,
+    "department_id": 50001,
+    "curriculum_code": "IADB17",
+    "curriculum_name_en": "IT Systems Development"
+  },
+  {
+    "group_code": "IADB22",
+    "sg_id": 15149,
+    "curriculum_version_id": null,
+    "department_id": 50001,
+    "curriculum_code": "IADB17",
+    "curriculum_name_en": "IT Systems Development"
+  },
+  {
+    "group_code": "IADB23",
+    "sg_id": 15150,
+    "curriculum_version_id": null,
+    "department_id": 50001,
+    "curriculum_code": "IADB17",
+    "curriculum_name_en": "IT Systems Development"
+  },
+  {
+    "group_code": "IADB24",
+    "sg_id": 15151,
+    "curriculum_version_id": null,
+    "department_id": 50001,
+    "curriculum_code": "IADB17",
+    "curriculum_name_en": "IT Systems Development"
+  },
+  {
+    "group_code": "IADB25",
+    "sg_id": 15152,
+    "curriculum_version_id": null,
+    "department_id": 50001,
+    "curriculum_code": "IADB17",
+    "curriculum_name_en": "IT Systems Development"
+  },
+  {
+    "group_code": "IACB41",
+    "sg_id": 15559,
+    "curriculum_version_id": null,
+    "department_id": 50001,
+    "curriculum_code": "IACB17",
+    "curriculum_name_en": "Hardware Development and Programming"
+  },
+  {
+    "group_code": "IACB21",
+    "sg_id": 15680,
+    "curriculum_version_id": null,
+    "department_id": 50001,
+    "curriculum_code": "IACB17",
+    "curriculum_name_en": "Hardware Development and Programming"
+  },
+  {
+    "group_code": "IACB61",
+    "sg_id": 15111,
+    "curriculum_version_id": null,
+    "department_id": 50001,
+    "curriculum_code": "IACB17",
+    "curriculum_name_en": "Hardware Development and Programming"
+  },
+  {
+    "group_code": "IABB41",
+    "sg_id": 15483,
+    "curriculum_version_id": null,
+    "department_id": 50001,
+    "curriculum_code": "IABB17",
+    "curriculum_name_en": "Business Information Technology"
+  },
+  {
+    "group_code": "IABB42",
+    "sg_id": 15484,
+    "curriculum_version_id": null,
+    "department_id": 50001,
+    "curriculum_code": "IABB17",
+    "curriculum_name_en": "Business Information Technology"
+  },
+  {
+    "group_code": "IABB21",
+    "sg_id": 16107,
+    "curriculum_version_id": null,
+    "department_id": 50001,
+    "curriculum_code": "IABB17",
+    "curriculum_name_en": "Business Information Technology"
+  },
+  {
+    "group_code": "IABB22",
+    "sg_id": 16108,
+    "curriculum_version_id": null,
+    "department_id": 50001,
+    "curriculum_code": "IABB17",
+    "curriculum_name_en": "Business Information Technology"
+  },
+  {
+    "group_code": "IABB61",
+    "sg_id": 15801,
+    "curriculum_version_id": null,
+    "department_id": 50001,
+    "curriculum_code": "IABB17",
+    "curriculum_name_en": "Business Information Technology"
+  },
+  {
+    "group_code": "IABB62",
+    "sg_id": 15802,
+    "curriculum_version_id": null,
+    "department_id": 50001,
+    "curriculum_code": "IABB17",
+    "curriculum_name_en": "Business Information Technology"
+  },
+  {
+    "group_code": "IABB63",
+    "sg_id": 15803,
+    "curriculum_version_id": null,
+    "department_id": 50001,
+    "curriculum_code": "IABB17",
+    "curriculum_name_en": "Business Information Technology"
+  },
+  {
+    "group_code": "IAPM21",
+    "sg_id": 15266,
+    "curriculum_version_id": null,
+    "department_id": 50001,
+    "curriculum_code": "IAPM02",
+    "curriculum_name_en": "Computer Science"
+  },
+  {
+    "group_code": "IAPM22",
+    "sg_id": 15267,
+    "curriculum_version_id": null,
+    "department_id": 50001,
+    "curriculum_code": "IAPM02",
+    "curriculum_name_en": "Computer Science"
+  },
+  {
+    "group_code": "IAAB41",
+    "sg_id": 15934,
+    "curriculum_version_id": null,
+    "department_id": 50001,
+    "curriculum_code": "IAAB17",
+    "curriculum_name_en": "IT Systems Administration"
+  },
+  {
+    "group_code": "IAAB42",
+    "sg_id": 15935,
+    "curriculum_version_id": null,
+    "department_id": 50001,
+    "curriculum_code": "IAAB17",
+    "curriculum_name_en": "IT Systems Administration"
+  },
+  {
+    "group_code": "IAAB21",
+    "sg_id": 15026,
+    "curriculum_version_id": null,
+    "department_id": 50001,
+    "curriculum_code": "IAAB17",
+    "curriculum_name_en": "IT Systems Administration"
+  },
+  {
+    "group_code": "IAAB22",
+    "sg_id": 15027,
+    "curriculum_version_id": null,
+    "department_id": 50001,
+    "curriculum_code": "IAAB17",
+    "curriculum_name_en": "IT Systems Administration"
+  },
+  {
+    "group_code": "IAAB23",
+    "sg_id": 15028,
+    "curriculum_version_id": null,
+    "department_id": 50001,
+    "curriculum_code": "IAAB17",
+    "curriculum_name_en": "IT Systems Administration"
+  },
+  {
+    "group_code": "IVSB41",
+    "sg_id": 15578,
+    "curriculum_version_id": null,
+    "department_id": 50001,
+    "curriculum_code": "IVSB17",
+    "curriculum_name_en": "Cyber Security Engineering"
+  },
+  {
+    "group_code": "IVSB42",
+    "sg_id": 15579,
+    "curriculum_version_id": null,
+    "department_id": 50001,
+    "curriculum_code": "IVSB17",
+    "curriculum_name_en": "Cyber Security Engineering"
+  },
+  {
+    "group_code": "IVSB21",
+    "sg_id": 16098,
+    "curriculum_version_id": null,
+    "department_id": 50001,
+    "curriculum_code": "IVSB17",
+    "curriculum_name_en": "Cyber Security Engineering"
+  },
+  {
+    "group_code": "IVSB22",
+    "sg_id": 16099,
+    "curriculum_version_id": null,
+    "department_id": 50001,
+    "curriculum_code": "IVSB17",
+    "curriculum_name_en": "Cyber Security Engineering"
+  },
+  {
+    "group_code": "IVSB23",
+    "sg_id": 16100,
+    "curriculum_version_id": null,
+    "department_id": 50001,
+    "curriculum_code": "IVSB17",
+    "curriculum_name_en": "Cyber Security Engineering"
+  },
+  {
+    "group_code": "IAIB41",
+    "sg_id": 15082,
+    "curriculum_version_id": null,
+    "department_id": 50001,
+    "curriculum_code": "IAIB17",
+    "curriculum_name_en": "Informatics"
+  },
+  {
+    "group_code": "IAIB42",
+    "sg_id": 15083,
+    "curriculum_version_id": null,
+    "department_id": 50001,
+    "curriculum_code": "IAIB17",
+    "curriculum_name_en": "Informatics"
+  },
+  {
+    "group_code": "IAIB43",
+    "sg_id": 15084,
+    "curriculum_version_id": null,
+    "department_id": 50001,
+    "curriculum_code": "IAIB17",
+    "curriculum_name_en": "Informatics"
+  },
+  {
+    "group_code": "IAIB61",
+    "sg_id": 16015,
+    "curriculum_version_id": null,
+    "department_id": 50001,
+    "curriculum_code": "IAIB17",
+    "curriculum_name_en": "Informatics"
+  },
+  {
+    "group_code": "IAIB62",
+    "sg_id": 16016,
+    "curriculum_version_id": null,
+    "department_id": 50001,
+    "curriculum_code": "IAIB17",
+    "curriculum_name_en": "Informatics"
+  },
+  {
+    "group_code": "IAIB63",
+    "sg_id": 16017,
+    "curriculum_version_id": null,
+    "department_id": 50001,
+    "curriculum_code": "IAIB17",
+    "curriculum_name_en": "Informatics"
+  },
+  {
+    "group_code": "YVEM21",
+    "sg_id": 15831,
+    "curriculum_version_id": null,
+    "department_id": 50001,
+    "curriculum_code": "YVEM09",
+    "curriculum_name_en": "Digital Health"
+  },
+  {
+    "group_code": "YVEM41",
+    "sg_id": 15746,
+    "curriculum_version_id": null,
+    "department_id": 50001,
+    "curriculum_code": "YVEM09",
+    "curriculum_name_en": "Digital Health"
+  },
+  {
+    "group_code": "IAHM40A",
+    "sg_id": 15577,
+    "curriculum_version_id": null,
+    "department_id": 50001,
+    "curriculum_code": "IAHM19",
+    "curriculum_name_en": "Medical Technology and Physics"
+  },
+  {
+    "group_code": "IAHM20A",
+    "sg_id": 16097,
+    "curriculum_version_id": null,
+    "department_id": 50001,
+    "curriculum_code": "IAHM19",
+    "curriculum_name_en": "Medical Technology and Physics"
+  },
+  {
+    "group_code": "IABM41",
+    "sg_id": 15979,
+    "curriculum_version_id": null,
+    "department_id": 50001,
+    "curriculum_code": "IABM02",
+    "curriculum_name_en": "Business Information Technology"
+  },
+  {
+    "group_code": "IABM42",
+    "sg_id": 15980,
+    "curriculum_version_id": null,
+    "department_id": 50001,
+    "curriculum_code": "IABM02",
+    "curriculum_name_en": "Business Information Technology"
+  },
+  {
+    "group_code": "IABM43",
+    "sg_id": 15981,
+    "curriculum_version_id": null,
+    "department_id": 50001,
+    "curriculum_code": "IABM02",
+    "curriculum_name_en": "Business Information Technology"
+  },
+  {
+    "group_code": "IABM21",
+    "sg_id": 15445,
+    "curriculum_version_id": null,
+    "department_id": 50001,
+    "curriculum_code": "IABM02",
+    "curriculum_name_en": "Business Information Technology"
+  },
+  {
+    "group_code": "IVCM21",
+    "sg_id": 15709,
+    "curriculum_version_id": null,
+    "department_id": 50001,
+    "curriculum_code": "IVCM25",
+    "curriculum_name_en": "Cybersecurity"
+  },
+  {
+    "group_code": "IVCM22",
+    "sg_id": 15710,
+    "curriculum_version_id": null,
+    "department_id": 50001,
+    "curriculum_code": "IVCM25",
+    "curriculum_name_en": "Cybersecurity"
+  },
+  {
+    "group_code": "IAAM21",
+    "sg_id": 15017,
+    "curriculum_version_id": null,
+    "department_id": 50001,
+    "curriculum_code": "IAAM17",
+    "curriculum_name_en": "Analysis and Design of Information Systems"
+  },
+  {
+    "group_code": "IAAM22",
+    "sg_id": 15018,
+    "curriculum_version_id": null,
+    "department_id": 50001,
+    "curriculum_code": "IAAM17",
+    "curriculum_name_en": "Analysis and Design of Information Systems"
+  },
+  {
+    "group_code": "IAIB21",
+    "sg_id": 15531,
+    "curriculum_version_id": null,
+    "department_id": 50001,
+    "curriculum_code": "IAIB25",
+    "curriculum_name_en": "Informatics and Artificial Intelligence"
+  },
+  {
+    "group_code": "IAIB22",
+    "sg_id": 15532,
+    "curriculum_version_id": null,
+    "department_id": 50001,
+    "curriculum_code": "IAIB25",
+    "curriculum_name_en": "Informatics and Artificial Intelligence"
+  },
+  {
+    "group_code": "IAIB23",
+    "sg_id": 15533,
+    "curriculum_version_id": null,
+    "department_id": 50001,
+    "curriculum_code": "IAIB25",
+    "curriculum_name_en": "Informatics and Artificial Intelligence"
+  },
+  {
+    "group_code": "IAIB24",
+    "sg_id": 15534,
+    "curriculum_version_id": null,
+    "department_id": 50001,
+    "curriculum_code": "IAIB25",
+    "curriculum_name_en": "Informatics and Artificial Intelligence"
+  },
+  {
+    "group_code": "IADM20A",
+    "sg_id": 15860,
+    "curriculum_version_id": null,
+    "department_id": 50001,
+    "curriculum_code": "IADM18",
+    "curriculum_name_en": "Digital Transformation in Business"
+  },
+  {
+    "group_code": "IADM20B",
+    "sg_id": 16183,
+    "curriculum_version_id": null,
+    "department_id": 50001,
+    "curriculum_code": "IADM18",
+    "curriculum_name_en": "Digital Transformation in Business"
+  },
+  {
+    "group_code": "IAGM20",
+    "sg_id": 15463,
+    "curriculum_version_id": null,
+    "department_id": 50001,
+    "curriculum_code": "IAGM25",
+    "curriculum_name_en": "Data and Technologies for a Digital State"
+  },
+  {
+    "group_code": "IACM21",
+    "sg_id": 16088,
+    "curriculum_version_id": null,
+    "department_id": 50001,
+    "curriculum_code": "IACM23",
+    "curriculum_name_en": "Hardware Development and Programming"
+  },
+  {
+    "group_code": "IACM22",
+    "sg_id": 16089,
+    "curriculum_version_id": null,
+    "department_id": 50001,
+    "curriculum_code": "IACM23",
+    "curriculum_name_en": "Hardware Development and Programming"
+  },
+  {
+    "group_code": "IAVM21",
+    "sg_id": 15248,
+    "curriculum_version_id": null,
+    "department_id": 50001,
+    "curriculum_code": "IAVM23",
+    "curriculum_name_en": "Communications Networks and Services"
+  },
+  {
+    "group_code": "IVDM20",
+    "sg_id": 15830,
+    "curriculum_version_id": null,
+    "department_id": 50001,
+    "curriculum_code": "IVDM24",
+    "curriculum_name_en": "E-Governance Technologies and Services"
+  },
+  {
+    "group_code": "TATM21",
+    "sg_id": 15861,
+    "curriculum_version_id": null,
+    "department_id": 50020,
+    "curriculum_code": "TATM02",
+    "curriculum_name_en": "Management and Marketing"
+  },
+  {
+    "group_code": "TATM22",
+    "sg_id": 15862,
+    "curriculum_version_id": null,
+    "department_id": 50020,
+    "curriculum_code": "TATM02",
+    "curriculum_name_en": "Management and Marketing"
+  },
+  {
+    "group_code": "TATM23",
+    "sg_id": 15863,
+    "curriculum_version_id": null,
+    "department_id": 50020,
+    "curriculum_code": "TATM02",
+    "curriculum_name_en": "Management and Marketing"
+  },
+  {
+    "group_code": "TATM24",
+    "sg_id": 15864,
+    "curriculum_version_id": null,
+    "department_id": 50020,
+    "curriculum_code": "TATM02",
+    "curriculum_name_en": "Management and Marketing"
+  },
+  {
+    "group_code": "HAAB21",
+    "sg_id": 15275,
+    "curriculum_version_id": null,
+    "department_id": 50020,
+    "curriculum_code": "HAAB02",
+    "curriculum_name_en": "Public Administration and Governance"
+  },
+  {
+    "group_code": "HAAB41",
+    "sg_id": 15783,
+    "curriculum_version_id": null,
+    "department_id": 50020,
+    "curriculum_code": "HAAB02",
+    "curriculum_name_en": "Public Administration and Governance"
+  },
+  {
+    "group_code": "HAAB61",
+    "sg_id": 15615,
+    "curriculum_version_id": null,
+    "department_id": 50020,
+    "curriculum_code": "HAAB02",
+    "curriculum_name_en": "Public Administration and Governance"
+  },
+  {
+    "group_code": "TVTB41",
+    "sg_id": 15474,
+    "curriculum_version_id": null,
+    "department_id": 50020,
+    "curriculum_code": "TVTB12",
+    "curriculum_name_en": "International Business Administration"
+  },
+  {
+    "group_code": "TVTB42",
+    "sg_id": 15475,
+    "curriculum_version_id": null,
+    "department_id": 50020,
+    "curriculum_code": "TVTB12",
+    "curriculum_name_en": "International Business Administration"
+  },
+  {
+    "group_code": "TVTB21",
+    "sg_id": 15736,
+    "curriculum_version_id": null,
+    "department_id": 50020,
+    "curriculum_code": "TVTB12",
+    "curriculum_name_en": "International Business Administration"
+  },
+  {
+    "group_code": "TVTB22",
+    "sg_id": 15737,
+    "curriculum_version_id": null,
+    "department_id": 50020,
+    "curriculum_code": "TVTB12",
+    "curriculum_name_en": "International Business Administration"
+  },
+  {
+    "group_code": "TVTB61",
+    "sg_id": 15406,
+    "curriculum_version_id": null,
+    "department_id": 50020,
+    "curriculum_code": "TVTB12",
+    "curriculum_name_en": "International Business Administration"
+  },
+  {
+    "group_code": "TVTB62",
+    "sg_id": 15407,
+    "curriculum_version_id": null,
+    "department_id": 50020,
+    "curriculum_code": "TVTB12",
+    "curriculum_name_en": "International Business Administration"
+  },
+  {
+    "group_code": "TVTB63",
+    "sg_id": 15408,
+    "curriculum_version_id": null,
+    "department_id": 50020,
+    "curriculum_code": "TVTB12",
+    "curriculum_name_en": "International Business Administration"
+  },
+  {
+    "group_code": "TVTB64",
+    "sg_id": 15409,
+    "curriculum_version_id": null,
+    "department_id": 50020,
+    "curriculum_code": "TVTB12",
+    "curriculum_name_en": "International Business Administration"
+  },
+  {
+    "group_code": "HAJM41",
+    "sg_id": 15765,
+    "curriculum_version_id": null,
+    "department_id": 50020,
+    "curriculum_code": "HAJM08",
+    "curriculum_name_en": "Law"
+  },
+  {
+    "group_code": "HAJM21",
+    "sg_id": 15841,
+    "curriculum_version_id": null,
+    "department_id": 50020,
+    "curriculum_code": "HAJM08",
+    "curriculum_name_en": "Law"
+  },
+  {
+    "group_code": "HAJB41",
+    "sg_id": 15368,
+    "curriculum_version_id": null,
+    "department_id": 50020,
+    "curriculum_code": "HAJB08",
+    "curriculum_name_en": "Law"
+  },
+  {
+    "group_code": "HAJB21",
+    "sg_id": 15850,
+    "curriculum_version_id": null,
+    "department_id": 50020,
+    "curriculum_code": "HAJB08",
+    "curriculum_name_en": "Law"
+  },
+  {
+    "group_code": "HAJB61",
+    "sg_id": 16042,
+    "curriculum_version_id": null,
+    "department_id": 50020,
+    "curriculum_code": "HAJB08",
+    "curriculum_name_en": "Law"
+  },
+  {
+    "group_code": "MAJB41_V",
+    "sg_id": 15101,
+    "curriculum_version_id": null,
+    "department_id": 50020,
+    "curriculum_code": "MAJB24",
+    "curriculum_name_en": "Sustainable Entrepreneurship and Circular Economy"
+  },
+  {
+    "group_code": "MAJB21_V",
+    "sg_id": 15008,
+    "curriculum_version_id": null,
+    "department_id": 50020,
+    "curriculum_code": "MAJB24",
+    "curriculum_name_en": "Sustainable Entrepreneurship and Circular Economy"
+  },
+  {
+    "group_code": "HAPM20",
+    "sg_id": 16078,
+    "curriculum_version_id": null,
+    "department_id": 50020,
+    "curriculum_code": "HAPM10",
+    "curriculum_name_en": "Human Resource Management"
+  },
+  {
+    "group_code": "HAPM40",
+    "sg_id": 15110,
+    "curriculum_version_id": null,
+    "department_id": 50020,
+    "curriculum_code": "HAPM10",
+    "curriculum_name_en": "Human Resource Management"
+  },
+  {
+    "group_code": "TAAB41",
+    "sg_id": 15952,
+    "curriculum_version_id": null,
+    "department_id": 50020,
+    "curriculum_code": "TAAB02",
+    "curriculum_name_en": "Applied Economics"
+  },
+  {
+    "group_code": "TAAB42",
+    "sg_id": 15953,
+    "curriculum_version_id": null,
+    "department_id": 50020,
+    "curriculum_code": "TAAB02",
+    "curriculum_name_en": "Applied Economics"
+  },
+  {
+    "group_code": "TAAB61",
+    "sg_id": 16164,
+    "curriculum_version_id": null,
+    "department_id": 50020,
+    "curriculum_code": "TAAB02",
+    "curriculum_name_en": "Applied Economics"
+  },
+  {
+    "group_code": "TAAB62",
+    "sg_id": 16165,
+    "curriculum_version_id": null,
+    "department_id": 50020,
+    "curriculum_code": "TAAB02",
+    "curriculum_name_en": "Applied Economics"
+  },
+  {
+    "group_code": "TAAB21",
+    "sg_id": 15293,
+    "curriculum_version_id": null,
+    "department_id": 50020,
+    "curriculum_code": "TAAB02",
+    "curriculum_name_en": "Applied Economics"
+  },
+  {
+    "group_code": "TAAB22",
+    "sg_id": 15294,
+    "curriculum_version_id": null,
+    "department_id": 50020,
+    "curriculum_code": "TAAB02",
+    "curriculum_name_en": "Applied Economics"
+  },
+  {
+    "group_code": "TAAM41",
+    "sg_id": 15587,
+    "curriculum_version_id": null,
+    "department_id": 50020,
+    "curriculum_code": "TAAM02",
+    "curriculum_name_en": "Economic Analysis"
+  },
+  {
+    "group_code": "TAAM21",
+    "sg_id": 15662,
+    "curriculum_version_id": null,
+    "department_id": 50020,
+    "curriculum_code": "TAAM02",
+    "curriculum_name_en": "Economic Analysis"
+  },
+  {
+    "group_code": "TABB41",
+    "sg_id": 15377,
+    "curriculum_version_id": null,
+    "department_id": 50020,
+    "curriculum_code": "TABB02",
+    "curriculum_name_en": "Business "
+  },
+  {
+    "group_code": "TABB42",
+    "sg_id": 15378,
+    "curriculum_version_id": null,
+    "department_id": 50020,
+    "curriculum_code": "TABB02",
+    "curriculum_name_en": "Business "
+  },
+  {
+    "group_code": "TABB43",
+    "sg_id": 15379,
+    "curriculum_version_id": null,
+    "department_id": 50020,
+    "curriculum_code": "TABB02",
+    "curriculum_name_en": "Business "
+  },
+  {
+    "group_code": "TABB44",
+    "sg_id": 15380,
+    "curriculum_version_id": null,
+    "department_id": 50020,
+    "curriculum_code": "TABB02",
+    "curriculum_name_en": "Business "
+  },
+  {
+    "group_code": "TABB45",
+    "sg_id": 15381,
+    "curriculum_version_id": null,
+    "department_id": 50020,
+    "curriculum_code": "TABB02",
+    "curriculum_name_en": "Business "
+  },
+  {
+    "group_code": "TABB46",
+    "sg_id": 15382,
+    "curriculum_version_id": null,
+    "department_id": 50020,
+    "curriculum_code": "TABB02",
+    "curriculum_name_en": "Business "
+  },
+  {
+    "group_code": "TABB47",
+    "sg_id": 15383,
+    "curriculum_version_id": null,
+    "department_id": 50020,
+    "curriculum_code": "TABB02",
+    "curriculum_name_en": "Business "
+  },
+  {
+    "group_code": "TABB61",
+    "sg_id": 16033,
+    "curriculum_version_id": null,
+    "department_id": 50020,
+    "curriculum_code": "TABB02",
+    "curriculum_name_en": "Business "
+  },
+  {
+    "group_code": "TABB62",
+    "sg_id": 16034,
+    "curriculum_version_id": null,
+    "department_id": 50020,
+    "curriculum_code": "TABB02",
+    "curriculum_name_en": "Business "
+  },
+  {
+    "group_code": "TABB63",
+    "sg_id": 16035,
+    "curriculum_version_id": null,
+    "department_id": 50020,
+    "curriculum_code": "TABB02",
+    "curriculum_name_en": "Business "
+  },
+  {
+    "group_code": "TABB64",
+    "sg_id": 16036,
+    "curriculum_version_id": null,
+    "department_id": 50020,
+    "curriculum_code": "TABB02",
+    "curriculum_name_en": "Business "
+  },
+  {
+    "group_code": "TABB65",
+    "sg_id": 16037,
+    "curriculum_version_id": null,
+    "department_id": 50020,
+    "curriculum_code": "TABB02",
+    "curriculum_name_en": "Business "
+  },
+  {
+    "group_code": "TABB66",
+    "sg_id": 16038,
+    "curriculum_version_id": null,
+    "department_id": 50020,
+    "curriculum_code": "TABB02",
+    "curriculum_name_en": "Business "
+  },
+  {
+    "group_code": "TABB67",
+    "sg_id": 16039,
+    "curriculum_version_id": null,
+    "department_id": 50020,
+    "curriculum_code": "TABB02",
+    "curriculum_name_en": "Business "
+  },
+  {
+    "group_code": "TABB21",
+    "sg_id": 15045,
+    "curriculum_version_id": null,
+    "department_id": 50020,
+    "curriculum_code": "TABB02",
+    "curriculum_name_en": "Business "
+  },
+  {
+    "group_code": "TABB22",
+    "sg_id": 15046,
+    "curriculum_version_id": null,
+    "department_id": 50020,
+    "curriculum_code": "TABB02",
+    "curriculum_name_en": "Business "
+  },
+  {
+    "group_code": "TABB23",
+    "sg_id": 15047,
+    "curriculum_version_id": null,
+    "department_id": 50020,
+    "curriculum_code": "TABB02",
+    "curriculum_name_en": "Business "
+  },
+  {
+    "group_code": "TABB24",
+    "sg_id": 15048,
+    "curriculum_version_id": null,
+    "department_id": 50020,
+    "curriculum_code": "TABB02",
+    "curriculum_name_en": "Business "
+  },
+  {
+    "group_code": "TABB25",
+    "sg_id": 15049,
+    "curriculum_version_id": null,
+    "department_id": 50020,
+    "curriculum_code": "TABB02",
+    "curriculum_name_en": "Business "
+  },
+  {
+    "group_code": "TARM42",
+    "sg_id": 15213,
+    "curriculum_version_id": null,
+    "department_id": 50020,
+    "curriculum_code": "TARM02",
+    "curriculum_name_en": "Finance and Accounting"
+  },
+  {
+    "group_code": "TARM21",
+    "sg_id": 15727,
+    "curriculum_version_id": null,
+    "department_id": 50020,
+    "curriculum_code": "TARM02",
+    "curriculum_name_en": "Finance and Accounting"
+  },
+  {
+    "group_code": "TARM22",
+    "sg_id": 15728,
+    "curriculum_version_id": null,
+    "department_id": 50020,
+    "curriculum_code": "TARM02",
+    "curriculum_name_en": "Finance and Accounting"
+  },
+  {
+    "group_code": "MAKM20",
+    "sg_id": 15745,
+    "curriculum_version_id": null,
+    "department_id": 50020,
+    "curriculum_code": "MAKM25",
+    "curriculum_name_en": "Sustainability Management"
+  },
+  {
+    "group_code": "MAEM20",
+    "sg_id": 15661,
+    "curriculum_version_id": null,
+    "department_id": 50020,
+    "curriculum_code": "MAEM20",
+    "curriculum_name_en": "Entrepreneurial Management MBA"
+  },
+  {
+    "group_code": "TVTM21",
+    "sg_id": 15321,
+    "curriculum_version_id": null,
+    "department_id": 50020,
+    "curriculum_code": "TVTM03",
+    "curriculum_name_en": "International Business in the Digital Era"
+  },
+  {
+    "group_code": "HAGM21",
+    "sg_id": 15436,
+    "curriculum_version_id": null,
+    "department_id": 50020,
+    "curriculum_code": "HAGM09",
+    "curriculum_name_en": "Technology Governance and Sustainability"
+  },
+  {
+    "group_code": "HAAM21",
+    "sg_id": 16079,
+    "curriculum_version_id": null,
+    "department_id": 50020,
+    "curriculum_code": "HAAM02",
+    "curriculum_name_en": "Public Administration and Innovation"
+  },
+  {
+    "group_code": "EDKR41_V",
+    "sg_id": 15492,
+    "curriculum_version_id": null,
+    "department_id": 50007,
+    "curriculum_code": "EDKR16",
+    "curriculum_name_en": "Chemical Technology"
+  },
+  {
+    "group_code": "EDKR42_V",
+    "sg_id": 15091,
+    "curriculum_version_id": null,
+    "department_id": 50007,
+    "curriculum_code": "EDKR16",
+    "curriculum_name_en": "Chemical Technology"
+  },
+  {
+    "group_code": "EDKR82_V",
+    "sg_id": 15417,
+    "curriculum_version_id": null,
+    "department_id": 50007,
+    "curriculum_code": "EDKR16",
+    "curriculum_name_en": "Chemical Technology"
+  },
+  {
+    "group_code": "EDKR21_V",
+    "sg_id": 15302,
+    "curriculum_version_id": null,
+    "department_id": 50007,
+    "curriculum_code": "EDKR16",
+    "curriculum_name_en": "Chemical Technology"
+  },
+  {
+    "group_code": "EDKR22_V",
+    "sg_id": 15035,
+    "curriculum_version_id": null,
+    "department_id": 50007,
+    "curriculum_code": "EDKR16",
+    "curriculum_name_en": "Chemical Technology"
+  },
+  {
+    "group_code": "EDKR61_V",
+    "sg_id": 16173,
+    "curriculum_version_id": null,
+    "department_id": 50007,
+    "curriculum_code": "EDKR16",
+    "curriculum_name_en": "Chemical Technology"
+  },
+  {
+    "group_code": "EDKR62_V",
+    "sg_id": 15415,
+    "curriculum_version_id": null,
+    "department_id": 50007,
+    "curriculum_code": "EDKR16",
+    "curriculum_name_en": "Chemical Technology"
+  },
+  {
+    "group_code": "EDTR41_Tartu",
+    "sg_id": 15925,
+    "curriculum_version_id": null,
+    "department_id": 50007,
+    "curriculum_code": "EDTR17",
+    "curriculum_name_en": "Smart Systems and Applied Information Technology"
+  },
+  {
+    "group_code": "EDTR41_V",
+    "sg_id": 15926,
+    "curriculum_version_id": null,
+    "department_id": 50007,
+    "curriculum_code": "EDTR17",
+    "curriculum_name_en": "Smart Systems and Applied Information Technology"
+  },
+  {
+    "group_code": "EDTR43_V",
+    "sg_id": 16127,
+    "curriculum_version_id": null,
+    "department_id": 50007,
+    "curriculum_code": "EDTR17",
+    "curriculum_name_en": "Smart Systems and Applied Information Technology"
+  },
+  {
+    "group_code": "EDTR61_Tartu",
+    "sg_id": 16006,
+    "curriculum_version_id": null,
+    "department_id": 50007,
+    "curriculum_code": "EDTR17",
+    "curriculum_name_en": "Smart Systems and Applied Information Technology"
+  },
+  {
+    "group_code": "EDTR61_V",
+    "sg_id": 16007,
+    "curriculum_version_id": null,
+    "department_id": 50007,
+    "curriculum_code": "EDTR17",
+    "curriculum_name_en": "Smart Systems and Applied Information Technology"
+  },
+  {
+    "group_code": "EDTR63_V",
+    "sg_id": 15405,
+    "curriculum_version_id": null,
+    "department_id": 50007,
+    "curriculum_code": "EDTR17",
+    "curriculum_name_en": "Smart Systems and Applied Information Technology"
+  },
+  {
+    "group_code": "EDTR21_Tartu",
+    "sg_id": 15879,
+    "curriculum_version_id": null,
+    "department_id": 50007,
+    "curriculum_code": "EDTR17",
+    "curriculum_name_en": "Smart Systems and Applied Information Technology"
+  },
+  {
+    "group_code": "EDTR21_V",
+    "sg_id": 15880,
+    "curriculum_version_id": null,
+    "department_id": 50007,
+    "curriculum_code": "EDTR17",
+    "curriculum_name_en": "Smart Systems and Applied Information Technology"
+  },
+  {
+    "group_code": "EDTR23_V",
+    "sg_id": 15521,
+    "curriculum_version_id": null,
+    "department_id": 50007,
+    "curriculum_code": "EDTR17",
+    "curriculum_name_en": "Smart Systems and Applied Information Technology"
+  },
+  {
+    "group_code": "EARM41",
+    "sg_id": 16128,
+    "curriculum_version_id": null,
+    "department_id": 50007,
+    "curriculum_code": "EARM22",
+    "curriculum_name_en": "Green Energy Technologies"
+  },
+  {
+    "group_code": "EARM21",
+    "sg_id": 15652,
+    "curriculum_version_id": null,
+    "department_id": 50007,
+    "curriculum_code": "EARM22",
+    "curriculum_name_en": "Green Energy Technologies"
+  },
+  {
+    "group_code": "EARM24_V",
+    "sg_id": 15840,
+    "curriculum_version_id": null,
+    "department_id": 50007,
+    "curriculum_code": "EARM22",
+    "curriculum_name_en": "Green Energy Technologies"
+  },
+  {
+    "group_code": "EAKB40_K",
+    "sg_id": 16125,
+    "curriculum_version_id": null,
+    "department_id": 50007,
+    "curriculum_code": "EAKB23",
+    "curriculum_name_en": "Sustainable Technologies in Blue Economy"
+  },
+  {
+    "group_code": "SDSR60_K",
+    "sg_id": 15395,
+    "curriculum_version_id": null,
+    "department_id": 50007,
+    "curriculum_code": "SDSR10",
+    "curriculum_name_en": "Marine Engineering"
+  },
+  {
+    "group_code": "SDSR80_K",
+    "sg_id": 15820,
+    "curriculum_version_id": null,
+    "department_id": 50007,
+    "curriculum_code": "SDSR10",
+    "curriculum_name_en": "Marine Engineering"
+  },
+  {
+    "group_code": "SDSR20_K",
+    "sg_id": 15166,
+    "curriculum_version_id": null,
+    "department_id": 50007,
+    "curriculum_code": "SDSR10",
+    "curriculum_name_en": "Marine Engineering"
+  },
+  {
+    "group_code": "SDSR40_K",
+    "sg_id": 15464,
+    "curriculum_version_id": null,
+    "department_id": 50007,
+    "curriculum_code": "SDSR10",
+    "curriculum_name_en": "Marine Engineering"
+  },
+  {
+    "group_code": "EAUI81",
+    "sg_id": 15138,
+    "curriculum_version_id": null,
+    "department_id": 50007,
+    "curriculum_code": "EAUI12",
+    "curriculum_name_en": "Architecture"
+  },
+  {
+    "group_code": "EAUI61",
+    "sg_id": 16024,
+    "curriculum_version_id": null,
+    "department_id": 50007,
+    "curriculum_code": "EAUI12",
+    "curriculum_name_en": "Architecture"
+  },
+  {
+    "group_code": "EAUI21",
+    "sg_id": 15339,
+    "curriculum_version_id": null,
+    "department_id": 50007,
+    "curriculum_code": "EAUI12",
+    "curriculum_name_en": "Architecture"
+  },
+  {
+    "group_code": "EAUI41",
+    "sg_id": 15568,
+    "curriculum_version_id": null,
+    "department_id": 50007,
+    "curriculum_code": "EAUI12",
+    "curriculum_name_en": "Architecture"
+  },
+  {
+    "group_code": "MVEB61",
+    "sg_id": 15386,
+    "curriculum_version_id": null,
+    "department_id": 50007,
+    "curriculum_code": "MVEB14",
+    "curriculum_name_en": "Integrated Engineering"
+  },
+  {
+    "group_code": "MVEB62",
+    "sg_id": 15387,
+    "curriculum_version_id": null,
+    "department_id": 50007,
+    "curriculum_code": "MVEB14",
+    "curriculum_name_en": "Integrated Engineering"
+  },
+  {
+    "group_code": "MVEB21",
+    "sg_id": 15330,
+    "curriculum_version_id": null,
+    "department_id": 50007,
+    "curriculum_code": "MVEB14",
+    "curriculum_name_en": "Integrated Engineering"
+  },
+  {
+    "group_code": "MVEB22",
+    "sg_id": 15331,
+    "curriculum_version_id": null,
+    "department_id": 50007,
+    "curriculum_code": "MVEB14",
+    "curriculum_name_en": "Integrated Engineering"
+  },
+  {
+    "group_code": "MVEB23",
+    "sg_id": 15332,
+    "curriculum_version_id": null,
+    "department_id": 50007,
+    "curriculum_code": "MVEB14",
+    "curriculum_name_en": "Integrated Engineering"
+  },
+  {
+    "group_code": "MVEB41",
+    "sg_id": 15916,
+    "curriculum_version_id": null,
+    "department_id": 50007,
+    "curriculum_code": "MVEB14",
+    "curriculum_name_en": "Integrated Engineering"
+  },
+  {
+    "group_code": "MVEB42",
+    "sg_id": 15917,
+    "curriculum_version_id": null,
+    "department_id": 50007,
+    "curriculum_code": "MVEB14",
+    "curriculum_name_en": "Integrated Engineering"
+  },
+  {
+    "group_code": "EATI81",
+    "sg_id": 16051,
+    "curriculum_version_id": null,
+    "department_id": 50007,
+    "curriculum_code": "EATI02",
+    "curriculum_name_en": "Road Engineering and Geodesy"
+  },
+  {
+    "group_code": "EATI82",
+    "sg_id": 16052,
+    "curriculum_version_id": null,
+    "department_id": 50007,
+    "curriculum_code": "EATI02",
+    "curriculum_name_en": "Road Engineering and Geodesy"
+  },
+  {
+    "group_code": "EATI21",
+    "sg_id": 15157,
+    "curriculum_version_id": null,
+    "department_id": 50007,
+    "curriculum_code": "EATI02",
+    "curriculum_name_en": "Road Engineering and Geodesy"
+  },
+  {
+    "group_code": "EATI22",
+    "sg_id": 15158,
+    "curriculum_version_id": null,
+    "department_id": 50007,
+    "curriculum_code": "EATI02",
+    "curriculum_name_en": "Road Engineering and Geodesy"
+  },
+  {
+    "group_code": "EATI41",
+    "sg_id": 16146,
+    "curriculum_version_id": null,
+    "department_id": 50007,
+    "curriculum_code": "EATI02",
+    "curriculum_name_en": "Road Engineering and Geodesy"
+  },
+  {
+    "group_code": "EATI42",
+    "sg_id": 16147,
+    "curriculum_version_id": null,
+    "department_id": 50007,
+    "curriculum_code": "EATI02",
+    "curriculum_name_en": "Road Engineering and Geodesy"
+  },
+  {
+    "group_code": "EATI61",
+    "sg_id": 15512,
+    "curriculum_version_id": null,
+    "department_id": 50007,
+    "curriculum_code": "EATI02",
+    "curriculum_name_en": "Road Engineering and Geodesy"
+  },
+  {
+    "group_code": "EATI62",
+    "sg_id": 15513,
+    "curriculum_version_id": null,
+    "department_id": 50007,
+    "curriculum_code": "EATI02",
+    "curriculum_name_en": "Road Engineering and Geodesy"
+  },
+  {
+    "group_code": "EAEI81",
+    "sg_id": 15811,
+    "curriculum_version_id": null,
+    "department_id": 50007,
+    "curriculum_code": "EAEI02",
+    "curriculum_name_en": "Structural Engineering and Construction Management"
+  },
+  {
+    "group_code": "EAEI82",
+    "sg_id": 15812,
+    "curriculum_version_id": null,
+    "department_id": 50007,
+    "curriculum_code": "EAEI02",
+    "curriculum_name_en": "Structural Engineering and Construction Management"
+  },
+  {
+    "group_code": "EAEI84_Tartu",
+    "sg_id": 15814,
+    "curriculum_version_id": null,
+    "department_id": 50007,
+    "curriculum_code": "EAEI02",
+    "curriculum_name_en": "Structural Engineering and Construction Management"
+  },
+  {
+    "group_code": "EAEI85_Tartu",
+    "sg_id": 15815,
+    "curriculum_version_id": null,
+    "department_id": 50007,
+    "curriculum_code": "EAEI02",
+    "curriculum_name_en": "Structural Engineering and Construction Management"
+  },
+  {
+    "group_code": "EAEI21",
+    "sg_id": 15522,
+    "curriculum_version_id": null,
+    "department_id": 50007,
+    "curriculum_code": "EAEI02",
+    "curriculum_name_en": "Structural Engineering and Construction Management"
+  },
+  {
+    "group_code": "EAEI22",
+    "sg_id": 15523,
+    "curriculum_version_id": null,
+    "department_id": 50007,
+    "curriculum_code": "EAEI02",
+    "curriculum_name_en": "Structural Engineering and Construction Management"
+  },
+  {
+    "group_code": "EAEI23",
+    "sg_id": 15524,
+    "curriculum_version_id": null,
+    "department_id": 50007,
+    "curriculum_code": "EAEI02",
+    "curriculum_name_en": "Structural Engineering and Construction Management"
+  },
+  {
+    "group_code": "EAEI24",
+    "sg_id": 15525,
+    "curriculum_version_id": null,
+    "department_id": 50007,
+    "curriculum_code": "EAEI02",
+    "curriculum_name_en": "Structural Engineering and Construction Management"
+  },
+  {
+    "group_code": "EAEI25_Tartu",
+    "sg_id": 15526,
+    "curriculum_version_id": null,
+    "department_id": 50007,
+    "curriculum_code": "EAEI02",
+    "curriculum_name_en": "Structural Engineering and Construction Management"
+  },
+  {
+    "group_code": "EAEI26_Tartu",
+    "sg_id": 15527,
+    "curriculum_version_id": null,
+    "department_id": 50007,
+    "curriculum_code": "EAEI02",
+    "curriculum_name_en": "Structural Engineering and Construction Management"
+  },
+  {
+    "group_code": "EAEI27",
+    "sg_id": 15528,
+    "curriculum_version_id": null,
+    "department_id": 50007,
+    "curriculum_code": "EAEI02",
+    "curriculum_name_en": "Structural Engineering and Construction Management"
+  },
+  {
+    "group_code": "EAEI41",
+    "sg_id": 15970,
+    "curriculum_version_id": null,
+    "department_id": 50007,
+    "curriculum_code": "EAEI02",
+    "curriculum_name_en": "Structural Engineering and Construction Management"
+  },
+  {
+    "group_code": "EAEI42",
+    "sg_id": 15971,
+    "curriculum_version_id": null,
+    "department_id": 50007,
+    "curriculum_code": "EAEI02",
+    "curriculum_name_en": "Structural Engineering and Construction Management"
+  },
+  {
+    "group_code": "EAEI43",
+    "sg_id": 15972,
+    "curriculum_version_id": null,
+    "department_id": 50007,
+    "curriculum_code": "EAEI02",
+    "curriculum_name_en": "Structural Engineering and Construction Management"
+  },
+  {
+    "group_code": "EAEI45_Tartu",
+    "sg_id": 15974,
+    "curriculum_version_id": null,
+    "department_id": 50007,
+    "curriculum_code": "EAEI02",
+    "curriculum_name_en": "Structural Engineering and Construction Management"
+  },
+  {
+    "group_code": "EAEI46_Tartu",
+    "sg_id": 15975,
+    "curriculum_version_id": null,
+    "department_id": 50007,
+    "curriculum_code": "EAEI02",
+    "curriculum_name_en": "Structural Engineering and Construction Management"
+  },
+  {
+    "group_code": "EAEI61",
+    "sg_id": 15605,
+    "curriculum_version_id": null,
+    "department_id": 50007,
+    "curriculum_code": "EAEI02",
+    "curriculum_name_en": "Structural Engineering and Construction Management"
+  },
+  {
+    "group_code": "EAEI62",
+    "sg_id": 15606,
+    "curriculum_version_id": null,
+    "department_id": 50007,
+    "curriculum_code": "EAEI02",
+    "curriculum_name_en": "Structural Engineering and Construction Management"
+  },
+  {
+    "group_code": "EAEI63",
+    "sg_id": 15607,
+    "curriculum_version_id": null,
+    "department_id": 50007,
+    "curriculum_code": "EAEI02",
+    "curriculum_name_en": "Structural Engineering and Construction Management"
+  },
+  {
+    "group_code": "EAEI64_Tartu",
+    "sg_id": 15608,
+    "curriculum_version_id": null,
+    "department_id": 50007,
+    "curriculum_code": "EAEI02",
+    "curriculum_name_en": "Structural Engineering and Construction Management"
+  },
+  {
+    "group_code": "EAEI65_Tartu",
+    "sg_id": 15609,
+    "curriculum_version_id": null,
+    "department_id": 50007,
+    "curriculum_code": "EAEI02",
+    "curriculum_name_en": "Structural Engineering and Construction Management"
+  },
+  {
+    "group_code": "EAKM21",
+    "sg_id": 15897,
+    "curriculum_version_id": null,
+    "department_id": 50007,
+    "curriculum_code": "EAKM25",
+    "curriculum_name_en": "Environmental Technologies and Strategies"
+  },
+  {
+    "group_code": "EANB61",
+    "sg_id": 15503,
+    "curriculum_version_id": null,
+    "department_id": 50007,
+    "curriculum_code": "EANB16",
+    "curriculum_name_en": "Materials Technology"
+  },
+  {
+    "group_code": "EANB21",
+    "sg_id": 15718,
+    "curriculum_version_id": null,
+    "department_id": 50007,
+    "curriculum_code": "EANB16",
+    "curriculum_name_en": "Materials Technology"
+  },
+  {
+    "group_code": "EANB22",
+    "sg_id": 15719,
+    "curriculum_version_id": null,
+    "department_id": 50007,
+    "curriculum_code": "EANB16",
+    "curriculum_name_en": "Materials Technology"
+  },
+  {
+    "group_code": "EANB41",
+    "sg_id": 15064,
+    "curriculum_version_id": null,
+    "department_id": 50007,
+    "curriculum_code": "EANB16",
+    "curriculum_name_en": "Materials Technology"
+  },
+  {
+    "group_code": "EDJR81_V",
+    "sg_id": 15633,
+    "curriculum_version_id": null,
+    "department_id": 50007,
+    "curriculum_code": "EDJR16",
+    "curriculum_name_en": "Mechanical Engineering and Energy Technology Processes Control"
+  },
+  {
+    "group_code": "EDJR84_V",
+    "sg_id": 16182,
+    "curriculum_version_id": null,
+    "department_id": 50007,
+    "curriculum_code": "EDJR16",
+    "curriculum_name_en": "Mechanical Engineering and Energy Technology Processes Control"
+  },
+  {
+    "group_code": "EDJR85_V",
+    "sg_id": 16190,
+    "curriculum_version_id": null,
+    "department_id": 50007,
+    "curriculum_code": "EDJR16",
+    "curriculum_name_en": "Mechanical Engineering and Energy Technology Processes Control"
+  },
+  {
+    "group_code": "EDJR61_V",
+    "sg_id": 16155,
+    "curriculum_version_id": null,
+    "department_id": 50007,
+    "curriculum_code": "EDJR16",
+    "curriculum_name_en": "Mechanical Engineering and Energy Technology Processes Control"
+  },
+  {
+    "group_code": "EDJR64_V",
+    "sg_id": 15614,
+    "curriculum_version_id": null,
+    "department_id": 50007,
+    "curriculum_code": "EDJR16",
+    "curriculum_name_en": "Mechanical Engineering and Energy Technology Processes Control"
+  },
+  {
+    "group_code": "EDJR65_V",
+    "sg_id": 16189,
+    "curriculum_version_id": null,
+    "department_id": 50007,
+    "curriculum_code": "EDJR16",
+    "curriculum_name_en": "Mechanical Engineering and Energy Technology Processes Control"
+  },
+  {
+    "group_code": "EDJR21_V",
+    "sg_id": 15427,
+    "curriculum_version_id": null,
+    "department_id": 50007,
+    "curriculum_code": "EDJR16",
+    "curriculum_name_en": "Mechanical Engineering and Energy Technology Processes Control"
+  },
+  {
+    "group_code": "EDJR24_V",
+    "sg_id": 15699,
+    "curriculum_version_id": null,
+    "department_id": 50007,
+    "curriculum_code": "EDJR16",
+    "curriculum_name_en": "Mechanical Engineering and Energy Technology Processes Control"
+  },
+  {
+    "group_code": "EDJR41_V",
+    "sg_id": 15185,
+    "curriculum_version_id": null,
+    "department_id": 50007,
+    "curriculum_code": "EDJR16",
+    "curriculum_name_en": "Mechanical Engineering and Energy Technology Processes Control"
+  },
+  {
+    "group_code": "EDJR42_V",
+    "sg_id": 15186,
+    "curriculum_version_id": null,
+    "department_id": 50007,
+    "curriculum_code": "EDJR16",
+    "curriculum_name_en": "Mechanical Engineering and Energy Technology Processes Control"
+  },
+  {
+    "group_code": "EDJR44_V",
+    "sg_id": 15764,
+    "curriculum_version_id": null,
+    "department_id": 50007,
+    "curriculum_code": "EDJR16",
+    "curriculum_name_en": "Mechanical Engineering and Energy Technology Processes Control"
+  },
+  {
+    "group_code": "EDJR45_V",
+    "sg_id": 16188,
+    "curriculum_version_id": null,
+    "department_id": 50007,
+    "curriculum_code": "EDJR16",
+    "curriculum_name_en": "Mechanical Engineering and Energy Technology Processes Control"
+  },
+  {
+    "group_code": "EACB61",
+    "sg_id": 15120,
+    "curriculum_version_id": null,
+    "department_id": 50007,
+    "curriculum_code": "EACB17",
+    "curriculum_name_en": "Environmental, Energy and Chemical Technology"
+  },
+  {
+    "group_code": "EACB21",
+    "sg_id": 15167,
+    "curriculum_version_id": null,
+    "department_id": 50007,
+    "curriculum_code": "EACB17",
+    "curriculum_name_en": "Environmental, Energy and Chemical Technology"
+  },
+  {
+    "group_code": "EACB22",
+    "sg_id": 15168,
+    "curriculum_version_id": null,
+    "department_id": 50007,
+    "curriculum_code": "EACB17",
+    "curriculum_name_en": "Environmental, Energy and Chemical Technology"
+  },
+  {
+    "group_code": "EACB41",
+    "sg_id": 15055,
+    "curriculum_version_id": null,
+    "department_id": 50007,
+    "curriculum_code": "EACB17",
+    "curriculum_name_en": "Environmental, Energy and Chemical Technology"
+  },
+  {
+    "group_code": "EAAB61",
+    "sg_id": 15997,
+    "curriculum_version_id": null,
+    "department_id": 50007,
+    "curriculum_code": "EAAB16",
+    "curriculum_name_en": "Electrical Power Engineering and Mechatronics"
+  },
+  {
+    "group_code": "EAAB62",
+    "sg_id": 15998,
+    "curriculum_version_id": null,
+    "department_id": 50007,
+    "curriculum_code": "EAAB16",
+    "curriculum_name_en": "Electrical Power Engineering and Mechatronics"
+  },
+  {
+    "group_code": "EAAB63",
+    "sg_id": 15999,
+    "curriculum_version_id": null,
+    "department_id": 50007,
+    "curriculum_code": "EAAB16",
+    "curriculum_name_en": "Electrical Power Engineering and Mechatronics"
+  },
+  {
+    "group_code": "EAAB64",
+    "sg_id": 16000,
+    "curriculum_version_id": null,
+    "department_id": 50007,
+    "curriculum_code": "EAAB16",
+    "curriculum_name_en": "Electrical Power Engineering and Mechatronics"
+  },
+  {
+    "group_code": "EAAB21",
+    "sg_id": 15311,
+    "curriculum_version_id": null,
+    "department_id": 50007,
+    "curriculum_code": "EAAB16",
+    "curriculum_name_en": "Electrical Power Engineering and Mechatronics"
+  },
+  {
+    "group_code": "EAAB22",
+    "sg_id": 15312,
+    "curriculum_version_id": null,
+    "department_id": 50007,
+    "curriculum_code": "EAAB16",
+    "curriculum_name_en": "Electrical Power Engineering and Mechatronics"
+  },
+  {
+    "group_code": "EAAB23",
+    "sg_id": 15313,
+    "curriculum_version_id": null,
+    "department_id": 50007,
+    "curriculum_code": "EAAB16",
+    "curriculum_name_en": "Electrical Power Engineering and Mechatronics"
+  },
+  {
+    "group_code": "EAAB24",
+    "sg_id": 15314,
+    "curriculum_version_id": null,
+    "department_id": 50007,
+    "curriculum_code": "EAAB16",
+    "curriculum_name_en": "Electrical Power Engineering and Mechatronics"
+  },
+  {
+    "group_code": "EAAB25",
+    "sg_id": 15315,
+    "curriculum_version_id": null,
+    "department_id": 50007,
+    "curriculum_code": "EAAB16",
+    "curriculum_name_en": "Electrical Power Engineering and Mechatronics"
+  },
+  {
+    "group_code": "EAAB26",
+    "sg_id": 15316,
+    "curriculum_version_id": null,
+    "department_id": 50007,
+    "curriculum_code": "EAAB16",
+    "curriculum_name_en": "Electrical Power Engineering and Mechatronics"
+  },
+  {
+    "group_code": "EAAB27",
+    "sg_id": 15317,
+    "curriculum_version_id": null,
+    "department_id": 50007,
+    "curriculum_code": "EAAB16",
+    "curriculum_name_en": "Electrical Power Engineering and Mechatronics"
+  },
+  {
+    "group_code": "EAAB41",
+    "sg_id": 15465,
+    "curriculum_version_id": null,
+    "department_id": 50007,
+    "curriculum_code": "EAAB16",
+    "curriculum_name_en": "Electrical Power Engineering and Mechatronics"
+  },
+  {
+    "group_code": "EAAB42",
+    "sg_id": 15466,
+    "curriculum_version_id": null,
+    "department_id": 50007,
+    "curriculum_code": "EAAB16",
+    "curriculum_name_en": "Electrical Power Engineering and Mechatronics"
+  },
+  {
+    "group_code": "EAAB43",
+    "sg_id": 15467,
+    "curriculum_version_id": null,
+    "department_id": 50007,
+    "curriculum_code": "EAAB16",
+    "curriculum_name_en": "Electrical Power Engineering and Mechatronics"
+  },
+  {
+    "group_code": "EAAB44",
+    "sg_id": 15468,
+    "curriculum_version_id": null,
+    "department_id": 50007,
+    "curriculum_code": "EAAB16",
+    "curriculum_name_en": "Electrical Power Engineering and Mechatronics"
+  },
+  {
+    "group_code": "RAKM21_V",
+    "sg_id": 15054,
+    "curriculum_version_id": null,
+    "department_id": 50007,
+    "curriculum_code": "RAKM11",
+    "curriculum_name_en": "Sustainable Chemical Technologies"
+  },
+  {
+    "group_code": "MARM21",
+    "sg_id": 15700,
+    "curriculum_version_id": null,
+    "department_id": 50007,
+    "curriculum_code": "MARM06",
+    "curriculum_name_en": "Industrial Engineering and Management"
+  },
+  {
+    "group_code": "MARM41",
+    "sg_id": 15755,
+    "curriculum_version_id": null,
+    "department_id": 50007,
+    "curriculum_code": "MARM06",
+    "curriculum_name_en": "Industrial Engineering and Management"
+  },
+  {
+    "group_code": "MATM20A",
+    "sg_id": 15320,
+    "curriculum_version_id": null,
+    "department_id": 50007,
+    "curriculum_code": "MATM02",
+    "curriculum_name_en": "Product Development and Production Engineering"
+  },
+  {
+    "group_code": "MATM20B",
+    "sg_id": 16187,
+    "curriculum_version_id": null,
+    "department_id": 50007,
+    "curriculum_code": "MATM02",
+    "curriculum_name_en": "Product Development and Production Engineering"
+  },
+  {
+    "group_code": "MATM21",
+    "sg_id": 15176,
+    "curriculum_version_id": null,
+    "department_id": 50007,
+    "curriculum_code": "MATM02",
+    "curriculum_name_en": "Product Development and Production Engineering"
+  },
+  {
+    "group_code": "MATM22",
+    "sg_id": 15177,
+    "curriculum_version_id": null,
+    "department_id": 50007,
+    "curriculum_code": "MATM02",
+    "curriculum_name_en": "Product Development and Production Engineering"
+  },
+  {
+    "group_code": "EALM21",
+    "sg_id": 15418,
+    "curriculum_version_id": null,
+    "department_id": 50007,
+    "curriculum_code": "EALM02",
+    "curriculum_name_en": "Logistics"
+  },
+  {
+    "group_code": "EALM22",
+    "sg_id": 15419,
+    "curriculum_version_id": null,
+    "department_id": 50007,
+    "curriculum_code": "EALM02",
+    "curriculum_name_en": "Logistics"
+  },
+  {
+    "group_code": "EALM41",
+    "sg_id": 15774,
+    "curriculum_version_id": null,
+    "department_id": 50007,
+    "curriculum_code": "EALM02",
+    "curriculum_name_en": "Logistics"
+  },
+  {
+    "group_code": "EALM42",
+    "sg_id": 15775,
+    "curriculum_version_id": null,
+    "department_id": 50007,
+    "curriculum_code": "EALM02",
+    "curriculum_name_en": "Logistics"
+  },
+  {
+    "group_code": "EAKI21",
+    "sg_id": 15671,
+    "curriculum_version_id": null,
+    "department_id": 50007,
+    "curriculum_code": "EAKI02",
+    "curriculum_name_en": "Indoor Climate in Buildings and Water Engineering"
+  },
+  {
+    "group_code": "EAKI22",
+    "sg_id": 15672,
+    "curriculum_version_id": null,
+    "department_id": 50007,
+    "curriculum_code": "EAKI02",
+    "curriculum_name_en": "Indoor Climate in Buildings and Water Engineering"
+  },
+  {
+    "group_code": "EAKI101",
+    "sg_id": 16060,
+    "curriculum_version_id": null,
+    "department_id": 50007,
+    "curriculum_code": "EAKI02",
+    "curriculum_name_en": "Indoor Climate in Buildings and Water Engineering"
+  },
+  {
+    "group_code": "EAKI41",
+    "sg_id": 15092,
+    "curriculum_version_id": null,
+    "department_id": 50007,
+    "curriculum_code": "EAKI02",
+    "curriculum_name_en": "Indoor Climate in Buildings and Water Engineering"
+  },
+  {
+    "group_code": "EAKI61",
+    "sg_id": 15624,
+    "curriculum_version_id": null,
+    "department_id": 50007,
+    "curriculum_code": "EAKI02",
+    "curriculum_name_en": "Indoor Climate in Buildings and Water Engineering"
+  },
+  {
+    "group_code": "EAKI81",
+    "sg_id": 15129,
+    "curriculum_version_id": null,
+    "department_id": 50007,
+    "curriculum_code": "EAKI02",
+    "curriculum_name_en": "Indoor Climate in Buildings and Water Engineering"
+  },
+  {
+    "group_code": "MASM21",
+    "sg_id": 15870,
+    "curriculum_version_id": null,
+    "department_id": 50007,
+    "curriculum_code": "MASM02",
+    "curriculum_name_en": "Energy Technology and Thermal Engineering"
+  },
+  {
+    "group_code": "MASM41",
+    "sg_id": 15194,
+    "curriculum_version_id": null,
+    "department_id": 50007,
+    "curriculum_code": "MASM02",
+    "curriculum_name_en": "Energy Technology and Thermal Engineering"
+  },
+  {
+    "group_code": "AAVM21",
+    "sg_id": 15284,
+    "curriculum_version_id": null,
+    "department_id": 50007,
+    "curriculum_code": "AAVM02",
+    "curriculum_name_en": "Electrical Power Engineering"
+  },
+  {
+    "group_code": "AAVM22",
+    "sg_id": 15285,
+    "curriculum_version_id": null,
+    "department_id": 50007,
+    "curriculum_code": "AAVM02",
+    "curriculum_name_en": "Electrical Power Engineering"
+  },
+  {
+    "group_code": "RATM41_V",
+    "sg_id": 15366,
+    "curriculum_version_id": null,
+    "department_id": 50007,
+    "curriculum_code": "RATM24",
+    "curriculum_name_en": "Sustainable Industry "
+  },
+  {
+    "group_code": "RATM21_V",
+    "sg_id": 15549,
+    "curriculum_version_id": null,
+    "department_id": 50007,
+    "curriculum_code": "RATM24",
+    "curriculum_name_en": "Sustainable Industry "
+  },
+  {
+    "group_code": "NAEM20_Tartu",
+    "sg_id": 15859,
+    "curriculum_version_id": null,
+    "department_id": 50007,
+    "curriculum_code": "NAEM06",
+    "curriculum_name_en": "Industrial Ecology"
+  },
+  {
+    "group_code": "HALM20A",
+    "sg_id": 15147,
+    "curriculum_version_id": null,
+    "department_id": 50007,
+    "curriculum_code": "HALM15",
+    "curriculum_name_en": "Vocational Teacher"
+  },
+  {
+    "group_code": "HALM40A",
+    "sg_id": 15367,
+    "curriculum_version_id": null,
+    "department_id": 50007,
+    "curriculum_code": "HALM15",
+    "curriculum_name_en": "Vocational Teacher"
+  },
+  {
+    "group_code": "KVEM21",
+    "sg_id": 15454,
+    "curriculum_version_id": null,
+    "department_id": 50007,
+    "curriculum_code": "KVEM12",
+    "curriculum_name_en": "Technology of Wood, Plastic and Textiles"
+  },
+  {
+    "group_code": "KVEM22",
+    "sg_id": 15455,
+    "curriculum_version_id": null,
+    "department_id": 50007,
+    "curriculum_code": "KVEM12",
+    "curriculum_name_en": "Technology of Wood, Plastic and Textiles"
+  },
+  {
+    "group_code": "KVEM41",
+    "sg_id": 15357,
+    "curriculum_version_id": null,
+    "department_id": 50007,
+    "curriculum_code": "KVEM12",
+    "curriculum_name_en": "Technology of Wood, Plastic and Textiles"
+  },
+  {
+    "group_code": "KVEM42",
+    "sg_id": 15358,
+    "curriculum_version_id": null,
+    "department_id": 50007,
+    "curriculum_code": "KVEM12",
+    "curriculum_name_en": "Technology of Wood, Plastic and Textiles"
+  },
+  {
+    "group_code": "EAXM22",
+    "sg_id": 15037,
+    "curriculum_version_id": null,
+    "department_id": 50007,
+    "curriculum_code": "EAXM15",
+    "curriculum_name_en": "Building and Infrastructure Engineering"
+  },
+  {
+    "group_code": "EAXM23",
+    "sg_id": 15038,
+    "curriculum_version_id": null,
+    "department_id": 50007,
+    "curriculum_code": "EAXM15",
+    "curriculum_name_en": "Building and Infrastructure Engineering"
+  },
+  {
+    "group_code": "EAXM24",
+    "sg_id": 15039,
+    "curriculum_version_id": null,
+    "department_id": 50007,
+    "curriculum_code": "EAXM15",
+    "curriculum_name_en": "Building and Infrastructure Engineering"
+  },
+  {
+    "group_code": "EAXM25",
+    "sg_id": 15040,
+    "curriculum_version_id": null,
+    "department_id": 50007,
+    "curriculum_code": "EAXM15",
+    "curriculum_name_en": "Building and Infrastructure Engineering"
+  },
+  {
+    "group_code": "EAXM26",
+    "sg_id": 15041,
+    "curriculum_version_id": null,
+    "department_id": 50007,
+    "curriculum_code": "EAXM15",
+    "curriculum_name_en": "Building and Infrastructure Engineering"
+  },
+  {
+    "group_code": "EAXM27",
+    "sg_id": 15042,
+    "curriculum_version_id": null,
+    "department_id": 50007,
+    "curriculum_code": "EAXM15",
+    "curriculum_name_en": "Building and Infrastructure Engineering"
+  },
+  {
+    "group_code": "EAXM28",
+    "sg_id": 15043,
+    "curriculum_version_id": null,
+    "department_id": 50007,
+    "curriculum_code": "EAXM15",
+    "curriculum_name_en": "Building and Infrastructure Engineering"
+  },
+  {
+    "group_code": "EAXM41",
+    "sg_id": 15073,
+    "curriculum_version_id": null,
+    "department_id": 50007,
+    "curriculum_code": "EAXM15",
+    "curriculum_name_en": "Building and Infrastructure Engineering"
+  },
+  {
+    "group_code": "EARB21",
+    "sg_id": 15690,
+    "curriculum_version_id": null,
+    "department_id": 50007,
+    "curriculum_code": "EARB16",
+    "curriculum_name_en": "Product Development and Robotics"
+  },
+  {
+    "group_code": "EARB22",
+    "sg_id": 15691,
+    "curriculum_version_id": null,
+    "department_id": 50007,
+    "curriculum_code": "EARB16",
+    "curriculum_name_en": "Product Development and Robotics"
+  },
+  {
+    "group_code": "EARB23",
+    "sg_id": 15692,
+    "curriculum_version_id": null,
+    "department_id": 50007,
+    "curriculum_code": "EARB16",
+    "curriculum_name_en": "Product Development and Robotics"
+  },
+  {
+    "group_code": "EARB61",
+    "sg_id": 15396,
+    "curriculum_version_id": null,
+    "department_id": 50007,
+    "curriculum_code": "EARB16",
+    "curriculum_name_en": "Product Development and Robotics"
+  },
+  {
+    "group_code": "EARB62",
+    "sg_id": 15397,
+    "curriculum_version_id": null,
+    "department_id": 50007,
+    "curriculum_code": "EARB16",
+    "curriculum_name_en": "Product Development and Robotics"
+  },
+  {
+    "group_code": "EARB41",
+    "sg_id": 15943,
+    "curriculum_version_id": null,
+    "department_id": 50007,
+    "curriculum_code": "EARB16",
+    "curriculum_name_en": "Product Development and Robotics"
+  },
+  {
+    "group_code": "EARB42",
+    "sg_id": 15944,
+    "curriculum_version_id": null,
+    "department_id": 50007,
+    "curriculum_code": "EARB16",
+    "curriculum_name_en": "Product Development and Robotics"
+  },
+  {
+    "group_code": "EAMM21",
+    "sg_id": 16069,
+    "curriculum_version_id": null,
+    "department_id": 50007,
+    "curriculum_code": "EAMM23",
+    "curriculum_name_en": "Electrical Engineering and Mechatronics"
+  },
+  {
+    "group_code": "EAMM22",
+    "sg_id": 16070,
+    "curriculum_version_id": null,
+    "department_id": 50007,
+    "curriculum_code": "EAMM23",
+    "curriculum_name_en": "Electrical Engineering and Mechatronics"
+  },
+  {
+    "group_code": "VDXR61",
+    "sg_id": 14844,
+    "curriculum_version_id": null,
+    "department_id": 50026,
+    "curriculum_code": "VDXR17",
+    "curriculum_name_en": "Ship Engineering"
+  },
+  {
+    "group_code": "VDXR62",
+    "sg_id": 14845,
+    "curriculum_version_id": null,
+    "department_id": 50026,
+    "curriculum_code": "VDXR17",
+    "curriculum_name_en": "Ship Engineering"
+  },
+  {
+    "group_code": "VDXR81",
+    "sg_id": 14943,
+    "curriculum_version_id": null,
+    "department_id": 50026,
+    "curriculum_code": "VDXR17",
+    "curriculum_name_en": "Ship Engineering"
+  },
+  {
+    "group_code": "VDXR82",
+    "sg_id": 14944,
+    "curriculum_version_id": null,
+    "department_id": 50026,
+    "curriculum_code": "VDXR17",
+    "curriculum_name_en": "Ship Engineering"
+  },
+  {
+    "group_code": "VDXR21",
+    "sg_id": 14997,
+    "curriculum_version_id": null,
+    "department_id": 50026,
+    "curriculum_code": "VDXR17",
+    "curriculum_name_en": "Ship Engineering"
+  },
+  {
+    "group_code": "VDXR41",
+    "sg_id": 14916,
+    "curriculum_version_id": null,
+    "department_id": 50026,
+    "curriculum_code": "VDXR17",
+    "curriculum_name_en": "Ship Engineering"
+  },
+  {
+    "group_code": "VDXR42",
+    "sg_id": 14917,
+    "curriculum_version_id": null,
+    "department_id": 50026,
+    "curriculum_code": "VDXR17",
+    "curriculum_name_en": "Ship Engineering"
+  },
+  {
+    "group_code": "VDVR21",
+    "sg_id": 14862,
+    "curriculum_version_id": null,
+    "department_id": 50026,
+    "curriculum_code": "VDVR25",
+    "curriculum_name_en": "Waterway Safety Management"
+  },
+  {
+    "group_code": "VDSR21",
+    "sg_id": 14871,
+    "curriculum_version_id": null,
+    "department_id": 50026,
+    "curriculum_code": "VDSR25",
+    "curriculum_name_en": "Port and Shipping Management"
+  },
+  {
+    "group_code": "VDLR81",
+    "sg_id": 14979,
+    "curriculum_version_id": null,
+    "department_id": 50026,
+    "curriculum_code": "VDLR14",
+    "curriculum_name_en": "Navigation"
+  },
+  {
+    "group_code": "VDLR21",
+    "sg_id": 14898,
+    "curriculum_version_id": null,
+    "department_id": 50026,
+    "curriculum_code": "VDLR14",
+    "curriculum_name_en": "Navigation"
+  },
+  {
+    "group_code": "VDLR41",
+    "sg_id": 14907,
+    "curriculum_version_id": null,
+    "department_id": 50026,
+    "curriculum_code": "VDLR14",
+    "curriculum_name_en": "Navigation"
+  },
+  {
+    "group_code": "VDLR61",
+    "sg_id": 14925,
+    "curriculum_version_id": null,
+    "department_id": 50026,
+    "curriculum_code": "VDLR14",
+    "curriculum_name_en": "Navigation"
+  },
+  {
+    "group_code": "VDVR81",
+    "sg_id": 14970,
+    "curriculum_version_id": null,
+    "department_id": 50026,
+    "curriculum_code": "VDVR14",
+    "curriculum_name_en": "Waterway Safety Management"
+  },
+  {
+    "group_code": "VDVR41",
+    "sg_id": 14835,
+    "curriculum_version_id": null,
+    "department_id": 50026,
+    "curriculum_code": "VDVR14",
+    "curriculum_name_en": "Waterway Safety Management"
+  },
+  {
+    "group_code": "VDVR61",
+    "sg_id": 14853,
+    "curriculum_version_id": null,
+    "department_id": 50026,
+    "curriculum_code": "VDVR14",
+    "curriculum_name_en": "Waterway Safety Management"
+  },
+  {
+    "group_code": "VAMM21",
+    "sg_id": 14988,
+    "curriculum_version_id": null,
+    "department_id": 50026,
+    "curriculum_code": "VAMM23",
+    "curriculum_name_en": "Maritime Digital Solutions"
+  },
+  {
+    "group_code": "VAAM21",
+    "sg_id": 14880,
+    "curriculum_version_id": null,
+    "department_id": 50026,
+    "curriculum_code": "VAAM15",
+    "curriculum_name_en": "Maritime Studies"
+  },
+  {
+    "group_code": "VAAM41",
+    "sg_id": 14934,
+    "curriculum_version_id": null,
+    "department_id": 50026,
+    "curriculum_code": "VAAM15",
+    "curriculum_name_en": "Maritime Studies"
+  },
+  {
+    "group_code": "VDSR41",
+    "sg_id": 14961,
+    "curriculum_version_id": null,
+    "department_id": 50026,
+    "curriculum_code": "VDSR14",
+    "curriculum_name_en": "Port and Shipping Management"
+  },
+  {
+    "group_code": "VDSR61",
+    "sg_id": 14889,
+    "curriculum_version_id": null,
+    "department_id": 50026,
+    "curriculum_code": "VDSR14",
+    "curriculum_name_en": "Port and Shipping Management"
+  },
+  {
+    "group_code": "KATM21",
+    "sg_id": 14709,
+    "curriculum_version_id": null,
+    "department_id": 50015,
+    "curriculum_code": "KATM02",
+    "curriculum_name_en": "Food Technology and Development"
+  },
+  {
+    "group_code": "KATM41",
+    "sg_id": 14736,
+    "curriculum_version_id": null,
+    "department_id": 50015,
+    "curriculum_code": "KATM02",
+    "curriculum_name_en": "Food Technology and Development"
+  },
+  {
+    "group_code": "LARB61",
+    "sg_id": 14745,
+    "curriculum_version_id": null,
+    "department_id": 50015,
+    "curriculum_code": "LARB17",
+    "curriculum_name_en": "Earth Systems, Climate and Technologies"
+  },
+  {
+    "group_code": "LARB21",
+    "sg_id": 14772,
+    "curriculum_version_id": null,
+    "department_id": 50015,
+    "curriculum_code": "LARB17",
+    "curriculum_name_en": "Earth Systems, Climate and Technologies"
+  },
+  {
+    "group_code": "LARB41",
+    "sg_id": 14727,
+    "curriculum_version_id": null,
+    "department_id": 50015,
+    "curriculum_code": "LARB17",
+    "curriculum_name_en": "Earth Systems, Climate and Technologies"
+  },
+  {
+    "group_code": "YASM21",
+    "sg_id": 14799,
+    "curriculum_version_id": null,
+    "department_id": 50015,
+    "curriculum_code": "YASM02",
+    "curriculum_name_en": "Applied Chemistry and Biotechnology"
+  },
+  {
+    "group_code": "YASM22",
+    "sg_id": 14800,
+    "curriculum_version_id": null,
+    "department_id": 50015,
+    "curriculum_code": "YASM02",
+    "curriculum_name_en": "Applied Chemistry and Biotechnology"
+  },
+  {
+    "group_code": "YASM41",
+    "sg_id": 14691,
+    "curriculum_version_id": null,
+    "department_id": 50015,
+    "curriculum_code": "YASM02",
+    "curriculum_name_en": "Applied Chemistry and Biotechnology"
+  },
+  {
+    "group_code": "YASM42",
+    "sg_id": 14692,
+    "curriculum_version_id": null,
+    "department_id": 50015,
+    "curriculum_code": "YASM02",
+    "curriculum_name_en": "Applied Chemistry and Biotechnology"
+  },
+  {
+    "group_code": "LARM21",
+    "sg_id": 14808,
+    "curriculum_version_id": null,
+    "department_id": 50015,
+    "curriculum_code": "LARM18",
+    "curriculum_name_en": "Earth Systems and Geotechnology"
+  },
+  {
+    "group_code": "LARM22",
+    "sg_id": 14809,
+    "curriculum_version_id": null,
+    "department_id": 50015,
+    "curriculum_code": "LARM18",
+    "curriculum_name_en": "Earth Systems and Geotechnology"
+  },
+  {
+    "group_code": "YAFB21",
+    "sg_id": 14790,
+    "curriculum_version_id": null,
+    "department_id": 50015,
+    "curriculum_code": "YAFB02",
+    "curriculum_name_en": "Applied Physics"
+  },
+  {
+    "group_code": "YAFB41",
+    "sg_id": 14817,
+    "curriculum_version_id": null,
+    "department_id": 50015,
+    "curriculum_code": "YAFB02",
+    "curriculum_name_en": "Applied Physics"
+  },
+  {
+    "group_code": "YAFB61",
+    "sg_id": 14826,
+    "curriculum_version_id": null,
+    "department_id": 50015,
+    "curriculum_code": "YAFB02",
+    "curriculum_name_en": "Applied Physics"
+  },
+  {
+    "group_code": "LATB21",
+    "sg_id": 14763,
+    "curriculum_version_id": null,
+    "department_id": 50015,
+    "curriculum_code": "LATB22",
+    "curriculum_name_en": "Food and Biotechnology"
+  },
+  {
+    "group_code": "LATB22",
+    "sg_id": 14764,
+    "curriculum_version_id": null,
+    "department_id": 50015,
+    "curriculum_code": "LATB22",
+    "curriculum_name_en": "Food and Biotechnology"
+  },
+  {
+    "group_code": "LATB23",
+    "sg_id": 14765,
+    "curriculum_version_id": null,
+    "department_id": 50015,
+    "curriculum_code": "LATB22",
+    "curriculum_name_en": "Food and Biotechnology"
+  },
+  {
+    "group_code": "LATB24",
+    "sg_id": 14766,
+    "curriculum_version_id": null,
+    "department_id": 50015,
+    "curriculum_code": "LATB22",
+    "curriculum_name_en": "Food and Biotechnology"
+  },
+  {
+    "group_code": "LATB41",
+    "sg_id": 14700,
+    "curriculum_version_id": null,
+    "department_id": 50015,
+    "curriculum_code": "LATB22",
+    "curriculum_name_en": "Food and Biotechnology"
+  },
+  {
+    "group_code": "LATB42",
+    "sg_id": 14701,
+    "curriculum_version_id": null,
+    "department_id": 50015,
+    "curriculum_code": "LATB22",
+    "curriculum_name_en": "Food and Biotechnology"
+  },
+  {
+    "group_code": "LATB61",
+    "sg_id": 14718,
+    "curriculum_version_id": null,
+    "department_id": 50015,
+    "curriculum_code": "LATB22",
+    "curriculum_name_en": "Food and Biotechnology"
+  },
+  {
+    "group_code": "LAFM21",
+    "sg_id": 14754,
+    "curriculum_version_id": null,
+    "department_id": 50015,
+    "curriculum_code": "LAFM23",
+    "curriculum_name_en": "Applied Physics and Data Science"
+  },
+  {
+    "group_code": "LAFM41",
+    "sg_id": 14664,
+    "curriculum_version_id": null,
+    "department_id": 50015,
+    "curriculum_code": "LAFM23",
+    "curriculum_name_en": "Applied Physics and Data Science"
+  },
+  {
+    "group_code": "LAAB21",
+    "sg_id": 14781,
+    "curriculum_version_id": null,
+    "department_id": 50015,
+    "curriculum_code": "LAAB17",
+    "curriculum_name_en": "Applied Chemistry and Gene Technology"
+  },
+  {
+    "group_code": "LAAB22",
+    "sg_id": 14782,
+    "curriculum_version_id": null,
+    "department_id": 50015,
+    "curriculum_code": "LAAB17",
+    "curriculum_name_en": "Applied Chemistry and Gene Technology"
+  },
+  {
+    "group_code": "LAAB23",
+    "sg_id": 14783,
+    "curriculum_version_id": null,
+    "department_id": 50015,
+    "curriculum_code": "LAAB17",
+    "curriculum_name_en": "Applied Chemistry and Gene Technology"
+  },
+  {
+    "group_code": "LAAB24",
+    "sg_id": 14784,
+    "curriculum_version_id": null,
+    "department_id": 50015,
+    "curriculum_code": "LAAB17",
+    "curriculum_name_en": "Applied Chemistry and Gene Technology"
+  },
+  {
+    "group_code": "LAAB25",
+    "sg_id": 14785,
+    "curriculum_version_id": null,
+    "department_id": 50015,
+    "curriculum_code": "LAAB17",
+    "curriculum_name_en": "Applied Chemistry and Gene Technology"
+  },
+  {
+    "group_code": "LAAB26",
+    "sg_id": 14786,
+    "curriculum_version_id": null,
+    "department_id": 50015,
+    "curriculum_code": "LAAB17",
+    "curriculum_name_en": "Applied Chemistry and Gene Technology"
+  },
+  {
+    "group_code": "LAAB27",
+    "sg_id": 14787,
+    "curriculum_version_id": null,
+    "department_id": 50015,
+    "curriculum_code": "LAAB17",
+    "curriculum_name_en": "Applied Chemistry and Gene Technology"
+  },
+  {
+    "group_code": "LAAB41",
+    "sg_id": 14682,
+    "curriculum_version_id": null,
+    "department_id": 50015,
+    "curriculum_code": "LAAB17",
+    "curriculum_name_en": "Applied Chemistry and Gene Technology"
+  },
+  {
+    "group_code": "LAAB42",
+    "sg_id": 14683,
+    "curriculum_version_id": null,
+    "department_id": 50015,
+    "curriculum_code": "LAAB17",
+    "curriculum_name_en": "Applied Chemistry and Gene Technology"
+  },
+  {
+    "group_code": "LAAB43",
+    "sg_id": 14684,
+    "curriculum_version_id": null,
+    "department_id": 50015,
+    "curriculum_code": "LAAB17",
+    "curriculum_name_en": "Applied Chemistry and Gene Technology"
+  },
+  {
+    "group_code": "LAAB44",
+    "sg_id": 14685,
+    "curriculum_version_id": null,
+    "department_id": 50015,
+    "curriculum_code": "LAAB17",
+    "curriculum_name_en": "Applied Chemistry and Gene Technology"
+  },
+  {
+    "group_code": "LAAB45",
+    "sg_id": 14686,
+    "curriculum_version_id": null,
+    "department_id": 50015,
+    "curriculum_code": "LAAB17",
+    "curriculum_name_en": "Applied Chemistry and Gene Technology"
+  },
+  {
+    "group_code": "LAAB46",
+    "sg_id": 14687,
+    "curriculum_version_id": null,
+    "department_id": 50015,
+    "curriculum_code": "LAAB17",
+    "curriculum_name_en": "Applied Chemistry and Gene Technology"
+  },
+  {
+    "group_code": "LAAB61",
+    "sg_id": 14673,
+    "curriculum_version_id": null,
+    "department_id": 50015,
+    "curriculum_code": "LAAB17",
+    "curriculum_name_en": "Applied Chemistry and Gene Technology"
+  },
+  {
+    "group_code": "LAAB62",
+    "sg_id": 14674,
+    "curriculum_version_id": null,
+    "department_id": 50015,
+    "curriculum_code": "LAAB17",
+    "curriculum_name_en": "Applied Chemistry and Gene Technology"
+  }
+]

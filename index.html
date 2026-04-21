@@ -1,0 +1,839 @@
+<!DOCTYPE html>
+<html lang="et">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TalTech Aineplanner</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap');
+
+  :root {
+    --bg: #0a0a0f;
+    --surface: #13131a;
+    --surface2: #1c1c26;
+    --border: #2a2a3a;
+    --accent: #4f6ef7;
+    --accent2: #7c3aed;
+    --green: #10b981;
+    --red: #ef4444;
+    --amber: #f59e0b;
+    --text: #e8e8f0;
+    --muted: #6b6b80;
+    --mono: 'Space Mono', monospace;
+    --sans: 'DM Sans', sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Grid background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(79,110,247,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(79,110,247,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .app { position: relative; z-index: 1; max-width: 960px; margin: 0 auto; padding: 40px 24px; }
+
+  /* Header */
+  header { margin-bottom: 48px; }
+  .logo { font-family: var(--mono); font-size: 11px; color: var(--accent); letter-spacing: 3px; text-transform: uppercase; margin-bottom: 12px; }
+  h1 { font-size: 36px; font-weight: 600; line-height: 1.15; }
+  h1 span { color: var(--accent); }
+  .subtitle { color: var(--muted); margin-top: 8px; font-size: 15px; }
+
+  /* Steps */
+  .step { display: none; animation: fadeIn 0.3s ease; }
+  .step.active { display: block; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* Step indicator */
+  .step-indicator { display: flex; gap: 8px; margin-bottom: 32px; }
+  .step-dot { width: 28px; height: 4px; border-radius: 2px; background: var(--border); transition: background 0.3s; }
+  .step-dot.done { background: var(--accent); }
+  .step-dot.active { background: var(--accent); opacity: 0.5; }
+
+  /* Cards */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 16px;
+  }
+  .card-title { font-size: 13px; font-family: var(--mono); color: var(--muted); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 16px; }
+
+  /* Inputs */
+  .input-row { display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap; }
+  .field { flex: 1; min-width: 160px; }
+  label { display: block; font-size: 12px; color: var(--muted); margin-bottom: 6px; font-family: var(--mono); letter-spacing: 0.5px; }
+  input, select {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 14px;
+    padding: 10px 14px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  input:focus, select:focus { border-color: var(--accent); }
+  select option { background: var(--surface2); }
+
+  /* Buttons */
+  .btn {
+    padding: 10px 20px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    font-family: var(--sans);
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.15s;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .btn:active { transform: scale(0.97); }
+  .btn-primary { background: var(--accent); color: #fff; }
+  .btn-primary:hover { background: #3d5ce8; }
+  .btn-secondary { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
+  .btn-secondary:hover { border-color: var(--accent); }
+  .btn-ghost { background: transparent; color: var(--muted); border: 1px solid var(--border); }
+  .btn-ghost:hover { color: var(--text); }
+  .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  /* Course list */
+  .course-list { display: flex; flex-direction: column; gap: 8px; }
+  .course-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: border-color 0.2s;
+    user-select: none;
+  }
+  .course-item:hover { border-color: var(--accent); }
+  .course-item.selected { border-color: var(--accent); background: rgba(79,110,247,0.08); }
+  .course-item.confirmed { border-color: var(--green); background: rgba(16,185,129,0.06); }
+  .course-code { font-family: var(--mono); font-size: 12px; color: var(--accent); min-width: 80px; }
+  .course-name { flex: 1; font-size: 14px; }
+  .course-eap { font-family: var(--mono); font-size: 11px; color: var(--muted); }
+  .course-sem { font-family: var(--mono); font-size: 11px; color: var(--muted); padding: 2px 8px; border: 1px solid var(--border); border-radius: 4px; }
+  .check { width: 18px; height: 18px; border-radius: 4px; border: 1.5px solid var(--border); display: flex; align-items: center; justify-content: center; transition: all 0.2s; flex-shrink: 0; }
+  .course-item.selected .check, .course-item.confirmed .check { background: var(--green); border-color: var(--green); }
+  .check::after { content: '✓'; font-size: 11px; color: #fff; display: none; }
+  .course-item.selected .check::after, .course-item.confirmed .check::after { display: block; }
+
+  /* Filter row */
+  .filter-row { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 16px; }
+  .filter-chip {
+    padding: 6px 14px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    background: var(--surface2);
+    color: var(--muted);
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.15s;
+    font-family: var(--mono);
+  }
+  .filter-chip:hover { border-color: var(--accent); color: var(--text); }
+  .filter-chip.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+  /* Timetable grid */
+  .timetable {
+    display: grid;
+    grid-template-columns: 56px repeat(5, 1fr);
+    gap: 2px;
+    margin-top: 16px;
+    font-size: 11px;
+  }
+  .tt-header {
+    background: var(--surface2);
+    border-radius: 6px;
+    padding: 8px 4px;
+    text-align: center;
+    font-family: var(--mono);
+    color: var(--muted);
+    font-size: 10px;
+  }
+  .tt-time {
+    background: transparent;
+    color: var(--muted);
+    font-family: var(--mono);
+    font-size: 9px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-end;
+    padding: 2px 6px 0 0;
+    height: 32px;
+  }
+  .tt-cell {
+    background: var(--surface2);
+    border-radius: 4px;
+    height: 32px;
+    position: relative;
+    border: 1px solid transparent;
+  }
+  .tt-event {
+    position: absolute;
+    left: 1px; right: 1px;
+    border-radius: 4px;
+    padding: 3px 5px;
+    font-size: 9px;
+    line-height: 1.2;
+    overflow: hidden;
+    cursor: pointer;
+    transition: opacity 0.2s;
+    z-index: 1;
+  }
+  .tt-event:hover { opacity: 0.85; }
+  .tt-event.mandatory { background: rgba(79,110,247,0.25); border: 1px solid rgba(79,110,247,0.5); color: #a5b4fc; }
+  .tt-event.free { background: rgba(16,185,129,0.2); border: 1px solid rgba(16,185,129,0.5); color: #6ee7b7; }
+  .tt-event.conflict { background: rgba(239,68,68,0.15); border: 1px solid rgba(239,68,68,0.4); color: #fca5a5; }
+
+  /* Result cards */
+  .result-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; margin-top: 16px; }
+  .result-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+    transition: border-color 0.2s, transform 0.15s;
+    cursor: pointer;
+  }
+  .result-card:hover { border-color: var(--green); transform: translateY(-1px); }
+  .result-card.conflict-card { opacity: 0.45; }
+  .result-card.conflict-card:hover { border-color: var(--red); transform: none; }
+  .rc-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
+  .rc-code { font-family: var(--mono); font-size: 11px; color: var(--accent); }
+  .rc-badge {
+    font-size: 10px; font-family: var(--mono); padding: 2px 8px;
+    border-radius: 10px; border: 1px solid;
+  }
+  .rc-badge.free { color: var(--green); border-color: var(--green); background: rgba(16,185,129,0.1); }
+  .rc-badge.conflict { color: var(--red); border-color: var(--red); background: rgba(239,68,68,0.1); }
+  .rc-name { font-size: 13px; font-weight: 500; margin-bottom: 6px; line-height: 1.3; }
+  .rc-meta { font-size: 11px; color: var(--muted); font-family: var(--mono); }
+  .rc-time { margin-top: 6px; font-size: 11px; color: var(--muted); font-family: var(--mono); }
+
+  /* Agent bubble */
+  .agent-bubble {
+    background: var(--surface);
+    border: 1px solid rgba(79,110,247,0.3);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 10px 10px 0;
+    padding: 14px 18px;
+    margin-bottom: 20px;
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--text);
+  }
+  .agent-label { font-family: var(--mono); font-size: 10px; color: var(--accent); letter-spacing: 1px; margin-bottom: 6px; }
+
+  /* Loading */
+  .loading { display: flex; align-items: center; gap: 10px; color: var(--muted); font-size: 13px; }
+  .spinner { width: 16px; height: 16px; border: 2px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.7s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* EAP slider */
+  .range-row { display: flex; align-items: center; gap: 16px; }
+  input[type=range] {
+    flex: 1; height: 4px; accent-color: var(--accent);
+    padding: 0; background: var(--surface2);
+    border: none;
+  }
+  .range-val { font-family: var(--mono); font-size: 14px; color: var(--accent); min-width: 60px; }
+
+  /* Dept checkboxes */
+  .dept-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 8px; }
+  .dept-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 12px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: border-color 0.2s;
+    font-size: 13px;
+  }
+  .dept-item:hover { border-color: var(--accent); }
+  .dept-item.checked { border-color: var(--accent); background: rgba(79,110,247,0.08); }
+  .dept-cb { width: 14px; height: 14px; border-radius: 3px; border: 1.5px solid var(--border); flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+  .dept-item.checked .dept-cb { background: var(--accent); border-color: var(--accent); }
+  .dept-cb::after { content: '✓'; font-size: 9px; color: #fff; display: none; }
+  .dept-item.checked .dept-cb::after { display: block; }
+
+  .section-title { font-size: 18px; font-weight: 600; margin-bottom: 4px; }
+  .section-sub { font-size: 13px; color: var(--muted); margin-bottom: 20px; }
+  .actions { display: flex; gap: 10px; margin-top: 20px; flex-wrap: wrap; }
+  .divider { height: 1px; background: var(--border); margin: 20px 0; }
+  .tag { display: inline-block; font-family: var(--mono); font-size: 10px; padding: 2px 8px; border-radius: 4px; background: var(--surface2); border: 1px solid var(--border); color: var(--muted); }
+  .error { color: var(--red); font-size: 13px; margin-top: 8px; font-family: var(--mono); }
+  .success-count { font-family: var(--mono); font-size: 28px; font-weight: 700; color: var(--green); }
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <div class="logo">TalTech · Aineplanner</div>
+    <h1>Leia sobivad<br><span>valikained</span></h1>
+    <p class="subtitle">AI agent analüüsib sinu tunniplaani ja leiab konfliktivabad valikained</p>
+  </header>
+
+  <div class="step-indicator">
+    <div class="step-dot active" id="dot0"></div>
+    <div class="step-dot" id="dot1"></div>
+    <div class="step-dot" id="dot2"></div>
+    <div class="step-dot" id="dot3"></div>
+  </div>
+
+  <!-- STEP 0: Input -->
+  <div class="step active" id="step0">
+    <div class="section-title">Sisesta oma andmed</div>
+    <div class="section-sub">Grupi kood ja semester — agent teeb ülejäänu</div>
+
+    <div class="card">
+      <div class="card-title">Õpperühm</div>
+      <div class="input-row">
+        <div class="field">
+          <label>GRUPI KOOD</label>
+          <input id="groupCode" type="text" placeholder="nt IAAB21" maxlength="8" style="text-transform:uppercase">
+        </div>
+        <div class="field">
+          <label>SEMESTER</label>
+          <select id="semester">
+            <option value="1">1. semester</option>
+            <option value="2">2. semester</option>
+            <option value="3">3. semester (kevad)</option>
+            <option value="4">4. semester</option>
+            <option value="5">5. semester</option>
+            <option value="6">6. semester</option>
+          </select>
+        </div>
+        <button class="btn btn-primary" onclick="startAgent()">
+          <span>Alusta</span> →
+        </button>
+      </div>
+      <div id="step0Error" class="error"></div>
+    </div>
+
+    <div class="agent-bubble">
+      <div class="agent-label">AGENT</div>
+      Tere! Sisesta oma grupi kood (nt <code>IAAB21</code>) ja jooksev semester. Agent tõmbab sinu tüüpõpingukava, leiab kohustuslikud ained ja kontrollib kõik valikained konfliktide suhtes — automaatselt.
+    </div>
+  </div>
+
+  <!-- STEP 1: Confirm mandatory courses -->
+  <div class="step" id="step1">
+    <div class="section-title">Kohustuslikud ained</div>
+    <div class="section-sub">Agent leidis sinu semestri kohustuslikud ained. Kinnita et need on õiged.</div>
+
+    <div id="agentMsg1" class="agent-bubble" style="display:none">
+      <div class="agent-label">AGENT</div>
+      <span id="agentMsg1Text"></span>
+    </div>
+
+    <div id="loadingCourses" class="loading" style="margin-bottom:16px">
+      <div class="spinner"></div> Laen tunniplaan ja kohustuslikud ained...
+    </div>
+
+    <div class="card" id="mandatoryCard" style="display:none">
+      <div class="card-title">Vali ained mida käid sel semestril</div>
+      <div class="course-list" id="mandatoryCourseList"></div>
+    </div>
+
+    <div class="actions" id="step1Actions" style="display:none">
+      <button class="btn btn-primary" onclick="confirmMandatory()">Kinnita valitud ained →</button>
+      <button class="btn btn-ghost" onclick="goStep(0)">← Tagasi</button>
+    </div>
+  </div>
+
+  <!-- STEP 2: Filters -->
+  <div class="step" id="step2">
+    <div class="section-title">Seadista filter</div>
+    <div class="section-sub">Defineeri mida otsid — agent käib läbi ainult relevantse osa tunniplaanist</div>
+
+    <div class="card">
+      <div class="card-title">EAP maht</div>
+      <div class="range-row">
+        <span style="font-size:12px;color:var(--muted);font-family:var(--mono)">MIN</span>
+        <input type="range" id="eapMin" min="1" max="12" value="3" step="1" oninput="updateEapLabel()">
+        <span class="range-val" id="eapMinVal">3 EAP</span>
+        <span style="font-size:12px;color:var(--muted);font-family:var(--mono)">MAX</span>
+        <input type="range" id="eapMax" min="1" max="12" value="6" step="1" oninput="updateEapLabel()">
+        <span class="range-val" id="eapMaxVal">6 EAP</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Teaduskonnad / valdkonnad</div>
+      <div class="dept-grid" id="deptGrid">
+        <!-- filled by JS -->
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Lisakriteeriumid</div>
+      <div class="filter-row">
+        <div class="filter-chip active" id="chip_all" onclick="toggleChip('all')">Kõik tunnid</div>
+        <div class="filter-chip" id="chip_loeng" onclick="toggleChip('loeng')">Ainult loengud</div>
+        <div class="filter-chip" id="chip_online" onclick="toggleChip('online')">Sisaldab online</div>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button class="btn btn-primary" onclick="runSearch()">Otsi sobivaid aineid →</button>
+      <button class="btn btn-ghost" onclick="goStep(1)">← Tagasi</button>
+    </div>
+  </div>
+
+  <!-- STEP 3: Results + timetable -->
+  <div class="step" id="step3">
+    <div id="agentMsg3" class="agent-bubble" style="display:none">
+      <div class="agent-label">AGENT</div>
+      <span id="agentMsg3Text"></span>
+    </div>
+
+    <div id="loadingSearch" class="loading" style="display:none;margin-bottom:16px">
+      <div class="spinner"></div> <span id="loadingSearchText">Kontrollin valikaineid...</span>
+    </div>
+
+    <!-- Timetable -->
+    <div class="card" id="ttCard" style="display:none">
+      <div class="card-title">Sinu nädala tunniplaan</div>
+      <div style="font-size:11px;color:var(--muted);margin-bottom:12px">
+        <span style="color:#a5b4fc">■</span> Kohustuslikud &nbsp;
+        <span style="color:#6ee7b7">■</span> Sobivad valikained &nbsp;
+        <span style="color:#fca5a5;opacity:0.6">■</span> Konflikt
+      </div>
+      <div id="timetableGrid"></div>
+    </div>
+
+    <!-- Results -->
+    <div style="margin-top:24px" id="resultsSection" style="display:none">
+      <div style="display:flex;align-items:baseline;gap:12px;margin-bottom:16px">
+        <div class="success-count" id="freeCount">0</div>
+        <div>
+          <div style="font-size:16px;font-weight:600">sobivat valikainete</div>
+          <div style="font-size:12px;color:var(--muted);font-family:var(--mono)" id="conflictCount"></div>
+        </div>
+      </div>
+
+      <div class="filter-row" id="resultFilter">
+        <div class="filter-chip active" onclick="filterResults('all', this)">Kõik</div>
+        <div class="filter-chip" onclick="filterResults('free', this)">✓ Sobivad</div>
+        <div class="filter-chip" onclick="filterResults('conflict', this)">✗ Konfliktid</div>
+      </div>
+
+      <div class="result-grid" id="resultGrid"></div>
+    </div>
+
+    <div class="actions" style="margin-top:24px">
+      <button class="btn btn-ghost" onclick="goStep(2)">← Muuda filtrit</button>
+      <button class="btn btn-secondary" onclick="goStep(0)">Alusta uuesti</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── State ──────────────────────────────────────────────────────────────────
+const API_BASE = '/proxy';
+const TT_ID    = 10;
+const HEADERS  = { 'Origin':'https://tunniplaan.taltech.ee', 'Referer':'https://tunniplaan.taltech.ee/', 'Accept':'application/json', 'Content-Type':'application/json' };
+
+let state = {
+  groupCode: '', semester: 1,
+  groupInfo: null, allGroups: [],
+  timetableEvents: [],
+  mandatoryEvents: [],
+  confirmedCodes: new Set(),
+  allResults: [],
+  selectedDepts: new Set(),
+};
+
+// ── Navigation ─────────────────────────────────────────────────────────────
+function goStep(n) {
+  document.querySelectorAll('.step').forEach((s,i) => s.classList.toggle('active', i===n));
+  document.querySelectorAll('.step-dot').forEach((d,i) => {
+    d.classList.toggle('done', i < n);
+    d.classList.toggle('active', i === n);
+  });
+}
+
+// ── Helpers ────────────────────────────────────────────────────────────────
+function parseTime(s) {
+  if (!s) return [null, null];
+  const p = s.trim().split(' - ');
+  return p.length === 2 ? [p[0].trim(), p[1].trim()] : [null, null];
+}
+function toMin(t) { if(!t)return 0; const[h,m]=t.split(':'); return +h*60+ +m; }
+function overlap(a, b) {
+  if (a.dow===-1||b.dow===-1) return false;
+  if (a.dow !== b.dow) return false;
+  if (!a.start||!b.start) return false;
+  if (a.weekCodes?.length && b.weekCodes?.length) {
+    if (!a.weekCodes.some(w => b.weekCodes.includes(w))) return false;
+  }
+  return toMin(a.start) < toMin(b.end) && toMin(b.start) < toMin(a.end);
+}
+function dayName(d) { return ['','E','T','K','N','R'][d] || '?'; }
+
+// ── API calls ──────────────────────────────────────────────────────────────
+async function fetchAllGroups() {
+  const r = await fetch(`${API_BASE}/public/departments?ttId=${TT_ID}`, {headers: HEADERS});
+  const data = await r.json();
+  const groups = [];
+  for (const dept of data.departments || []) {
+    for (const curr of dept.curriculums || []) {
+      for (const sg of curr.studentGroups || []) {
+        groups.push({
+          group_code: sg.code, sg_id: sg.id,
+          curriculum_version_id: curr.curriculumVersionId || curr.id,
+          department_id: dept.departmentId,
+          curriculum_code: curr.code || '',
+          curriculum_name_en: curr.nameEn || '',
+          dept_name: dept.nameEt || dept.nameEn || '',
+        });
+      }
+    }
+  }
+  return groups;
+}
+
+async function fetchGroupTimetable(sgId, cvId, deptId) {
+  const events = [];
+  for (let page = 1; page <= 5; page++) {
+    const payload = { ttId: TT_ID, sgId, curriculumVersionId: cvId, departmentId: deptId, mode: 'OTHER', page, size: 50 };
+    const r = await fetch(`${API_BASE}/public/search`, { method:'POST', headers:HEADERS, body:JSON.stringify(payload) });
+    const data = await r.json();
+    const days = data.weekDays || [];
+    if (!days.length) break;
+    for (const day of days) {
+      for (const row of day.rows || []) {
+        const [start, end] = parseTime(row.time);
+        events.push({ course_code: row.subjectCode||'', course_name: row.subjectName||'', course_name_en: row.subjectNameEn||'', type: row.type||'', dow: row.dow ?? -1, start, end, weekCodes: row.weekCodes||[], sgs: (row.sgs||[]).map(s=>s.code) });
+      }
+    }
+    if (days.reduce((s,d)=>s+(d.rows||[]).length,0) < 50) break;
+  }
+  return events;
+}
+
+// ── Step 0 → 1 ────────────────────────────────────────────────────────────
+async function startAgent() {
+  const code = document.getElementById('groupCode').value.trim().toUpperCase();
+  const sem  = parseInt(document.getElementById('semester').value);
+  const err  = document.getElementById('step0Error');
+  err.textContent = '';
+  if (!code || code.length < 4) { err.textContent = 'Sisesta kehtiv grupi kood (nt IAAB21)'; return; }
+
+  state.groupCode = code;
+  state.semester  = sem;
+  goStep(1);
+
+  document.getElementById('loadingCourses').style.display = 'flex';
+  document.getElementById('mandatoryCard').style.display  = 'none';
+  document.getElementById('step1Actions').style.display   = 'none';
+  document.getElementById('agentMsg1').style.display      = 'none';
+
+  try {
+    // Load all groups
+    state.allGroups = await fetchAllGroups();
+    const group = state.allGroups.find(g => g.group_code === code);
+    if (!group) throw new Error(`Gruppi "${code}" ei leitud. Kontrolli koodi.`);
+    state.groupInfo = group;
+
+    // Fetch timetable
+    state.timetableEvents = await fetchGroupTimetable(group.sg_id, group.curriculum_version_id, group.department_id);
+
+    // Extract unique courses from timetable as "mandatory candidates"
+    const seen = new Set();
+    const courses = [];
+    for (const e of state.timetableEvents) {
+      if (!e.course_code || seen.has(e.course_code)) continue;
+      seen.add(e.course_code);
+      courses.push(e);
+    }
+
+    document.getElementById('loadingCourses').style.display = 'none';
+
+    // Agent message
+    const msg = document.getElementById('agentMsg1');
+    document.getElementById('agentMsg1Text').textContent =
+      `Leidsin grupile ${code} tunniplaanist ${courses.length} ainet. `+
+      `Palun märgi ained mida käid sel semestril — need on sinu kohustuslikud tunnid mille vastu konflikte kontrollime.`;
+    msg.style.display = 'block';
+
+    // Render course list
+    const list = document.getElementById('mandatoryCourseList');
+    list.innerHTML = '';
+    for (const c of courses) {
+      const hasTime = c.dow !== -1 && c.start;
+      const timeStr = hasTime ? `${dayName(c.dow)} ${c.start}–${c.end}` : 'paindlik aeg';
+      const el = document.createElement('div');
+      el.className = 'course-item selected';
+      el.dataset.code = c.course_code;
+      el.innerHTML = `
+        <div class="check"></div>
+        <div class="course-code">${c.course_code}</div>
+        <div class="course-name">${c.course_name}</div>
+        <div class="course-eap" style="font-size:10px">${timeStr}</div>
+      `;
+      el.onclick = () => el.classList.toggle('selected');
+      list.appendChild(el);
+    }
+
+    document.getElementById('mandatoryCard').style.display = 'block';
+    document.getElementById('step1Actions').style.display  = 'flex';
+
+    // Build dept list for step 2
+    buildDeptGrid();
+
+  } catch(e) {
+    document.getElementById('loadingCourses').style.display = 'none';
+    document.getElementById('agentMsg1').style.display = 'block';
+    document.getElementById('agentMsg1Text').textContent = '⚠ Viga: ' + e.message;
+  }
+}
+
+function confirmMandatory() {
+  const selected = [...document.querySelectorAll('.course-item.selected')].map(el => el.dataset.code);
+  if (!selected.length) { alert('Vali vähemalt üks kohustuslik aine'); return; }
+  state.confirmedCodes = new Set(selected);
+  state.mandatoryEvents = state.timetableEvents.filter(e => selected.includes(e.course_code));
+  goStep(2);
+}
+
+// ── Step 2: Filters ────────────────────────────────────────────────────────
+function buildDeptGrid() {
+  const depts = [...new Set(state.allGroups.map(g => g.dept_name).filter(Boolean))].sort();
+  const grid = document.getElementById('deptGrid');
+  grid.innerHTML = '';
+  state.selectedDepts = new Set(depts); // all selected by default
+  for (const dept of depts) {
+    const el = document.createElement('div');
+    el.className = 'dept-item checked';
+    el.dataset.dept = dept;
+    el.innerHTML = `<div class="dept-cb"></div><span>${dept}</span>`;
+    el.onclick = () => {
+      el.classList.toggle('checked');
+      if (el.classList.contains('checked')) state.selectedDepts.add(dept);
+      else state.selectedDepts.delete(dept);
+    };
+    grid.appendChild(el);
+  }
+}
+
+function updateEapLabel() {
+  document.getElementById('eapMinVal').textContent = document.getElementById('eapMin').value + ' EAP';
+  document.getElementById('eapMaxVal').textContent = document.getElementById('eapMax').value + ' EAP';
+}
+
+let activeChip = 'all';
+function toggleChip(id) {
+  activeChip = id;
+  document.querySelectorAll('.filter-chip[id^=chip_]').forEach(c => c.classList.remove('active'));
+  document.getElementById('chip_'+id).classList.add('active');
+}
+
+// ── Step 2 → 3: Search ────────────────────────────────────────────────────
+async function runSearch() {
+  goStep(3);
+  const loading = document.getElementById('loadingSearch');
+  const loadTxt = document.getElementById('loadingSearchText');
+  loading.style.display = 'flex';
+  document.getElementById('ttCard').style.display = 'none';
+  document.getElementById('resultsSection').style.display = 'none';
+  document.getElementById('agentMsg3').style.display = 'none';
+
+  const eapMin = parseInt(document.getElementById('eapMin').value);
+  const eapMax = parseInt(document.getElementById('eapMax').value);
+  const mandCodes = state.confirmedCodes;
+
+  try {
+    // Find elective candidate groups (filtered by dept)
+    const candidateGroups = state.allGroups.filter(g => state.selectedDepts.has(g.dept_name));
+    loadTxt.textContent = `Kontrollin ${candidateGroups.length} gruppi...`;
+
+    // Collect all elective events from candidate groups
+    const electiveMap = new Map(); // code → [events]
+    const electiveInfo = new Map(); // code → {name, eap}
+
+    // Process in batches to avoid hammering the API
+    const BATCH = 6;
+    for (let i = 0; i < Math.min(candidateGroups.length, 60); i += BATCH) {
+      const batch = candidateGroups.slice(i, i+BATCH);
+      loadTxt.textContent = `Laen tunniplaane... ${Math.min(i+BATCH, candidateGroups.length)}/${Math.min(candidateGroups.length,60)}`;
+      await Promise.all(batch.map(async g => {
+        try {
+          const events = await fetchGroupTimetable(g.sg_id, g.curriculum_version_id, g.department_id);
+          for (const e of events) {
+            if (!e.course_code || mandCodes.has(e.course_code)) continue;
+            if (!electiveMap.has(e.course_code)) {
+              electiveMap.set(e.course_code, []);
+              electiveInfo.set(e.course_code, { name: e.course_name, name_en: e.course_name_en });
+            }
+            electiveMap.get(e.course_code).push(e);
+          }
+        } catch(_) {}
+      }));
+    }
+
+    loadTxt.textContent = 'Kontrollin konflikte...';
+
+    // Check conflicts
+    const results = [];
+    for (const [code, events] of electiveMap) {
+      const fixedEvents = events.filter(e => e.dow !== -1 && e.start);
+      const hasConflict = fixedEvents.some(e => state.mandatoryEvents.some(m => overlap(e, m)));
+      const info = electiveInfo.get(code);
+
+      // Get a representative time slot
+      const rep = fixedEvents[0];
+      results.push({
+        code, name: info.name, name_en: info.name_en,
+        free: !hasConflict,
+        time: rep ? `${dayName(rep.dow)} ${rep.start}–${rep.end}` : 'paindlik',
+        dow: rep?.dow ?? -1, start: rep?.start, end: rep?.end,
+        weekCodes: rep?.weekCodes ?? [],
+        events: fixedEvents,
+      });
+    }
+
+    state.allResults = results;
+    loading.style.display = 'none';
+
+    const free     = results.filter(r => r.free);
+    const conflict = results.filter(r => !r.free);
+
+    // Agent summary
+    document.getElementById('agentMsg3Text').textContent =
+      `Kontrollisin ${results.length} valikainete tunniplaane. Leidsin ${free.length} konfliktivaaba ainet. `+
+      `${conflict.length} ainel esines konflikt sinu kohustuslike tundidega.`;
+    document.getElementById('agentMsg3').style.display = 'block';
+
+    // Render timetable
+    renderTimetable(state.mandatoryEvents, free);
+    document.getElementById('ttCard').style.display = 'block';
+
+    // Render results
+    document.getElementById('freeCount').textContent  = free.length;
+    document.getElementById('conflictCount').textContent = `${conflict.length} konfliktsed peidetud`;
+    renderResults(results, 'all');
+    document.getElementById('resultsSection').style.display = 'block';
+
+  } catch(e) {
+    loading.style.display = 'none';
+    document.getElementById('agentMsg3Text').textContent = '⚠ Viga: ' + e.message;
+    document.getElementById('agentMsg3').style.display = 'block';
+  }
+}
+
+// ── Timetable renderer ─────────────────────────────────────────────────────
+function renderTimetable(mandatory, free) {
+  const HOUR_START = 8, HOUR_END = 20;
+  const HOURS = HOUR_END - HOUR_START;
+  const SLOT_H = 28; // px per 30min
+
+  const days = ['E','T','K','N','R'];
+  let html = `<div class="timetable" style="grid-template-rows: auto repeat(${HOURS*2}, ${SLOT_H}px)">`;
+
+  // Headers
+  html += `<div class="tt-header"></div>`;
+  days.forEach(d => html += `<div class="tt-header">${d}</div>`);
+
+  // Time rows + cells
+  for (let slot = 0; slot < HOURS*2; slot++) {
+    const totalMin = HOUR_START*60 + slot*30;
+    const h = Math.floor(totalMin/60), m = totalMin%60;
+    const timeLabel = m === 0 ? `${h}:00` : '';
+    html += `<div class="tt-time">${timeLabel}</div>`;
+    for (let d = 1; d <= 5; d++) {
+      html += `<div class="tt-cell" data-dow="${d}" data-slot="${slot}"></div>`;
+    }
+  }
+  html += '</div>';
+  const grid = document.getElementById('timetableGrid');
+  grid.innerHTML = html;
+
+  // Place events
+  const allEvents = [
+    ...mandatory.map(e => ({...e, cls:'mandatory'})),
+    ...free.flatMap(r => r.events.map(e => ({...e, cls:'free'}))),
+  ];
+
+  for (const ev of allEvents) {
+    if (ev.dow === -1 || !ev.start || !ev.end) continue;
+    const startMin = toMin(ev.start) - HOUR_START*60;
+    const endMin   = toMin(ev.end)   - HOUR_START*60;
+    if (startMin < 0 || endMin > HOURS*60) continue;
+
+    const startSlot = Math.floor(startMin/30);
+    const span      = Math.ceil((endMin - startMin)/30);
+    const cell = grid.querySelector(`[data-dow="${ev.dow}"][data-slot="${startSlot}"]`);
+    if (!cell) continue;
+
+    const el = document.createElement('div');
+    el.className = `tt-event ${ev.cls}`;
+    el.style.height = `${span * SLOT_H - 2}px`;
+    el.style.top    = '1px';
+    el.innerHTML    = `<div style="font-weight:700">${ev.course_code||''}</div><div style="opacity:.7">${ev.start}–${ev.end}</div>`;
+    el.title        = `${ev.course_code} ${ev.course_name}\n${ev.start}–${ev.end}`;
+    cell.style.position = 'relative';
+    cell.appendChild(el);
+  }
+}
+
+// ── Results renderer ───────────────────────────────────────────────────────
+function renderResults(results, filter) {
+  const grid = document.getElementById('resultGrid');
+  const toShow = filter === 'all' ? results : filter === 'free' ? results.filter(r=>r.free) : results.filter(r=>!r.free);
+  grid.innerHTML = '';
+  for (const r of toShow.slice(0, 80)) {
+    const card = document.createElement('div');
+    card.className = `result-card ${r.free ? '' : 'conflict-card'}`;
+    card.innerHTML = `
+      <div class="rc-top">
+        <div class="rc-code">${r.code}</div>
+        <div class="rc-badge ${r.free ? 'free' : 'conflict'}">${r.free ? '✓ sobib' : '✗ konflikt'}</div>
+      </div>
+      <div class="rc-name">${r.name || r.code}</div>
+      <div class="rc-time">${r.time}</div>
+    `;
+    grid.appendChild(card);
+  }
+  if (!toShow.length) grid.innerHTML = '<div style="color:var(--muted);font-size:13px;padding:12px">Ühtegi tulemust ei leitud</div>';
+}
+
+function filterResults(f, el) {
+  document.querySelectorAll('#resultFilter .filter-chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  renderResults(state.allResults, f);
+}
+
+// ── Init ───────────────────────────────────────────────────────────────────
+document.getElementById('groupCode').addEventListener('keydown', e => { if(e.key==='Enter') startAgent(); });
+</script>
+</body>
+</html>

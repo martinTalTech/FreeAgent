@@ -1,0 +1,340 @@
+[
+  {
+    "course_code": "ICY0004",
+    "course_name": "IT eetilised, sotsiaalsed ja professionaalsed aspektid",
+    "event_type": "AINEOSAD_LP",
+    "slot": {
+      "dow": -1,
+      "start": "",
+      "end": "",
+      "week_codes": [
+        "NADAL_10",
+        "NADAL_11",
+        "NADAL_12",
+        "NADAL_13",
+        "NADAL_14",
+        "NADAL_15",
+        "NADAL_16",
+        "NADAL_2",
+        "NADAL_3",
+        "NADAL_4",
+        "NADAL_5",
+        "NADAL_6",
+        "NADAL_7",
+        "NADAL_8",
+        "NADAL_9"
+      ]
+    }
+  },
+  {
+    "course_code": "ICY0030",
+    "course_name": "Kõrgem matemaatika",
+    "event_type": "AINEOSAD_L",
+    "slot": {
+      "dow": 1,
+      "start": "14:00",
+      "end": "15:30",
+      "week_codes": [
+        "NADAL_1",
+        "NADAL_10",
+        "NADAL_11",
+        "NADAL_12",
+        "NADAL_13",
+        "NADAL_14",
+        "NADAL_15",
+        "NADAL_16",
+        "NADAL_2",
+        "NADAL_3",
+        "NADAL_4",
+        "NADAL_5",
+        "NADAL_6",
+        "NADAL_7",
+        "NADAL_8",
+        "NADAL_9"
+      ]
+    }
+  },
+  {
+    "course_code": "ICY0031",
+    "course_name": "Ettevõtluse alused ja ärisuhtlus",
+    "event_type": "AINEOSAD_L",
+    "slot": {
+      "dow": 1,
+      "start": "16:00",
+      "end": "17:30",
+      "week_codes": [
+        "NADAL_1",
+        "NADAL_10",
+        "NADAL_11",
+        "NADAL_12",
+        "NADAL_13",
+        "NADAL_14",
+        "NADAL_15",
+        "NADAL_16",
+        "NADAL_2",
+        "NADAL_3",
+        "NADAL_4",
+        "NADAL_5",
+        "NADAL_6",
+        "NADAL_7",
+        "NADAL_8",
+        "NADAL_9"
+      ]
+    }
+  },
+  {
+    "course_code": "ICA0007",
+    "course_name": "Linuxi administreerimine",
+    "event_type": "AINEOSAD_LH",
+    "slot": {
+      "dow": 2,
+      "start": "12:00",
+      "end": "13:30",
+      "week_codes": [
+        "NADAL_1",
+        "NADAL_16"
+      ]
+    }
+  },
+  {
+    "course_code": "ICA0007",
+    "course_name": "Linuxi administreerimine",
+    "event_type": "AINEOSAD_LH",
+    "slot": {
+      "dow": 2,
+      "start": "12:00",
+      "end": "13:30",
+      "week_codes": [
+        "NADAL_10",
+        "NADAL_11",
+        "NADAL_12",
+        "NADAL_13",
+        "NADAL_14",
+        "NADAL_15",
+        "NADAL_2",
+        "NADAL_3",
+        "NADAL_4",
+        "NADAL_5",
+        "NADAL_6",
+        "NADAL_7",
+        "NADAL_8",
+        "NADAL_9"
+      ]
+    }
+  },
+  {
+    "course_code": "ICY0030",
+    "course_name": "Kõrgem matemaatika",
+    "event_type": "AINEOSAD_P",
+    "slot": {
+      "dow": 2,
+      "start": "14:00",
+      "end": "15:30",
+      "week_codes": [
+        "NADAL_1",
+        "NADAL_10",
+        "NADAL_11",
+        "NADAL_12",
+        "NADAL_13",
+        "NADAL_14",
+        "NADAL_15",
+        "NADAL_16",
+        "NADAL_2",
+        "NADAL_3",
+        "NADAL_4",
+        "NADAL_5",
+        "NADAL_6",
+        "NADAL_7",
+        "NADAL_8",
+        "NADAL_9"
+      ]
+    }
+  },
+  {
+    "course_code": "MLI0008",
+    "course_name": "Inglise ärikeel IT spetsialistidele",
+    "event_type": "AINEOSAD_P",
+    "slot": {
+      "dow": 2,
+      "start": "08:15",
+      "end": "11:30",
+      "week_codes": [
+        "NADAL_1",
+        "NADAL_10",
+        "NADAL_11",
+        "NADAL_12",
+        "NADAL_13",
+        "NADAL_14",
+        "NADAL_15",
+        "NADAL_16",
+        "NADAL_2",
+        "NADAL_3",
+        "NADAL_4",
+        "NADAL_5",
+        "NADAL_6",
+        "NADAL_7",
+        "NADAL_8",
+        "NADAL_9"
+      ]
+    }
+  },
+  {
+    "course_code": "ICA0001",
+    "course_name": "Operatsioonisüsteemid ja nende haldamine",
+    "event_type": "AINEOSAD_P",
+    "slot": {
+      "dow": 3,
+      "start": "12:00",
+      "end": "13:30",
+      "week_codes": [
+        "NADAL_10",
+        "NADAL_11",
+        "NADAL_12",
+        "NADAL_13",
+        "NADAL_14",
+        "NADAL_15",
+        "NADAL_16",
+        "NADAL_3",
+        "NADAL_4",
+        "NADAL_5",
+        "NADAL_6",
+        "NADAL_7",
+        "NADAL_8",
+        "NADAL_9"
+      ]
+    }
+  },
+  {
+    "course_code": "ICY0031",
+    "course_name": "Ettevõtluse alused ja ärisuhtlus",
+    "event_type": "AINEOSAD_P",
+    "slot": {
+      "dow": 3,
+      "start": "14:00",
+      "end": "15:30",
+      "week_codes": [
+        "NADAL_1",
+        "NADAL_10",
+        "NADAL_11",
+        "NADAL_12",
+        "NADAL_13",
+        "NADAL_14",
+        "NADAL_15",
+        "NADAL_16",
+        "NADAL_2",
+        "NADAL_3",
+        "NADAL_4",
+        "NADAL_5",
+        "NADAL_6",
+        "NADAL_7",
+        "NADAL_8",
+        "NADAL_9"
+      ]
+    }
+  },
+  {
+    "course_code": "ICA0007",
+    "course_name": "Linuxi administreerimine",
+    "event_type": "AINEOSAD_LH",
+    "slot": {
+      "dow": 4,
+      "start": "12:00",
+      "end": "13:30",
+      "week_codes": [
+        "NADAL_1"
+      ]
+    }
+  },
+  {
+    "course_code": "ICA0007",
+    "course_name": "Linuxi administreerimine",
+    "event_type": "AINEOSAD_LH",
+    "slot": {
+      "dow": 4,
+      "start": "12:00",
+      "end": "13:30",
+      "week_codes": [
+        "NADAL_10",
+        "NADAL_11",
+        "NADAL_12",
+        "NADAL_13",
+        "NADAL_14",
+        "NADAL_15",
+        "NADAL_2",
+        "NADAL_3",
+        "NADAL_4",
+        "NADAL_5",
+        "NADAL_6",
+        "NADAL_7",
+        "NADAL_8",
+        "NADAL_9"
+      ]
+    }
+  },
+  {
+    "course_code": "ICA0007",
+    "course_name": "Linuxi administreerimine",
+    "event_type": "AINEOSAD_LH",
+    "slot": {
+      "dow": 4,
+      "start": "16:15",
+      "end": "17:45",
+      "week_codes": [
+        "NADAL_16"
+      ]
+    }
+  },
+  {
+    "course_code": "ICY0004",
+    "course_name": "IT eetilised, sotsiaalsed ja professionaalsed aspektid",
+    "event_type": "AINEOSAD_LP",
+    "slot": {
+      "dow": 5,
+      "start": "16:00",
+      "end": "17:30",
+      "week_codes": [
+        "NADAL_1"
+      ]
+    }
+  },
+  {
+    "course_code": "ICA0001",
+    "course_name": "Operatsioonisüsteemid ja nende haldamine",
+    "event_type": "AINEOSAD_L",
+    "slot": {
+      "dow": 5,
+      "start": "12:00",
+      "end": "15:15",
+      "week_codes": [
+        "NADAL_1",
+        "NADAL_2"
+      ]
+    }
+  },
+  {
+    "course_code": "ICA0001",
+    "course_name": "Operatsioonisüsteemid ja nende haldamine",
+    "event_type": "AINEOSAD_P",
+    "slot": {
+      "dow": 5,
+      "start": "13:45",
+      "end": "15:15",
+      "week_codes": [
+        "NADAL_10",
+        "NADAL_11",
+        "NADAL_12",
+        "NADAL_13",
+        "NADAL_14",
+        "NADAL_15",
+        "NADAL_16",
+        "NADAL_3",
+        "NADAL_4",
+        "NADAL_5",
+        "NADAL_6",
+        "NADAL_7",
+        "NADAL_8",
+        "NADAL_9"
+      ]
+    }
+  }
+]
