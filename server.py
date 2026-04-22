@@ -347,6 +347,25 @@ def _filter_candidates_by_prerequisites(candidates: list[dict], completed_codes:
     return allowed, blocked
 
 
+def _filter_out_completed_candidates(candidates: list[dict], completed_codes: set[str]) -> tuple[list[dict], list[dict]]:
+    if not completed_codes:
+        return candidates, []
+    allowed = []
+    removed = []
+    for c in candidates:
+        code = str(c.get("code", "")).strip().upper()
+        if code and code in completed_codes:
+            removed.append(
+                {
+                    "code": code,
+                    "name": str(c.get("name", "")).strip(),
+                }
+            )
+            continue
+        allowed.append(c)
+    return allowed, removed
+
+
 def _fetch_subject_id(code: str) -> int | None:
     key = (code or "").strip().upper()
     if not key:
@@ -1077,6 +1096,10 @@ class Handler(BaseHTTPRequestHandler):
         normalized_candidates = _enrich_candidates_with_profiles(normalized_candidates, max_fetch=100)
         completed_codes = _normalize_completed_codes(completed_courses)
         completed_codes.update(_normalize_completed_codes(known_course_codes))
+        normalized_candidates, removed_due_completed = _filter_out_completed_candidates(
+            normalized_candidates,
+            completed_codes,
+        )
         normalized_candidates, blocked_by_prereq = _filter_candidates_by_prerequisites(
             normalized_candidates,
             completed_codes,
@@ -1087,11 +1110,14 @@ class Handler(BaseHTTPRequestHandler):
                 200,
                 {
                     "mode": "heuristic",
-                    "summary": "Kõik kandidaadid langesid välja eeldusainete kontrolli tõttu.",
+                    "summary": (
+                        "Kõik kandidaadid langesid välja läbitud ainete ja/või eeldusainete kontrolli tõttu."
+                    ),
                     "recommended_courses": [],
                     "future_courses": [],
                     "swap_suggestions": [],
                     "blocked_due_prerequisites": blocked_by_prereq[:40],
+                    "removed_due_completed": removed_due_completed[:40],
                 },
             )
             return
@@ -1116,6 +1142,13 @@ class Handler(BaseHTTPRequestHandler):
                         f"Eeldusainete puudumise tõttu peitsin {len(blocked_by_prereq)} ainet.",
                         520,
                     )
+                if removed_due_completed:
+                    result["removed_due_completed"] = removed_due_completed[:40]
+                    result["summary"] = _clip(
+                        f"{result.get('summary', '')} "
+                        f"Juba läbitud ainete tõttu peitsin {len(removed_due_completed)} kandidaati.",
+                        520,
+                    )
                 self._send_json(200, result)
                 return
             except Exception as exc:
@@ -1137,6 +1170,13 @@ class Handler(BaseHTTPRequestHandler):
                         f"Eeldusainete puudumise tõttu peitsin {len(blocked_by_prereq)} ainet.",
                         520,
                     )
+                if removed_due_completed:
+                    fallback["removed_due_completed"] = removed_due_completed[:40]
+                    fallback["summary"] = _clip(
+                        f"{fallback.get('summary', '')} "
+                        f"Juba läbitud ainete tõttu peitsin {len(removed_due_completed)} kandidaati.",
+                        520,
+                    )
                 self._send_json(200, fallback)
             return
 
@@ -1156,6 +1196,13 @@ class Handler(BaseHTTPRequestHandler):
             fallback["summary"] = _clip(
                 f"{fallback.get('summary', '')} "
                 f"Eeldusainete puudumise tõttu peitsin {len(blocked_by_prereq)} ainet.",
+                520,
+            )
+        if removed_due_completed:
+            fallback["removed_due_completed"] = removed_due_completed[:40]
+            fallback["summary"] = _clip(
+                f"{fallback.get('summary', '')} "
+                f"Juba läbitud ainete tõttu peitsin {len(removed_due_completed)} kandidaati.",
                 520,
             )
         self._send_json(200, fallback)
